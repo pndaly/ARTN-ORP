@@ -35,9 +35,9 @@ to use them!
     PostGreSQL server defaults of *localhost:5432*), execute:
     
     ```bash
-    % bash ${ARTN_BIN}/artn.database.sh --database=artn --password=my_secret --username=artn --dry-run
+    % bash ${ORP_BIN}/artn.database.sh --database=artn --password=my_secret --username=artn --dry-run
     % cat /tmp/artn.database.sh
-    % bash ${ARTN_BIN}/artn.database.sh --database=artn --password=my_secret --username=artn
+    % bash ${ORP_BIN}/artn.database.sh --database=artn --password=my_secret --username=artn
     ```
       
 * Create the *users* table
@@ -59,9 +59,9 @@ to use them!
     *artn:my_secret* on the PostGreSQL server of *localhost:5432*), execute:
     
     ```bash
-    % bash ${ARTN_BIN}/artn.users.sh --database=artn --password=my_secret --username=artn --dry-run
+    % bash ${ORP_BIN}/artn.users.sh --database=artn --password=my_secret --username=artn --dry-run
     % cat /tmp/artn.users.sh
-    % bash ${ARTN_BIN}/artn.users.sh --database=artn --password=my_secret --username=artn
+    % bash ${ORP_BIN}/artn.users.sh --database=artn --password=my_secret --username=artn
     ```
 
     *Once you have regular, registered, users we suggest you *disable* all Demo[1-5] accounts!*
@@ -72,9 +72,9 @@ to use them!
     created above (using credentials *artn:my_secret* on the PostGreSQL server of *localhost:5432*), execute:
     
     ```bash
-    % bash ${ARTN_BIN}/artn.obsreqs.sh --database=artn --password=my_secret --username=artn --dry-run
+    % bash ${ORP_BIN}/artn.obsreqs.sh --database=artn --password=my_secret --username=artn --dry-run
     % cat /tmp/artn.obsreqs.sh
-    % bash ${ARTN_BIN}/artn.obsreqs.sh --database=artn --password=my_secret --username=artn
+    % bash ${ORP_BIN}/artn.obsreqs.sh --database=artn --password=my_secret --username=artn
     ```
 
 * Database entity-relationship diagram 
@@ -90,15 +90,15 @@ to use them!
     We provide the following, generic, utilities for database manipulation:
     
     ```bash
-    % bash ${ARTN_BIN}/psql.size.sh --help
-    % bash ${ARTN_BIN}/psql.backup.sh --help
-    % bash ${ARTN_BIN}/psql.restore.sh --help
+    % bash ${ORP_BIN}/psql.size.sh --help
+    % bash ${ORP_BIN}/psql.backup.sh --help
+    % bash ${ORP_BIN}/psql.restore.sh --help
     ```
 
     We dockerize the database, so a utility is also provided for that:
     
     ```bash
-    % bash ${ARTN_BIN}/artn.docker.sh --help
+    % bash ${ORP_BIN}/artn.docker.sh --help
     ```
 
 ## Configure For Local Site
@@ -112,12 +112,12 @@ and edit the copies to suit your site and change:
    - rts2 server (if using RTS2, otherwise ignore this setting)
 
 ```bash
-% cp ${ARTN_BIN}/ORP.template.sh ${ARTN_BIN}/ORP.sh
-% vi ${ARTN_BIN}/ORP.sh
-% cp ${ARTN_ETC}/ARTN.template.sh ${ARTN_ETC}/ARTN.sh
-% vi ${ARTN_ETC}/ARTN.sh
-% cp ${ARTN_ETC}/ORP.template.sh ${ARTN_ETC}/ORP.sh
-% vi ${ARTN_ETC}/ORP.sh
+% cp ${ORP_BIN}/ORP.template.sh ${ARTN_BIN}/ORP.sh
+% vi ${ORP_BIN}/ORP.sh
+% cp ${ORP_ETC}/ARTN.template.sh ${ARTN_ETC}/ARTN.sh
+% vi ${ORP_ETC}/ARTN.sh
+% cp ${ORP_ETC}/ORP.template.sh ${ARTN_ETC}/ORP.sh
+% vi ${ORP_ETC}/ORP.sh
 ```
 
 ## Quick Start Guide
@@ -162,8 +162,8 @@ If you carried out the above, and assuming the codebase is in /home/artn/ARTN-OR
 You should *copy* `${ARTN_SRC}/telescopes/rts2_config.template.json` and edit the copy to suit your site:
 
 ```bash
-% cp ${ARTN_SRC}/telescopes/rts2_config.template.json ${ARTN_SRC}/telelscopes/rts2_config.json
-% vi ${ARTN_SRC}/telescopes/rts2_config.json
+% cp ${ORP_SRC}/telescopes/rts2_config.template.json ${ORP_SRC}/telelscopes/rts2_config.json
+% vi ${ORP_SRC}/telescopes/rts2_config.json
 ```
 
 The `rts2_config.json` file contains the JSON snippet { "rts2url": "http://localhost:8889" }
