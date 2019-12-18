@@ -112,11 +112,11 @@ and edit the copies to suit your site and change:
    - rts2 server (if using RTS2, otherwise ignore this setting)
 
 ```bash
-% cp ${ORP_BIN}/ORP.template.sh ${ARTN_BIN}/ORP.sh
+% cp ${ORP_BIN}/ORP.template.sh ${ORP_BIN}/ORP.sh
 % vi ${ORP_BIN}/ORP.sh
-% cp ${ORP_ETC}/ARTN.template.sh ${ARTN_ETC}/ARTN.sh
+% cp ${ORP_ETC}/ARTN.template.sh ${ORP_ETC}/ARTN.sh
 % vi ${ORP_ETC}/ARTN.sh
-% cp ${ORP_ETC}/ORP.template.sh ${ARTN_ETC}/ORP.sh
+% cp ${ORP_ETC}/ORP.template.sh ${ORP_ETC}/ORP.sh
 % vi ${ORP_ETC}/ORP.sh
 ```
 
