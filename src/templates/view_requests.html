@@ -1,0 +1,639 @@
+{% extends 'base.html' %}
+
+<!-- description -->
+{% block content %}
+
+<!--suppress ALL -->
+<hr>
+
+  <div class="row">
+   <div class="container">
+    <h5><span class="left"><img src="{{ current_user.get_avatar(24) }}">&nbsp;<i>Welcome back {{ current_user.firstname }} {{ current_user.lastname }} </i></span></h5>
+    <span class="right">
+     {% if current_user.is_admin %}
+      <a href="{{ url_for('orp_view_observable', username=current_user.username) }}" class="btn btn-sm btn-success">View Observable Request(s)</a>
+      <a href="{{ url_for('orp_view_requests', username=current_user.username) }}" class="btn btn-sm btn-warning">View All Request(s)</a>
+      <a href="{{ url_for('orp_view_users') }}?username=" class="btn btn-sm btn-info">View User(s)</a>
+      <a href="{{ url_for('orp_logout') }}" class="btn btn-sm btn-danger">Log Out</a>
+     {% else %}
+      <a href="{{ url_for('orp_view_observable', username=current_user.username) }}?username={{ current_user.username }}" class="btn btn-sm btn-success">View My Observable Request(s)</a>
+      <a href="{{ url_for('orp_view_requests', username=current_user.username) }}?username={{ current_user.username }}" class="btn btn-sm btn-warning">View My Request(s)</a>
+      <a href="{{ url_for('orp_logout') }}" class="btn btn-sm btn-danger">Log Out</a>
+     {% endif %}
+    </span>
+   </div>
+  </div>
+  <br>
+  <div class="row">
+   <div class="container">
+    <span class="right">
+     <a href="{{ url_for('orp_history') }}?username={{ current_user.username }}" class="btn btn-sm btn-outline-info">Observation History</a>
+     <a href="{{ url_for('orp_obsreq', username=current_user.username) }}" class="btn btn-sm btn-outline-info">Create Observation Request</a>
+     <a href="{{ url_for('orp_upload', username=current_user.username) }}" class="btn btn-sm btn-outline-info">File Upload</a>
+     <a href="{{ url_for('orp_profile', username=current_user.username) }}" class="btn btn-sm btn-outline-info">Edit Profile</a>
+    </span>
+   </div>
+  </div>
+
+ <hr>
+
+ <div class="container">
+
+  <!-- sort section -->
+  <!--suppress HtmlUnknownAttribute -->
+  <div class="row">
+   <div class="col-md-2">
+    <form method="GET" action="/orp/view_requests/{{ current_user.username }}">
+     <div align="center">
+     {% if current_user.is_admin %}
+       <button type="submit" class="btn btn-success">Select</button>
+        <a href="{{ url_for('orp_view_requests', username=current_user.username) }}" class="btn btn-warning">Reset</a>
+     {% else %}
+       <button type="submit" class="btn btn-success">Select</button>
+        <a href="{{ url_for('orp_view_requests', username=current_user.username) }}?username={{ current_user.username }}" class="btn btn-warning">Reset</a>
+     {% endif %}
+     </div>
+
+     <br>
+
+     <!-- Sort By ... group -->
+     <div class="form-group">
+      <label><b>Sort By ...</b></label>
+
+      <div class="form-row">
+       <select id="sort_field" name="sort_field" class="form-control form-control-sm" value="{{ request.args.sort_field }}">
+        <option value="id" {% if request.args.sort_field=='id' %} selected {% endif %}>Database ID</option>
+        <option value="object_name" {% if request.args.sort_field=='object_name' %} selected {% endif %}>Object Name</option>
+        <option value="ra_deg" {% if request.args.sort_field=='ra_deg' %} selected {% endif %}>RA (&deg;)</option>
+        <option value="dec_deg" {% if request.args.sort_field=='dec_deg' %} selected {% endif %}>Dec (&deg;)</option>
+        <option value="filter_name" {% if request.args.sort_field=='filter_name' %} selected {% endif %}>Filter</option>
+        <option value="exp_time" {% if request.args.sort_field=='exp_time' %} selected {% endif %}>Exposure Time</option>
+        <option value="num_exp" {% if request.args.sort_field=='num_exp' %} selected {% endif %}>Number of Exposures</option>
+        <option value="airmass" {% if request.args.sort_field=='airmass' %} selected {% endif %}>Airmass</option>
+        <option value="lunarphase" {% if request.args.sort_field=='lunarphase' %} selected {% endif %}>Lunar Phase</option>
+        <option value="begin_iso" {% if request.args.sort_field=='begin_iso' %} selected {% endif %}>Begin Date</option>
+        <option value="end_iso" {% if request.args.sort_field=='end_iso' %} selected {% endif %}>End Date</option>
+        <option value="photometric" {% if request.args.sort_field=='photometric' %} selected {% endif %}>Photometric</option>
+        <option value="guiding" {% if request.args.sort_field=='guiding' %} selected {% endif %}>Guiding</option>
+        <option value="non_sidereal" {% if request.args.sort_field=='non_sidereal' %} selected {% endif %}>Non-Sidereal</option>
+        <option value="binning" {% if request.args.sort_field=='binning' %} selected {% endif %}>Binning</option>
+        <option value="dither" {% if request.args.sort_field=='dither' %} selected {% endif %}>Dither Pattern</option>
+        <option value="cadence" {% if request.args.sort_field=='cadence' %} selected {% endif %}>Observing Cadence</option>
+        <option value="telescope" {% if request.args.sort_field=='telescope' %} selected {% endif %}>Telescope</option>
+        <option value="instrument" {% if request.args.sort_field=='instrument' %} selected {% endif %}>Instrument</option>
+        {% if current_user.is_admin %}
+         <option value="priority" {% if request.args.sort_field=='priority' %} selected {% endif %}>Priority</option>
+         <option value="username" {% if request.args.sort_field=='username' %} selected {% endif %}>Username</option>
+         <option value="group_id" {% if request.args.sort_field=='group_id' %} selected {% endif %}>Group Identifier</option>
+         <option value="observation_id" {% if request.args.sort_field=='observation_id' %} selected {% endif %}>Observation Identifier</option>
+         <option value="queued" {% if request.args.sort_field=='queued' %} selected {% endif %}>Queued</option>
+         <option value="completed" {% if request.args.sort_field=='completed' %} selected {% endif %}>Completed</option>
+        {% endif %}
+       </select>
+      </div>
+
+      <div class="form-row">
+       <select id="sort_order" name="sort_order" class="form-control form-control-sm" value="{{ request.args.sort_order }}">
+        <option value="descending" {% if request.args.sort_order=='descending' %} selected {% endif %}>Descending</option>
+        <option value="ascending" {% if request.args.sort_order=='ascending' %} selected {% endif %}>Ascending</option>
+       </select>
+      </div>
+     </div>
+
+     <br>
+
+     <!-- Using Filters ... group -->
+     <div class="form-group">
+      <label><b>Using Filters ...</b></label>
+
+      <div class="form-row">
+       <input type="text" class="form-control form-control-sm" id="object_name" name="object_name"
+           value="{{ request.args.object_name }}" placeholder="Object Name">
+      </div>
+
+      <div class="form-row">
+       <div class="col">
+        <input type="number" class="form-control form-control-sm" id="ra_deg__gte" name="ra_deg__gte" value="{{ request.args.ra_deg__gte }}" placeholder="0">
+       </div>
+       <label for="ra_deg__gte"><font color="grey">&le;</font> <small>RA</small> <font color="grey">&le;</font></label>
+       <div class="col">
+        <input type="number" class="form-control form-control-sm" id="ra_deg__lte" name="ra_deg__lte" value="{{ request.args.ra_deg__lte }}" placeholder="360">
+       </div>
+      </div>
+
+      <div class="form-row">
+       <div class="col">
+        <input type="number" class="form-control form-control-sm" id="dec_deg__gte" name="dec_deg__gte" value="{{ request.args.dec_deg__gte }}" placeholder="-90">
+       </div>
+       <label for="dec_deg__gte"><font color="grey">&le;</font> <small>Dec</small> <font color="grey">&le;</font></label>
+       <div class="col">
+        <input type="number" class="form-control form-control-sm" id="dec_deg__lte" name="dec_deg__lte" value="{{ request.args.dec_deg__lte }}" placeholder="90">
+       </div>
+      </div>
+
+      <div class="form-row">
+       <label for="filter_name"><small>Filter</small></label>
+       <select id="filter_name" name="filter_name" class="form-control form-control-sm" value="{{ request.args.filter_name }}">
+        <option value="" {% if request.args.filter_name=='' %} selected {% endif %}></option>
+        <option value="Clear" {% if request.args.filter_name=='Clear' %} selected {% endif %}>Clear</option>
+        <option value="U" {% if request.args.filter_name=='U' %} selected {% endif %}>U</option>
+        <option value="B" {% if request.args.filter_name=='B' %} selected {% endif %}>B</option>
+        <option value="V" {% if request.args.filter_name=='V' %} selected {% endif %}>V</option>
+        <option value="R" {% if request.args.filter_name=='R' %} selected {% endif %}>R</option>
+        <option value="I" {% if request.args.filter_name=='I' %} selected {% endif %}>I</option>
+       </select>
+      </div>
+
+      <div class="form-row">
+       <div class="col">
+        <input type="number" class="form-control form-control-sm" id="exp_time__gte" name="exp_time__gte" value="{{ request.args.exp_time__gte }}" placeholder="1">
+       </div>
+       <label for="exp_time__gte"><font color="grey">&le;</font> <small>Exp Time</small> <font color="grey">&le;</font></label>
+       <div class="col">
+        <input type="number" class="form-control form-control-sm" id="exp_time__lte" name="exp_time__lte" value="{{ request.args.exp_time__lte }}" placeholder="500">
+       </div>
+      </div>
+
+      <div class="form-row">
+       <div class="col">
+        <input type="number" class="form-control form-control-sm" id="num_exp__gte" name="num_exp__gte" value="{{ request.args.num_exp__gte }}" placeholder="1">
+       </div>
+       <label for="num_exp__gte"><font color="grey">&le;</font> <small># Exp</small> <font color="grey">&le;</font></label>
+       <div class="col">
+        <input type="number" class="form-control form-control-sm" id="num_exp__lte" name="num_exp__lte" value="{{ request.args.num_exp__lte }}" placeholder="10">
+       </div>
+      </div>
+
+      <div class="form-row">
+       <div class="col">
+        <input type="number" class="form-control form-control-sm" id="airmass__gte" name="airmass__gte" value="{{ request.args.airmass__gte }}" placeholder="1">
+       </div>
+       <label for="airmass__gte"><font color="grey">&le;</font> <small>Airmass</small> <font color="grey">&le;</font></label>
+       <div class="col">
+        <input type="number" class="form-control form-control-sm" id="airmass__lte" name="airmass__lte" value="{{ request.args.airmass__lte }}" placeholder="3">
+       </div>
+      </div>
+
+      <div class="form-row">
+       <label for="lunarphase"><small>Lunar Phase</small></label>
+       <select id="lunarphase" name="lunarphase" class="form-control form-control-sm" value="{{ request.args.lunarphase }}">
+        <option value="" {% if request.args.lunarphase=='' %} selected {% endif %}></option>
+        <option value="any" {% if request.args.lunarphase=='any' %} selected {% endif %}>Any</option>
+        <option value="dark" {% if request.args.lunarphase=='dark' %} selected {% endif %}>Dark</option>
+        <option value="grey" {% if request.args.lunarphase=='grey' %} selected {% endif %}>Grey</option>
+        <option value="bright" {% if request.args.lunarphase=='bright' %} selected {% endif %}>Bright</option>
+        <option value="mbright" {% if request.args.lunarphase=='mbright' %} selected {% endif %}>Bright (Before Moonrise)</option>
+       </select>
+      </div>
+
+      <div class="form-row">
+       <label for="begin_iso__gte"><small>Begin Date After</small></label>
+       <div class="col">
+        <input type="date" class="form-control form-control-sm" id="begin_iso__gte"
+            name="begin_iso__gte" value="{{ request.args.begin_iso__gte }}" placeholder="2019-01-01">
+       </div>
+       <label for="begin_iso__lte"><small>Begin Date Before</small></label>
+       <div class="col">
+        <input type="date" class="form-control form-control-sm" id="begin_iso__lte"
+            name="begin_iso__lte" value="{{ request.args.begin_iso__lte }}" placeholder="2020-01-01">
+       </div>
+      </div>
+
+      <div class="form-row">
+       <label for="end_iso__gte"><small>End Date After</small></label>
+       <div class="col">
+        <input type="date" class="form-control form-control-sm" id="end_iso__gte"
+            name="end_iso__gte" value="{{ request.args.end_iso__gte }}" placeholder="2019-01-01">
+       </div>
+       <label for="end_iso__lte"><small>End Date Before</small></label>
+       <div class="col">
+        <input type="date" class="form-control form-control-sm" id="end_iso__lte"
+            name="end_iso__lte" value="{{ request.args.end_iso__lte }}" placeholder="2020-01-01">
+       </div>
+      </div>
+
+      <div class="form-row">
+       <!-- <input type="checkbox" id="photometric" name="photometric" value="0" placeholder="0" onclick="toggle_check(this)"> &nbsp; <small>Photometric</small> -->
+       <label for="photometric"><small>Photometric Conditions?</small></label>
+       <select id="photometric" name="photometric" class="form-control form-control-sm" value="{{ request.args.photometric }}">
+        <option value="" {% if request.args.photometric=='' %} selected {% endif %}></option>
+        <option value="True" {% if request.args.photometric=='True' %} selected {% endif %}>True</option>
+        <option value="False" {% if request.args.photometric=='False' %} selected {% endif %}>False</option>
+       </select>
+      </div>
+      <div class="form-row">
+       <!-- <input type="checkbox" id="guiding" name="guiding" value="0" placeholder="0" onclick="toggle_check(this)"> &nbsp; <small>Guiding</small> -->
+       <label for="guiding"><small>Guiding Enabled?</small></label>
+       <select id="guiding" name="guiding" class="form-control form-control-sm" value="{{ request.args.guiding }}">
+        <option value="" {% if request.args.guiding=='' %} selected {% endif %}></option>
+        <option value="True" {% if request.args.guiding=='True' %} selected {% endif %}>True</option>
+        <option value="False" {% if request.args.guiding=='False' %} selected {% endif %}>False</option>
+       </select>
+      </div>
+      <div class="form-row">
+       <!-- <input type="checkbox" id="non_sidereal" name="non_sidereal" value="0" placeholder="0" onclick="toggle_check(this)"> &nbsp; <small>Non-Sidereal</small> -->
+       <label for="non_sidereal"><small>Non Sidereal?</small></label>
+       <select id="non_sidereal" name="non_sidereal" class="form-control form-control-sm" value="{{ request.args.non_sidereal }}">
+        <option value="" {% if request.args.non_sidereal=='' %} selected {% endif %}></option>
+        <option value="True" {% if request.args.non_sidereal=='True' %} selected {% endif %}>True</option>
+        <option value="False" {% if request.args.non_sidereal=='False' %} selected {% endif %}>False</option>
+       </select>
+      </div>
+
+      <div class="form-row">
+       <label for="binning"><small>Binning</small></label>
+       <select id="binning" name="binning" class="form-control form-control-sm" value="{{ request.args.binning }}">
+        <option value="" {% if request.args.binning=='' %} selected {% endif %}></option>
+        <option value="4x4" {% if request.args.binning=='4x4' %} selected {% endif %}>4x4</option>
+        <option value="3x3" {% if request.args.binning=='3x3' %} selected {% endif %}>3x3</option>
+        <option value="2x2" {% if request.args.binning=='2x2' %} selected {% endif %}>2x2</option>
+       </select>
+      </div>
+
+      <div class="form-row">
+       <label for="dither"><small>Dither</small></label>
+       <select id="dither" name="dither" class="form-control form-control-sm" value="{{ request.args.dither }}">
+        <option value="" {% if request.args.dither=='' %} selected {% endif %}></option>
+        <option value="n-RA" {% if request.args.dither=='n-RA' %} selected {% endif %}>n-RA</option>
+        <option value="n-Dec" {% if request.args.dither=='n-Dec' %} selected {% endif %}>n-Dec</option>
+        <option value="NxM" {% if request.args.dither=='NxM' %} selected {% endif %}>NxM</option>
+       </select>
+      </div>
+
+      <div class="form-row">
+       <label for="cadence"><small>Cadence</small></label>
+       <select id="cadence" name="cadence" class="form-control form-control-sm" value="{{ request.args.cadence }}">
+        <option value="" {% if request.args.cadence=='' %} selected {% endif %}></option>
+        <option value="Once" {% if request.args.cadence=='Once' %} selected {% endif %}>Once</option>
+        <option value="Daily" {% if request.args.cadence=='Daily' %} selected {% endif %}>Daily</option>
+        <option value="Weekly" {% if request.args.cadence=='Weekly' %} selected {% endif %}>Weekly</option>
+        <option value="Monthly" {% if request.args.cadence=='Monthly' %} selected {% endif %}>Monthly</option>
+       </select>
+      </div>
+
+      <div class="form-row">
+       <label for="telescope"><small>Telescope</small></label>
+       <select id="telescope" name="telescope" class="form-control form-control-sm" value="{{ request.args.telescope }}">
+        <option value="" {% if request.args.telescope=='' %} selected {% endif %}></option>
+        <!-- <option value="Any" {% if request.args.telescope=='Any' %} selected {% endif %}>Any</option> -->
+        <option value="Kuiper" {% if request.args.telescope=='Kuiper' %} selected {% endif %}>Kuiper</option>
+        <option value="Vatt" {% if request.args.telescope=='Vatt' %} selected {% endif %}>Vatt</option>
+        <option value="Bok" {% if request.args.telescope=='Bok' %} selected {% endif %}>Bok</option>
+       </select>
+      </div>
+
+      <div class="form-row">
+       <label for="instrument"><small>Instrument</small></label>
+       <select id="instrument" name="instrument" class="form-control form-control-sm" value="{{ request.args.instrument }}">
+        <option value="" {% if request.args.instrument=='' %} selected {% endif %}></option>
+        <!-- <option value="Any" {% if request.args.instrument=='Any' %} selected {% endif %}>Any</option> -->
+        <option value="Mont4k" {% if request.args.instrument=='Mont4k' %} selected {% endif %}>Mont 4k</option>
+        <option value="Vatt4k" {% if request.args.instrument=='Vatt4k' %} selected {% endif %}>Vatt 4k</option>
+        <option value="Bok4k" {% if request.args.instrument=='Bok4k' %} selected {% endif %}>Bok 4k</option>
+       </select>
+      </div>
+     </div>
+
+     {% if current_user.is_admin %}
+      <div class="form-row">
+       <label for="username"><small>Username</small></label>
+       <input type="text" class="form-control form-control-sm" id="username" name="username"
+           value="{{ request.args.username }}" placeholder="{{ current_user.username }}">
+      </div>
+      <div class="form-row">
+       <label for="priority"><small>Priority</small></label>
+       <select id="priority" name="priority" class="form-control form-control-sm" value="{{ request.args.priority }}"><br>
+        <option value="" {% if request.args.priority=='' %} selected {% endif %}></option>
+        <option value="urgent" {% if request.args.priority=='urgent' %} selected {% endif %}>Urgent</option>
+        <option value="routine" {% if request.args.priority=='routine' %} selected {% endif %}>Routine</option>
+       </select>
+      </div>
+      <div class="form-row">
+       <!-- <input type="checkbox" id="queued" name="queued" value="0" placeholder="0" onclick="toggle_check(this)"> &nbsp; <small>Queued</small> -->
+       <label for="queued"><small>Observation Queued?</small></label>
+       <select id="queued" name="queued" class="form-control form-control-sm" value="{{ request.args.queued }}">
+        <option value="" {% if request.args.queued=='' %} selected {% endif %}></option>
+        <option value="True" {% if request.args.queued=='True' %} selected {% endif %}>True</option>
+        <option value="False" {% if request.args.queued=='False' %} selected {% endif %}>False</option>
+       </select>
+      </div>
+      <div class="form-row">
+       <!-- <input type="checkbox" id="completed" name="completed" value="0" placeholder="0" onclick="toggle_check(this)"> &nbsp; <small>Completed</small> -->
+       <label for="completed"><small>Observation Completed?</small></label>
+       <select id="completed" name="completed" class="form-control form-control-sm" value="{{ request.args.completed }}">
+        <option value="" {% if request.args.completed=='' %} selected {% endif %}></option>
+        <option value="True" {% if request.args.completed=='True' %} selected {% endif %}>True</option>
+        <option value="False" {% if request.args.completed=='False' %} selected {% endif %}>False</option>
+       </select>
+      </div>
+     {% endif %}
+
+     <br>
+
+     <div align="center">
+      {% if current_user.is_admin %}
+       <button type="submit" class="btn btn-success">Select</button>
+        <a href="{{ url_for('orp_view_requests', username=current_user.username) }}" class="btn btn-warning">Reset</a>
+      {% else %}
+       <button type="submit" class="btn btn-success">Select</button>
+        <a href="{{ url_for('orp_view_requests', username=current_user.username) }}?username={{ current_user.username }}" class="btn btn-warning">Reset</a>
+      {% endif %}
+     </div>
+    </form>
+   </div>
+
+   <br>
+
+   <!-- Table -->
+   <div class="col-md-10">
+    <div class="table-responsive">
+     <div class="row">
+      <div class="col">
+       <div align="left">
+        {% if context.has_prev %}
+         <a href="/orp/view_requests/{{ current_user.username }}?{{ arg_str }}&page={{ page - 1 }}" class="btn btn-outline-secondary">Prev</a>
+        {% else %}
+         <a href="#" class="btn btn-outline-secondary disabled">Prev</a>
+        {% endif %}
+       </div>
+      </div>
+      <div class="col-md-8">
+       <div align="center">
+        {{ context.total }} record(s) found. Showing page {{ page }} / {{ context.pages }}.
+       </div>
+      </div>
+      <div class="col">
+       <div align="right">
+        {% if context.has_next %}
+         <a href="/orp/view_requests/{{ current_user.username }}?{{ arg_str }}&page={{ page + 1 }}" class="btn btn-outline-secondary">Next</a>
+        {% else %}
+         <a href="#" class="btn btn-outline-secondary disabled">Next</a>
+        {% endif %}
+       </div>
+      </div>
+     </div>
+
+     <br>
+
+     <table class="table table-striped table-sm">
+      <thead>
+      <tr>
+       <!-- Eyeglass | Completed -->
+       <th><font color="blue"></font></th>
+       <!-- Microscope -->
+       <th><font color="blue"></font></th>
+       <!-- Delete -->
+       <th><font color="blue"></font></th>
+       <!-- Edit -->
+       <th><font color="blue"></font></th>
+       <!-- Owner -->
+       <th><font color="blue">Owner</font></th>
+       <!-- Telescope -->
+       <!-- <th><font color="blue">Telescope</font></th> -->
+       <!-- Instrument -->
+       <!-- <th><font color="blue">Instrument</font></th> -->
+       <!-- Object -->
+       <th><font color="blue">Object</font></th>
+       <!-- RA -->
+       <th><font color="blue">RA</font></th>
+       <!-- Dec -->
+       <th><font color="blue">Dec</font></th>
+       <!-- Filter -->
+       <th><font color="blue">Filter</font></th>
+       <!-- Exp Time -->
+       <th><font color="blue">Exp Time</font></th>
+       <!-- # Exp -->
+       <th><font color="blue"># Exp</font></th>
+       <!-- Airmass -->
+       <th><font color="blue">Airmass</font></th>
+       <!-- Lunarphase -->
+       <th><font color="blue">Lunarphase</font></th>
+       <!-- Priority -->
+       <!-- <th><font color="blue">Priority</font></th> -->
+       <!-- Photometric -->
+       <th><font color="blue">Photometric</font></th>
+       <!-- Guiding -->
+       <th><font color="blue">Guiding</font></th>
+       <!-- Non-Sidereal -->
+       <th><font color="blue">Non-Sidereal</font></th>
+       <!-- Begin UTC -->
+       <th><font color="blue">Begin</font></th>
+       <!-- End UTC -->
+       <th><font color="blue">End</font></th>
+       <!-- Binning -->
+       <th><font color="blue">Binning</font></th>
+       <!-- Dither -->
+       <!-- <th><font color="blue">Dither</font></th> -->
+       <!-- Cadence -->
+       <!-- <th><font color="blue">Cadence</font></th> -->
+       <!-- Queued -->
+       <!-- <th><font color="blue">Queued</font></th> -->
+       <!-- Completed -->
+       <!-- <th><font color="blue">Completed</font></th> -->
+       <!-- RTS2 Document -->
+       <!-- <th><font color="blue">RTS2 Doc</font></th> -->
+       <!-- RTS2 Identifier -->
+       <!-- <th><font color="blue">RTS2 Id</font></th> -->
+       <!-- Non-Sidereal JSON -->
+       <!-- <th><font color="blue">Non-Sidereal Doc</font></th> -->
+      </tr>
+      <tr>
+       <!-- Eyeglass | Completed -->
+       <th><font color="grey"></font></th>
+       <!-- Microscope -->
+       <th><font color="grey"></font></th>
+       <!-- Delete -->
+       <th><font color="grey"><center> </center></font></th>
+       <!-- Edit -->
+       <th><font color="grey"><center> </center></font></th>
+       <!-- Owner -->
+       <th><font color="grey"><center> </center></font></th>
+       <!-- Telescope -->
+       <!-- <th><font color="grey"><center> </center></font></th> -->
+       <!-- Instrument -->
+       <!-- <th><font color="grey"><center> </center></font></th> -->
+       <!-- Object -->
+       <th><font color="grey"><center> </center></font></th>
+       <!-- RA -->
+       <th><font color="grey"><center>J2k &deg;</center></font></th>
+       <!-- Dec -->
+       <th><font color="grey"><center>J2k &deg;</center></font></th>
+       <!-- Filter -->
+       <th><font color="grey"><center> </center></font></th>
+       <!-- Exp Time -->
+       <th><font color="grey"><center>s</center></font></th>
+       <!-- # Exp -->
+       <th><font color="grey"><center> </center></font></th>
+       <!-- Airmass -->
+       <th><font color="grey"><center>1 &lt;&gt; 3.5</center></font></th>
+       <!-- Lunarphase -->
+       <th><font color="grey"><center></center></font></th>
+       <!-- Priority -->
+       <!-- <th><font color="grey"><center> </center></font></th> -->
+       <!-- Photometric -->
+       <th><font color="grey"><center> </center></font></th>
+       <!-- Guiding -->
+       <th><font color="grey"><center> </center></font></th>
+       <!-- Non-Sidereal -->
+       <th><font color="grey"><center> </center></font></th>
+       <!-- Begin UTC -->
+       <th><font color="grey"><center>UTC</center></font></th>
+       <!-- End UTC -->
+       <th><font color="grey"><center>UTC</center></font></th>
+       <!-- Binning -->
+       <th><font color="grey"><center> </center></font></th>
+       <!-- Dither -->
+       <!-- <th><font color="grey"><center> </center></font></th> -->
+       <!-- Cadence -->
+       <!-- <th><font color="grey"><center> </center></font></th> -->
+       <!-- Queued -->
+       <!-- <th><font color="grey"><center> </center></font></th> -->
+       <!-- Completed -->
+       <!-- <th><font color="grey"><center> </center></font></th> -->
+       <!-- RTS2 Document -->
+       <!-- <th><font color="grey"><center>jsonb</center></font></th> -->
+       <!-- RTS2 Identifier -->
+       <!-- <th><font color="grey"><center> </center></font></th> -->
+       <!-- Non-Sidereal JSON -->
+       <!-- <th><font color="grey"><center>jsonb</center></font></th> -->
+      </tr>
+      </thead>
+      <tbody>
+      {% for record in context.results %}
+      <tr>
+       <!-- Eyeglass | Completed -->
+       {% if record.completed %}
+        <td><i title="Observation request {{ record.id }} complete" class="far fa-check-circle fa-lg" aria-hidden="true"></i></a></td>
+       {% else %}
+        <td><a href="/orp/observe/{{ current_user.username }}?dbid={{ record.id }}" title="Observe obsreq {{ record.id }}"><i class="fa fa-eye fa-lg" aria-hidden="true"></i></a></td>
+       {% endif %}
+       <!-- Microscope -->
+       <td><a href="/orp/show/{{ current_user.username }}?dbid={{ record.id }}" title="Show obsreq {{ record.id }}"><i class="fas fa-microscope fa-lg" aria-hidden="true"></i></a></td>
+       <!-- Delete -->
+       <td><a href="/orp/delete/{{ current_user.username }}?dbid={{ record.id }}" title="Delete obsreq {{ record.id }}"><i class="fa fa-trash fa-lg" aria-hidden="true"></i></a></td>
+       <!-- Edit -->
+       <td><a href="/orp/update/{{ current_user.username }}?dbid={{ record.id }}" title="Edit obsreq {{ record.id }}"><i class="fa fa-edit fa-lg" aria-hidden="true"></i></a></td>
+       <!-- Owner -->
+       <td><center><img src="{{ record.avatar }}" title="{{ record.username }}"/></center></td>
+       <!-- Telescope -->
+       <!-- <td>{{ record.telescope }}</td> -->
+       <!-- Instrument -->
+       <!-- <td>{{ record.instrument }}</td> -->
+       <!-- Object -->
+       <td>{{ record.object_name }}</td>
+       <!-- RA -->
+       <td>{{ record.ra_deg }}</td>
+       <!-- Dec -->
+       <td>{{ record.dec_deg }}</td>
+       <!-- Filter -->
+       <td>{{ record.filter_name }}</td>
+       <!-- Exp Time -->
+       <td>{{ record.exp_time }}</td>
+       <!-- # Exp -->
+       <td>{{ record.num_exp }}</td>
+       <!-- Airmass -->
+       <td>{{ record.airmass }}</td>
+       <!-- Lunarphase -->
+       <td>{{ record.lunarphase }}</td>
+       <!-- Priority -->
+       <!-- <td>{{ record.priority }}</td> -->
+       <!-- Photometric -->
+       {% if record.photometric %}
+        <td><i class="fa fa-thumbs-o-up" aria-hidden="true"></i></td>
+       {% else %}
+        <td><i class="fa fa-thumbs-o-down" aria-hidden="true"></i></td>
+       {% endif %}
+       <!-- Guiding -->
+       {% if record.guiding %}
+        <td><i class="fa fa-thumbs-o-up" aria-hidden="true"></i></td>
+       {% else %}
+        <td><i class="fa fa-thumbs-o-down" aria-hidden="true"></i></td>
+       {% endif %}
+       <!-- Non-Sidereal -->
+       {% if record.non_sidereal %}
+        <td><i class="fa fa-thumbs-o-up" aria-hidden="true"></i></td>
+       {% else %}
+        <td><i class="fa fa-thumbs-o-down" aria-hidden="true"></i></td>
+       {% endif %}
+       <!-- Begin UTC -->
+       <td>{{ record.begin_iso[:19] }}</td>
+       <!-- End UTC -->
+       <td>{{ record.end_iso[:19] }}</td>
+       <!-- Binning -->
+       <td>{{ record.binning }}</td>
+       <!-- Dither -->
+       <!-- <td>{{ record.dither }}</td> -->
+       <!-- Cadence -->
+       <!-- <td>{{ record.cadence }}</td> -->
+       <!-- Queued -->
+       <!-- {% if record.queued %} -->
+       <!--  <td><i class="fa fa-thumbs-o-up" aria-hidden="true"></i></td> -->
+       <!-- {% else %} -->
+       <!--  <td><i class="fa fa-thumbs-o-down" aria-hidden="true"></i></td> -->
+       <!-- {% endif %} -->
+       <!-- Completed -->
+       <!-- {% if record.completed %} -->
+       <!--  <td><i class="fa fa-thumbs-o-up" aria-hidden="true"></i></td> -->
+       <!-- {% else %} -->
+       <!--  <td><i class="fa fa-thumbs-o-down" aria-hidden="true"></i></td> -->
+       <!-- {% endif %} -->
+       <!-- RTS2 Document -->
+       <!-- <td>{{ record.rts2_doc }}</td> -->
+       <!-- RTS2 Identifier -->
+       <!-- <td>{{ record.rts2_id }}</td> -->
+       <!-- Non-Sidereal JSON -->
+       <!-- <td>{{ record.non_sidereal_json }}</td> -->
+      </tr>
+      {% endfor %}
+      </tbody>
+     </table>
+
+     <div class="row">
+      <div class="col">
+       <div align="left">
+        {% if context.has_prev %}
+         <a href="/orp/view_requests/{{ current_user.username }}?{{ arg_str }}&page={{ page - 1 }}" class="btn btn-outline-secondary">Prev</a>
+        {% else %}
+         <a href="#" class="btn btn-outline-secondary disabled">Prev</a>
+        {% endif %}
+       </div>
+      </div>
+
+      <div class="col-md-8">
+       <div align="center">
+        {{ context.total }} record(s) found. Showing page {{ page }} / {{ context.pages }}.
+       </div>
+      </div>
+
+      <div class="col">
+       <div align="right">
+        {% if context.has_next %}
+         <a href="/orp/view_requests/{{ current_user.username }}?{{ arg_str }}&page={{ page + 1 }}" class="btn btn-outline-secondary">Next</a>
+        {% else %}
+         <a href="#" class="btn btn-outline-secondary disabled">Next</a>
+        {% endif %}
+       </div>
+      </div>
+     </div>
+     <br>
+    </div>
+   </div>
+  </div>
+ </div>
+ <hr>
+{% endblock %}
+
+{% block js %}
+<!-- toggle script -->
+<script type="text/javascript">
+function toggle_check(check) {
+  if (check.value == "1") {
+    check.value = "0";
+    console.log('check.value: True -> False');
+  } else {
+    check.value = "1";
+    console.log('check.value: False -> True');
+  }
+}
+</script>
+{% endblock %}

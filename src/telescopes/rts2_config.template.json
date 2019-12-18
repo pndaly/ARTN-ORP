@@ -1,0 +1,15 @@
+{
+	"username": "rts2obs",
+	"password": "********",
+	"script_path": "/tmp/",
+	"dbpath": "postgresql://rts2obs:rts2obs@localhost/stars",
+	"device_list": [
+		"C0",
+		"EXEC",
+		"F0",
+		"SEL",
+		"BIG61",
+		"W0"
+	],
+	"rts2url": "http://kuiper.as.arizona.edu:42889"
+}

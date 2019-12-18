@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% if incoming %}
+ <div class="row">
+     <div class="col-md-12"><h4>{{ incoming.text }}</h4></div>
+     <div class="col-md-12"><a href="{{ incoming.url }}" class="btn btn-md btn-info"><i class="fas fa-user" aria-hidden="true"></i>&nbsp; Return To User Home Page</a></div>
+ </div>
+{% endif %}
+{% endblock %}
+{% block js %}
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+<!-- description -->
+{% block content %}
+
+<!--suppress ALL -->
+<hr>
+
+ {% if result is defined %}
+ <div class="container">
+
+   <h4>File {{ result.filename }} has been downloaded.</h4>
+   <br>
+   <h3>Unpack with (either/or):<h3>
+   <ul>
+    <li><i>tar -xvf ~/Downloads/{{ result.filename }} --strip-components=7</i></li>
+    <li><i>gzip -cd ~/Downloads/{{ result.filename }} | tar xvf - --strip-components=7</i></li>
+   </ul>
+
+</i>tar -xvf ~/Downloads/{{ result.filename }} --strip-components=7</i></h3>
+
+ </div>
+ {% endif %}
+ <hr>
+{% endblock %}
+
+{% block js %}
+{% endblock %}

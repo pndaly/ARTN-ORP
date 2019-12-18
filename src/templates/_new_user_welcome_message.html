@@ -1,0 +1,6 @@
+<p>Dear {{ user.firstname }} {{ user.lastname }},</p>
+<p>To login click this <a href="{{ url_for('orp_login') }}">link</a>.</p>
+<p>Alternatively, you can paste the following link in your browser's address bar:</p>
+<p>{{ url_for('orp_login') }}</p>
+<p>Sincerely,</p>
+<p>ARTN Operator</p>

@@ -1,0 +1,16 @@
+Dear {{ user.firstname }} {{ user.lastname }},
+
+We have received your feeback on the ARTN Observation Request Portal.
+
+We will contact you again when we have resolved any issue(s).
+
+Thanks!
+
+ARTN Operator
+
++---- You reported the following ----+
+
+Category: {{ page.category }}
+Urgency: {{ page.urgency }}
+Report: {{ page.report }}
+Screenshot: {{ page.filename }}

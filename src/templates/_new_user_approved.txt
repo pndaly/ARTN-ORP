@@ -1,0 +1,10 @@
+Dear {{ user.firstname }} {{ user.lastname }},
+
+Welcome to the ARTN Observation Request Portal.
+
+Your account has been approved by the moderator.
+Login via this link: {{ url_for('orp_login') }}.
+
+Sincerely,
+
+ARTN Operator

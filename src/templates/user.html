@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block content %}
+ <hr>
+
+ {% if user is defined %}
+  <div class="row">
+   <div class="container">
+    <h5><span class="left"><img src="{{ current_user.get_avatar(24) }}">&nbsp;<i>Welcome back {{ current_user.firstname }} {{ current_user.lastname }} </i></span></h5>
+    <span class="right">
+     {% if current_user.is_admin %}
+      <a href="{{ url_for('orp_view_observable', username=current_user.username) }}" class="btn btn-sm btn-success">View Observable Request(s)</a>
+      <a href="{{ url_for('orp_view_requests', username=current_user.username) }}" class="btn btn-sm btn-warning">View All Request(s)</a>
+      <a href="{{ url_for('orp_view_users') }}?username=" class="btn btn-sm btn-info">View User(s)</a>
+      <a href="{{ url_for('orp_logout') }}" class="btn btn-sm btn-danger">Log Out</a>
+     {% else %}
+      <a href="{{ url_for('orp_view_observable', username=current_user.username) }}?username={{ current_user.username }}" class="btn btn-sm btn-success">View My Observable Request(s)</a>
+      <a href="{{ url_for('orp_view_requests', username=current_user.username) }}?username={{ current_user.username }}" class="btn btn-sm btn-warning">View My Request(s)</a>
+     {% endif %}
+    </span>
+   </div>
+  </div>
+  <br>
+  <div class="row">
+   <div class="container">
+    <span class="right">
+     <a href="{{ url_for('orp_history') }}?username={{ current_user.username }}" class="btn btn-sm btn-outline-info">Observation History</a>
+     <a href="{{ url_for('orp_obsreq', username=current_user.username) }}" class="btn btn-sm btn-outline-info">Create Observation Request</a>
+     <a href="{{ url_for('orp_upload', username=current_user.username) }}" class="btn btn-sm btn-outline-info">File Upload</a>
+     <a href="{{ url_for('orp_profile', username=current_user.username) }}" class="btn btn-sm btn-outline-info">Edit Profile</a>
+    </span>
+   </div>
+  </div>
+
+  <br>
+
+  <table id="table-border-red">
+   <tr>
+    <th><font color="blue">First Name</font></th>
+    <th><font color="blue">Family Name</font></th>
+    <th><font color="blue">Username</font></th>
+    <th><font color="blue">Is Admin</font></th>
+    <th><font color="blue">Email</font></th>
+    <th><font color="blue">Affiliation</font></th>
+    <th><font color="blue">About Me</font></th>
+    <th><font color="blue">Last Active</font></th>
+    <th><font color="blue">Account Created On</font></th>
+   </tr>
+   <tr>
+    <td>{{ user.firstname }}</td>
+    <td>{{ user.lastname }}</td>
+    <td>{{ user.username }}</td>
+    {% if user.is_admin %}
+     <td><i class="fa fa-thumbs-o-up" aria-hidden="true"></i></td>
+    {% else %}
+     <td><i class="fa fa-thumbs-o-down" aria-hidden="true"></i></td>
+    {% endif %}
+    <td>{{ user.email }}</td>
+    <td>{{ user.affiliation }}</td>
+    <td>{{ user.about_me }}</td>
+    <td>{{ user.last_seen_iso }}</td>
+    <td>{{ user.created_iso }}</td>
+   </tr>
+  </table>
+ {% endif %}
+ <hr>
+{% endblock %}

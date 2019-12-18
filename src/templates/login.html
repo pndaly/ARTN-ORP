@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+ <hr>
+ <form action="" method="post" novalidate>
+  {{ form.hidden_tag() }}
+  <p>
+   {{ form.username.label }} <br>
+   {{ form.username(size=32) }}<br>
+   {% for error in form.username.errors %}
+   <span style="color: red;"><small>[{{ error }}]</small></span>
+   {% endfor %}
+   <small><font color="purple">(New user? Register on the <a href="{{ url_for('orp_register') }}">Registration
+    Page</a>)</font></small>
+   <br>
+  </p>
+  <p>
+   {{ form.password.label }} <br>
+   {{ form.password(size=32) }}<br>
+   {% for error in form.password.errors %}
+   <span style="color: red;"><small>[{{ error }}]</small></span>
+   {% endfor %}
+   <small><font color="purple">(Forgot your password? <a href="{{ url_for('orp_reset_password_request') }}">Click Here To Reset It</a>)</font>
+   </small>
+   <br>
+  </p>
+  <p>{{ form.remember_me() }} {{ form.remember_me.label }}<br>
+   <small><font color="purple">(If checked, your browser will keep you logged in)</font></small>
+   <br>
+  </p>
+  <div class="d-flex justify-content-between">
+   <div class="row">
+    <!-- &nbsp; <p>{{ form.submit() }}</p> -->
+    <button type="submit" class="btn btn-md btn-success">Login</button>
+   </div>
+   <div>
+    <a href="{{ url_for('orp_register') }}" class="btn btn-md btn-warning">Register</a>
+    <a href="{{ url_for('orp_home') }}" class="btn btn-md btn-danger">Cancel</a>
+   </div>
+  </div>
+ </form>
+ <hr>
+{% endblock %}

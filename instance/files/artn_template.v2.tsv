@@ -1,0 +1,4 @@
+#username	telescope	instrument	object_name	ra	dec	filter	exp_time	num_exp	airmass	lunarphase	priority	photometric	guiding	non_sidereal	begin	end	binning	dither	cadence	non_sidereal_json
+#Demo1	Bok	90Prime	N01001	00:04:23.4	+01:06:15.0	Washington M	592.22	5	1.98	Grey	Routine	False	True	False	2019-04-12 08:34:00.843982	2019-07-24 08:34:00.843996	None	n-RA	BisInDie	'{}'
+#Demo2	Kuiper	Mont4k	S34087	15:09:11.8	-34:13:44.9	I	361.05	8	3.11	Bright	Routine	True	True	True	2019-04-17 08:34:01.315983	2019-07-17 08:34:01.315994	2x2	n-RA	Once	'{ "RA_BiasRate": "0.0", "Dec_BiasRate": "0.0", "ObjectRate": "0.0", "PositionAngle": "0.0", "UTC_At_Position": "2019-03-18 08:36:12" }'
+#Demo3	Vatt	Vatt4k	N01003	00:21:57.0	+01:06:15.0	Schott OG 550	214.24	7	1.83	Grey	Routine	False	False	False	2019-05-08 08:34:00.844206	2019-07-18 08:34:00.844213	None	n-Dec	Daily	'{}'

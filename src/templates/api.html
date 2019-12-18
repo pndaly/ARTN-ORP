@@ -1,0 +1,818 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!--suppress HtmlUnknownAttribute -->
+<hr>
+
+  <!-- Section -->
+  <div class="row">
+   <div class="col-md-12">
+    <button class="btn-sm btn-outline-info btn-block" data-toggle="collapse"
+      data-target="#Routes">RESTful Routes
+    </button>
+   </div>
+  </div>
+  <br>
+  <div class="row">
+   <div class="col-md-12 imgdiv">
+    <div id="Routes" class="collapse">
+     <table class="table table-striped table-bordered table-hover table-lg">
+      <thead>
+       <tr>
+        <th><font color="blue">Route</font></th>
+        <th><font color="blue">Method(s)</font></th>
+        <th><font color="blue">Description</font></th>
+        <th><font color="blue">Example</font></th>
+       </tr>
+      </thead>
+      <tbody>
+       <tr>
+        <td class="blue">/orp</td>
+        <td>GET</td>
+        <td>ARTN ORP landing page</td>
+        <td><a href="{{ url['url'] }}">{{ url['url'] }}</a></td>
+       </tr>
+       <tr>
+        <td class="blue">/orp/api</td>
+        <td>GET</td>
+        <td>API page, requires login</td>
+        <td><a href="{{ url['url'] }}/api">{{ url['url'] }}/api</a></td>
+       </tr>
+       <tr>
+        <td class="blue">/orp/cli_upload</td>
+        <td>POST</td>
+        <td>Upload a CSV/TSV file from the command line, requires login</td>
+        <td>Request <em>bash</em> script orp_cli_upload.sh</td>
+       </tr>
+       <tr>
+        <td class="blue">/orp/confirm_delete?dbid=<em>
+            <font type="lucinda" color="green">id</font></em></td>
+        <td>GET, POST</td>
+        <td>Confirm record delete for given database <em><font type="lucinda" color="green">id</font></em>, requires login</td>
+        <td>
+         <a href="{{ url['url'] }}/confirm_delete?dbid=38" class="hasTooltip">
+           {{ url['url'] }}/confirm_delete?dbid=38
+           <span>If the observation record is already queued at the telescope, you will be asked for confirmation.
+	   If it has not been queued or the observation has already been completed, the record is deleted without confirmation.</span>
+         </a>
+        </td>
+       </tr>
+       <tr>
+        <td class="blue">/orp/confirm_registration?token=<em><font type="lucinda" color="green">value</font></em></td>
+        <td>GET, POST</td>
+        <td>Confirm user registratiion for given token <em><font type="lucinda" color="green">value</font></em>, requires admin login</td>
+        <td>
+         <a href="{{ url['url'] }}/confirm_registration?token=blah" class="hasTooltip">
+           {{ url['url'] }}/confirm_registration?token=blah
+           <span>NB: tokens expires after 7 days so this link should not work!</span>
+         </a>
+        </td>
+       </tr>
+       <tr>
+	<td class="blue">/orp/delete/&lt;username&gt;?dbid=<em><font type="lucinda" color="green">id</font></em></td>
+        <td>GET, POST</td>
+	<td>Delete observation record with given database <em><font type="lucinda" color="green">id</font></em> for &lt;username&gt;, requires login</td>
+        <td>
+         <a href="{{ url['url'] }}/orp/delete/{{ user.username }}/?dbid=38" class="hasTooltip">
+	  {{ url['url'] }}/delete/{{ user.username }}/?dbid=38
+          <span>NB: If you do this, you will delete a database record!</span>
+         </a>
+        </td>
+       </tr>
+       <tr>
+        <td class="blue">/orp/download/artn_template.v1.csv</td>
+        <td>GET</td>
+	<td>Download the CSV (v1) file template</td>
+        <td><a href="{{ url['url'] }}/download/artn_template.v1.csv">{{ url['url'] }}/download/artn_template.v1.csv</a></td>
+       </tr>
+       <tr>
+        <td class="blue">/orp/download/artn_template.v1.tsv</td>
+        <td>GET</td>
+	<td>Download the TSV (v1) file template</td>
+        <td><a href="{{ url['url'] }}/download/artn_template.v1.tsv">{{ url['url'] }}/download/artn_template.v1.tsv</a></td>
+       </tr>
+       <tr>
+        <td class="blue">/orp/download/artn_template.v2.tsv</td>
+        <td>GET</td>
+	<td>Download the TSV (v2) file template</td>
+        <td><a href="{{ url['url'] }}/download/artn_template.v2.tsv">{{ url['url'] }}/download/artn_template.v2.tsv</a></td>
+       </tr>
+       <tr>
+        <td class="blue">/orp/download/check_upload_format_standalone.py</td>
+        <td>GET</td>
+	<td>Download the CSV/TSV file verification tool</td>
+        <td><a href="{{ url['url'] }}/download/check_upload_format_standalone.py">{{ url['url'] }}/download/check_upload_format_standalone.py</a></td>
+       </tr>
+       <tr>
+        <td class="blue">/orp/download/orp_cli_upload.sh</td>
+        <td>GET</td>
+	<td>Download the CLI upload shell script</td>
+        <td><a href="{{ url['url'] }}/download/orp_cli_upload.sh">{{ url['url'] }}/download/orp_cli_upload.sh</a></td>
+       </tr>
+       <tr>
+	<td class="blue">/orp/feedback/&lt;username&gt;</td>
+        <td>GET, POST</td>
+	<td>Provide feedback from &lt;username&gt;, requires login</td>
+	<td><a href="{{ url['url'] }}/feedback/{{ user.username }}">{{ url['url'] }}/feedback/{{ user.username }}</a></td>
+       </tr>
+       <tr>
+	<td class="blue">/orp/files/&lt;download_file&gt;</td>
+        <td>GET, POST</td>
+	<td>Retrieve &lt;download_file&gt;, requires login</td>
+	<td><a href="{{ url['url'] }}/files/skyflats.20190417.tgz">{{ url['url'] }}/files/skyflats.20190417.tgz</a></td>
+       </tr>
+       <tr>
+	<td class="blue">/orp/history/?username=<em><font type="lucinda" color="green">user</font></em></td>
+        <td>GET, POST</td>
+	<td>Show observation history for <em><font type="lucinda" color="green">user</font></em>, requires login</td>
+        <td><a href="{{ url['url'] }}/orp/history/?username={{ user.username }}">{{ url['url'] }}/history/?username={{ user.username }}</a></td>
+       </tr>
+       <tr>
+        <td class="blue">/orp/help</td>
+        <td>GET</td>
+        <td>Help page, requires login</td>
+        <td><a href="{{ url['url'] }}/help">{{ url['url'] }}/help</a></td>
+       </tr>
+       <tr>
+	<td class="blue">/orp/instance_files/&lt;type&gt;</td>
+        <td>GET, POST</td>
+	<td>Show &lt;type&gt; [csv, tsv, tgz] files for current user, requires login</td>
+	<td><a href="{{ url['url'] }}/instance_files/tgz">{{ url['url'] }}/instance_files/tgz</a></td>
+       </tr>
+       <tr>
+        <td class="blue">/orp/login</td>
+        <td>GET, POST</td>
+        <td>Login</td>
+        <td><a href="{{ url['url'] }}/login">{{ url['url'] }}/login</a></td>
+       </tr>
+       <tr>
+        <td class="blue">/orp/logout</td>
+        <td>GET</td>
+        <td>Logout</td>
+        <td><a href="{{ url['url'] }}/logout">{{ url['url'] }}/logout</a></td>
+       </tr>
+       <tr>
+        <td class="blue">/orp/observe/&lt;username&gt;?dbid=<em><font type="lucinda" color="green">id</font></em></td>
+        <td>GET, POST</td>
+	<td>Send observation record with given database <em><font type="lucinda" color="green">id</font></em> for &lt;username&gt; to telescope, requires login</td>
+        <td>
+         <a href="{{ url['url'] }}/observe/{{ user.username }}?dbid=38" class="hasTooltip">
+          {{ url['url'] }}/observe/{{ user.username }}?dbid=38
+          <span>NB: If you do this, you will send a database record to the telescope!</span>
+         </a>
+        </td>
+       </tr>
+       <tr>
+	<td class="blue">/orp/obsreq/&lt;username&gt;</td>
+        <td>GET, POST</td>
+	<td>Create new observation request for &lt;username&gt;, requires login</td>
+	<td><a href="{{ url['url'] }}/obsreq/{{ user.username }}">{{ url['url'] }}/obsreq/{{ user.username }}</a></td>
+       </tr>
+       <tr>
+	<td class="blue">/orp/profile/&lt;username&gt;</td>
+        <td>GET, POST</td>
+	<td>Edit profile for &lt;username&gt;, requires login</td>
+	<td><a href="{{ url['url'] }}/profile/{{ user.username }}">{{ url['url'] }}/profile/{{ user.username }}</a></td>
+       </tr>
+       <tr>
+        <td class="blue">/orp/register</td>
+        <td>GET, POST</td>
+        <td>Registration page</td>
+        <td><a href="{{ url['url'] }}/register">{{ url['url'] }}/register</a></td>
+       </tr>
+       <tr>
+	<td class="blue">/orp/reset_password/&lt;token&gt;</td>
+        <td>GET, POST</td>
+	<td>Reset password for &lt;username&gt;, requires token generated by reset_password_request</td>
+        <td>
+         <a href="{{ url['url'] }}/reset_password?token=blah" class="hasTooltip">
+           {{ url['url'] }}/reset_password?token=blah
+           <span>NB: tokens expires after 10 minutes so this link should not work!</span>
+         </a>
+        </td>
+       </tr>
+       <tr>
+        <td class="blue">/orp/reset_password_request</td>
+        <td>GET, POST</td>
+        <td>Reset password request</td>
+        <td><a href="{{ url['url'] }}/reset_password_request">{{ url['url'] }}/reset_password_request</a></td>
+       </tr>
+       <tr>
+        <td class="blue">/orp/show/&lt;username&gt;?dbid=<em><font type="lucinda" color="green">id</font></em></td>
+        <td>GET, POST</td>
+	<td>Show observation record with given database <em><font type="lucinda" color="green">id</font></em> for &lt;username&gt;, requires login</td>
+        <td>
+         <a href="{{ url['url'] }}/show/{{ user.username }}?dbid=38" class="hasTooltip">
+          {{ url['url'] }}/show/{{ user.username }}?dbid=38
+          <span>NB: This link will only work if the user owns that observation record!</span>
+         </a>
+        </td>
+       </tr>
+       <tr>
+        <td class="blue">/orp/telescopes</td>
+        <td>GET</td>
+        <td>Show parameters for all telescopes in network</td>
+        <td><a href="{{ url['url'] }}/telescopes">{{ url['url'] }}/telescopes</a></td>
+       </tr>
+       <tr>
+	<td class="blue">/orp/telescope/&lt;name&gt;</td>
+        <td>GET</td>
+	<td>Show parameter for specific telescope &lt;name&gt;</td>
+	<td><a href="{{ url['url'] }}/telescope/kuiper">{{ url['url'] }}/telescope/kuiper</a></td>
+       </tr>
+       <tr>
+        <td class="blue">/orp/update/&lt;username&gt;?dbid=<em><font type="lucinda" color="green">id</font></em></td>
+        <td>GET, POST</td>
+	<td>Update observation record with given database <em><font type="lucinda" color="green">id</font></em> for &lt;username&gt;, requires login</td>
+        <td>
+         <a href="{{ url['url'] }}/update/{{ user.username }}?dbid=38" class="hasTooltip">
+          {{ url['url'] }}/update/{{ user.username }}?dbid=38
+          <span>NB: If you do this, you will update the database record!</span>
+         </a>
+        </td>
+       </tr>
+       <tr>
+	<td class="blue">/orp/upload/&lt;username&gt;</td>
+        <td>GET, POST</td>
+	<td>Upload observation requests from file for &lt;username&gt;, requires login</td>
+	<td><a href="{{ url['url'] }}/upload/{{ user.username }}">{{ url['url'] }}/upload/{{ user.username }}</a></td>
+       </tr>
+       <tr>
+	<td class="blue">/orp/user/&lt;username&gt;</td>
+        <td>GET, POST</td>
+	<td>User home page for &lt;username&gt;, requires login</td>
+	<td><a href="{{ url['url'] }}/user/{{ user.username }}">{{ url['url'] }}/user/{{ user.username }}</a></td>
+       </tr>
+       <tr>
+	<td class="blue">/orp/version</td>
+        <td>GET</td>
+	<td>Show software version history</td>
+	<td><a href="{{ url['url'] }}/version">{{ url['url'] }}/version</a></td>
+       </tr>
+       <tr>
+	<td class="blue">/orp/view_observable/&lt;username&gt;</td>
+        <td>GET, POST</td>
+	<td>View observable requests for &lt;username&gt;, requires login</td>
+	<td><a href="{{ url['url'] }}/view_observable/{{ user.username }}">{{ url['url'] }}/view_observable/{{ user.username }}</a></td>
+       </tr>
+       <tr>
+	<td class="blue">/orp/view_requests/&lt;username&gt;</td>
+        <td>GET, POST</td>
+	<td>View observation requests for &lt;username&gt;, requires login</td>
+	<td><a href="{{ url['url'] }}/view_requests/{{ user.username }}">{{ url['url'] }}/view_requests/{{ user.username }}</a></td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+   </div>
+  </div>
+
+  <!-- Section -->
+  <div class="row">
+   <div class="col-md-12">
+    <button class="btn-sm btn-outline-info btn-block" data-toggle="collapse"
+      data-target="#Models">Database Models
+    </button>
+   </div>
+  </div>
+  <br>
+  <div class="row">
+   <div class="col-md-12 imgdiv">
+    <div id="Models" class="collapse">
+     <div class="table-responsive">
+      <table class="table table-striped table-sm cart">
+       <thead>
+        <tr>
+         <th>API</th>
+         <th>Return ObsReq with ...</th>
+         <th>ArgName[Type]: Description</th>
+         <th>Example</th>
+        </tr>
+       </thead>
+       <tbody>
+        <tr>
+         <td class="blue">?id=<em><font type="lucinda" color="green">value</font></em></td>
+         <td>database identifier = <em><font type="lucinda" color="green">value</font></em></td>
+         <td><em><font type="lucinda" color="green">value</font></em>[integer]: value </td>
+         <td>
+           <a href="{{ url['url'] }}/view_requests/{{ user.username }}?id=25" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?id=25</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?id__gte=<em><font type="lucinda" color="green">value</font></em></td>
+         <td>database identifier &ge; <em><font type="lucinda" color="green">value</font></em></td>
+         <td><em><font type="lucinda" color="green">value</font></em>[integer]: value </td>
+         <td>
+           <a href="{{ url['url'] }}/view_requests/{{ user.username }}?id__gte=25" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?id__gte=25</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?id__lte=<em><font type="lucinda" color="green">value</font></em></td>
+         <td>database identifier &le; <em><font type="lucinda" color="green">value</font></em></td>
+         <td><em><font type="lucinda" color="green">value</font></em>[integer]: value </td>
+         <td>
+           <a href="{{ url['url'] }}/view_requests/{{ user.username }}?id__lte=25" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?id__lte=25</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?username=<em><font type="lucinda" color="green">name</font></em></td>
+         <td>record owner contains <em><font type="lucinda" color="green">name</font></em></td>
+         <td><em><font type="lucinda" color="green">name</font></em>[string]: name </td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?username={{ user.username }}" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?username={{ user.username }}</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?pi=<em><font type="lucinda" color="green">name</font></em></td>
+         <td>record pi contains <em><font type="lucinda" color="green">name</font></em></td>
+         <td><em><font type="lucinda" color="green">name</font></em>[string]: name </td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?pi={{ user.username }}" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?pi={{ user.username }}</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?created_iso__gte=<em><font type="lucinda" color="green">time</font></em></td>
+         <td>record iso creation time &ge; <em><font type="lucinda" color="green">time</font></em></td>
+         <td><em><font type="lucinda" color="green">time</font></em>[string]: yyyy-mm-dd</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?created_iso__gte=2019-01-31" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?created_iso__gte=2019-01-01</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?created_iso__lte=<em><font type="lucinda" color="green">time</font></em></td>
+         <td>record iso creation time &le; <em><font type="lucinda" color="green">time</font></em></td>
+         <td><em><font type="lucinda" color="green">time</font></em>[string]: yyyy-mm-dd</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?created_iso__lte=2019-12-31" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?created_iso__lte=2019-12-31</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?created_mjd__gte=<em><font type="lucinda" color="green">time</font></em></td>
+         <td>record mjd creation time &ge; <em><font type="lucinda" color="green">time</font></em></td>
+         <td><em><font type="lucinda" color="green">time</font></em>[float]: mjd</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?created_mjd__gte=58484.5" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?created_mjd__gte=58484.5</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?created_mjd__lte=<em><font type="lucinda" color="green">time</font></em></td>
+         <td>record mjd creation time &le; <em><font type="lucinda" color="green">time</font></em></td>
+         <td><em><font type="lucinda" color="green">time</font></em>[float]: mjd</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?created_mjd__lte=58848.5" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?created_mjd__lte=58848.5</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?group_id=<em><font type="lucinda" color="green">hash</font></em></td>
+         <td>record group_id contains <em><font type="lucinda" color="green">hash</font></em></td>
+         <td><em><font type="lucinda" color="green">hash</font></em>[string]: hash-value </td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?group_id=f9660b4e" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?group_id=f9660b4e</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?observation_id=<em><font type="lucinda" color="green">hash</font></em></td>
+         <td>record observation_id contains <em><font type="lucinda" color="green">hash</font></em></td>
+         <td><em><font type="lucinda" color="green">hash</font></em>[string]: hash-value </td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?observation_id=f9660b4e" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?observation_id=f9660b4e</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?priority=<em><font type="lucinda" color="green">value</font></em></td>
+         <td>record priority contains <em><font type="lucinda" color="green">value</font></em></td>
+         <td><em><font type="lucinda" color="green">value</font></em>[string]: 'Routine', 'Urgent' </td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?priority=routine" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?priority=routine</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?priority_value__gte=<em><font type="lucinda" color="green">value</font></em></td>
+         <td>record priority value &ge; <em><font type="lucinda" color="green">value</font></em></td>
+         <td><em><font type="lucinda" color="green">value</font></em>[float]: &plusmn;mjd</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?priority_value__gte=2019-01-31" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?priority_value__gte=58484.5
+	  <span>Positive values are 'routine' with the minimum value at the head of the queue. Negative values are 'urgent'.</span>
+	  </a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?priority_value__lte=<em><font type="lucinda" color="green">value</font></em></td>
+         <td>record priority value &le; <em><font type="lucinda" color="green">value</font></em></td>
+         <td><em><font type="lucinda" color="green">value</font></em>[float]: &plusmn;mjd</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?priority_value__lte=2019-12-31" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?priority_value__lte=58848.5
+	  <span>Positive values are 'routine' with the minimum value at the head of the queue. Negative values are 'urgent'.</span>
+	  </a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?object_name=<em><font type="lucinda" color="green">name</font></em></td>
+         <td>record name contains <em><font type="lucinda" color="green">name</font></em></td>
+         <td><em><font type="lucinda" color="green">name</font></em>[string]: name </td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?object_name=SN2019np" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?object_name=SN2019np</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?ra_hms=<em><font type="lucinda" color="green">coordinate</font></em></td>
+         <td>record RA contains <em><font type="lucinda" color="green">coordinate</font></em></td>
+         <td><em><font type="lucinda" color="green">coordinate</font></em>[sexagisimal]: co-ordinate </td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?ra_hms=12:12:12.3" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?ra_hms=12:12:12.3</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?ra_deg__gte=<em><font type="lucinda" color="green">value</font></em></td>
+         <td>record RA value &ge; <em><font type="lucinda" color="green">value</font></em></td>
+         <td><em><font type="lucinda" color="green">value</font></em>[float]: J2000&deg;</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?ra_deg__gte=25.5" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?ra_deg__gte=25.5</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?ra_deg__lte=<em><font type="lucinda" color="green">value</font></em></td>
+         <td>record RA value &le; <em><font type="lucinda" color="green">value</font></em></td>
+         <td><em><font type="lucinda" color="green">value</font></em>[float]: J2000&deg;</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?ra_deg__lte=25.5" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?ra_deg__lte=25.5</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?dec_dms=<em><font type="lucinda" color="green">coordinate</font></em></td>
+         <td>record Dec contains <em><font type="lucinda" color="green">coordinate</font></em></td>
+         <td><em><font type="lucinda" color="green">coordinate</font></em>[sexagisimal]: &plusmn;co-ordinate </td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?dec_dms=-30:30:30.2" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?dec_dms=-30:30:30.2</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?dec_deg__gte=<em><font type="lucinda" color="green">value</font></em></td>
+         <td>record dec_deg__gte value &ge; <em><font type="lucinda" color="green">value</font></em></td>
+         <td><em><font type="lucinda" color="green">value</font></em>[float]: &plusmn;J2000&deg;</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?dec_deg__gte=-31.6" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?dec_deg__gte=-31.6</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?dec_deg__lte=<em><font type="lucinda" color="green">value</font></em></td>
+         <td>record priority value &le; <em><font type="lucinda" color="green">value</font></em></td>
+         <td><em><font type="lucinda" color="green">value</font></em>[float]: &plusmn;J2000&deg;</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?dec_deg__lte=-31.6" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?dec_deg__lte=-31.6</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?begin_iso__gte=<em><font type="lucinda" color="green">time</font></em></td>
+         <td>record iso begin time &ge; <em><font type="lucinda" color="green">time</font></em></td>
+         <td><em><font type="lucinda" color="green">time</font></em>[string]: yyyy-mm-dd</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?begin_iso__gte=2019-01-31" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?begin_iso__gte=2019-01-01</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?begin_iso__lte=<em><font type="lucinda" color="green">time</font></em></td>
+         <td>record iso begin time &le; <em><font type="lucinda" color="green">time</font></em></td>
+         <td><em><font type="lucinda" color="green">time</font></em>[string]: yyyy-mm-dd</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?begin_iso__lte=2019-12-31" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?begin_iso__lte=2019-12-31</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?begin_mjd__gte=<em><font type="lucinda" color="green">time</font></em></td>
+         <td>record mjd begin time &ge; <em><font type="lucinda" color="green">time</font></em></td>
+         <td><em><font type="lucinda" color="green">time</font></em>[float]: mjd</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?begin_mjd__gte=58484.5" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?begin_mjd__gte=58484.5</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?begin_mjd__lte=<em><font type="lucinda" color="green">time</font></em></td>
+         <td>record mjd begin time &le; <em><font type="lucinda" color="green">time</font></em></td>
+         <td><em><font type="lucinda" color="green">time</font></em>[float]: mjd</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?begin_mjd__lte=58848.5" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?begin_mjd__lte=58848.5</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?end_iso__gte=<em><font type="lucinda" color="green">time</font></em></td>
+         <td>record iso end time &ge; <em><font type="lucinda" color="green">time</font></em></td>
+         <td><em><font type="lucinda" color="green">time</font></em>[string]: yyyy-mm-dd</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?end_iso__gte=2019-01-31" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?end_iso__gte=2019-01-01</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?end_iso__lte=<em><font type="lucinda" color="green">time</font></em></td>
+         <td>record iso end time &le; <em><font type="lucinda" color="green">time</font></em></td>
+         <td><em><font type="lucinda" color="green">time</font></em>[string]: yyyy-mm-dd</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?end_iso__lte=2019-12-31" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?end_iso__lte=2019-12-31</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?end_mjd__gte=<em><font type="lucinda" color="green">time</font></em></td>
+         <td>record mjd end time &ge; <em><font type="lucinda" color="green">time</font></em></td>
+         <td><em><font type="lucinda" color="green">time</font></em>[float]: mjd</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?end_mjd__gte=58484.5" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?end_mjd__gte=58484.5</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?end_mjd__lte=<em><font type="lucinda" color="green">time</font></em></td>
+         <td>record mjd end time &le; <em><font type="lucinda" color="green">time</font></em></td>
+         <td><em><font type="lucinda" color="green">time</font></em>[float]: mjd</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?end_mjd__lte=58848.5" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?end_mjd__lte=58848.5</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?airmass__gte=<em><font type="lucinda" color="green">value</font></em></td>
+         <td>record airmass &ge; <em><font type="lucinda" color="green">value</font></em></td>
+         <td><em><font type="lucinda" color="green">value</font></em>[float]: 1&mdash;3.5</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?airmass__gte=2.5" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?airmass__gte=2.5</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?airmass__lte=<em><font type="lucinda" color="green">value</font></em></td>
+         <td>record airmass &le; <em><font type="lucinda" color="green">value</font></em></td>
+         <td><em><font type="lucinda" color="green">value</font></em>[float]: 1&mdash;3.5</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?airmass__lte=2.5" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?airmass__lte=2.5</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?lunarphase=<em><font type="lucinda" color="green">phase</font></em></td>
+         <td>record lunarphase contains <em><font type="lucinda" color="green">phase</font></em></td>
+         <td><em><font type="lucinda" color="green">phase</font></em>[string]: 'Dark', 'Grey', 'Bright', 'mBright' </td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?lunarphase=grey" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?lunarphase=grey</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?moonphase__gte=<em><font type="lucinda" color="green">value</font></em></td>
+         <td>record moonphase &ge; <em><font type="lucinda" color="green">value</font></em></td>
+         <td><em><font type="lucinda" color="green">value</font></em>[float]: value</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?moonphase__gte=12.5" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?moonphase__gte=12.5
+          <span>Dark is with 5.5 days of a new moon, grey between 5.5 and 8.5 days and bright beyond 8.5 days. mBright are bright nights before moonrise or after moonset</span>
+          </a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?moonphase__gte=<em><font type="lucinda" color="green">value</font></em></td>
+         <td>record moonphase &le; <em><font type="lucinda" color="green">value</font></em></td>
+         <td><em><font type="lucinda" color="green">value</font></em>[float]: value</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?moonphase__gte=12.5" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?moonphase__gte=12.5
+          <span>Dark is with 5.5 days of a new moon, grey between 5.5 and 8.5 days and bright beyond 8.5 days. mBright are bright nights before moonrise or after moonset</span>
+          </a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?photometric=<em><font type="lucinda" color="green">boolean</font></em></td>
+         <td>photometric conditions required? <em><font type="lucinda" color="green">boolean</font></em></td>
+         <td><em><font type="lucinda" color="green">boolean</font></em>[boolean]: True, False</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?photometric=True" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?photometric=True</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?guiding=<em><font type="lucinda" color="green">boolean</font></em></td>
+         <td>guiding enabled? <em><font type="lucinda" color="green">boolean</font></em></td>
+         <td><em><font type="lucinda" color="green">boolean</font></em>[boolean]: True, False</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?guiding=True" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?guiding=True</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?non_sidereal=<em><font type="lucinda" color="green">boolean</font></em></td>
+         <td>non_sidereal tracking required? <em><font type="lucinda" color="green">boolean</font></em></td>
+         <td><em><font type="lucinda" color="green">boolean</font></em>[boolean]: True, False</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?non_sidereal=True" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?non_sidereal=True</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?filter_name=<em><font type="lucinda" color="green">value</font></em></td>
+         <td>record filter_name contains <em><font type="lucinda" color="green">value</font></em></td>
+         <td><em><font type="lucinda" color="green">value</font></em>[string]: filter name</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?filter_name=U" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?filter_name=U</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?exp_time__gte=<em><font type="lucinda" color="green">value</font></em></td>
+         <td>record exposure time &ge; <em><font type="lucinda" color="green">value</font></em></td>
+         <td><em><font type="lucinda" color="green">value</font></em>[float]: number</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?exp_time__gte=2.5" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?exp_time__gte=2.5</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?exp_time__lte=<em><font type="lucinda" color="green">value</font></em></td>
+         <td>record exposure time &le; <em><font type="lucinda" color="green">value</font></em></td>
+         <td><em><font type="lucinda" color="green">value</font></em>[float]: number</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?exp_time__lte=2.5" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?exp_time__lte=2.5</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?num_exp__gte=<em><font type="lucinda" color="green">value</font></em></td>
+         <td>record number of exposures &ge; <em><font type="lucinda" color="green">value</font></em></td>
+         <td><em><font type="lucinda" color="green">value</font></em>[integer]: number</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?num_exp__gte=2.5" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?num_exp__gte=2.5</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?num_exp__lte=<em><font type="lucinda" color="green">value</font></em></td>
+         <td>record number of exposures &le; <em><font type="lucinda" color="green">value</font></em></td>
+         <td><em><font type="lucinda" color="green">value</font></em>[integer]: number</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?num_exp__lte=2" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?num_exp__lte=2</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?binning=<em><font type="lucinda" color="green">value</font></em></td>
+         <td>record binning contains <em><font type="lucinda" color="green">value</font></em></td>
+         <td><em><font type="lucinda" color="green">value</font></em>[string]: 'None', '2x2', '3x3'</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?binning=3x3" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?binning=3x3</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?dither=<em><font type="lucinda" color="green">value</font></em></td>
+         <td>record dither contains <em><font type="lucinda" color="green">value</font></em></td>
+         <td><em><font type="lucinda" color="green">value</font></em>[string]: 'None', 'n-RA', 'n-Dec', 'NxM'</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?dither=None" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?dither=None</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?cadence=<em><font type="lucinda" color="green">value</font></em></td>
+         <td>record cadence contains <em><font type="lucinda" color="green">value</font></em></td>
+         <td><em><font type="lucinda" color="green">value</font></em>[string]: 'Once', 'Daily', 'BisInDie', 'Weekly', 'Monthly'</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?cadence=Once" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?cadence=Once</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?telescope=<em><font type="lucinda" color="green">value</font></em></td>
+         <td>record telescope contains <em><font type="lucinda" color="green">value</font></em></td>
+         <td><em><font type="lucinda" color="green">value</font></em>[string]: 'Bok', 'Kuiper', 'Vatt'</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?telescope=Kuiper" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?telescope=Kuiper</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?instrument=<em><font type="lucinda" color="green">value</font></em></td>
+         <td>record instrument contains <em><font type="lucinda" color="green">value</font></em></td>
+         <td><em><font type="lucinda" color="green">value</font></em>[string]: '90Prime', 'Mont4k', 'Vatt4k'</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?instrument=vatt4k" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?instrument=vatt4k</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?queued=<em><font type="lucinda" color="green">boolean</font></em></td>
+         <td>observation queued? <em><font type="lucinda" color="green">boolean</font></em></td>
+         <td><em><font type="lucinda" color="green">boolean</font></em>[boolean]: True, False</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?queued=True" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?queued=True</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?completed=<em><font type="lucinda" color="green">boolean</font></em></td>
+         <td>observation completed? <em><font type="lucinda" color="green">boolean</font></em></td>
+         <td><em><font type="lucinda" color="green">boolean</font></em>[boolean]: True, False</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?completed=True" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?completed=True</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?rts2_doc__key=<em><font type="lucinda" color="green">key</font></em></td>
+         <td>RTS2 json record contains <em><font type="lucinda" color="green">key</font></em></td>
+         <td><em><font type="lucinda" color="green">key</font></em>[string]: dictionary key</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?rts2_doc__key=obs_info" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?rts2_doc__key=obs_info</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?non_sidereal__key=<em><font type="lucinda" color="green">key</font></em></td>
+         <td>non-sidereal json record contains <em><font type="lucinda" color="green">key</font></em></td>
+         <td><em><font type="lucinda" color="green">key</font></em>[string]: dictionary key</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?non_sidereal__key=RA_BiasRate" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?non_sidereal__key=RA_BiasRate</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?rts2_id__gte=<em><font type="lucinda" color="green">value</font></em></td>
+         <td>record RTS2 identifier &ge; <em><font type="lucinda" color="green">value</font></em></td>
+         <td><em><font type="lucinda" color="green">value</font></em>[integer]: number</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?rts2_id__gte=2554" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?rts2_id__gte=2554</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?rts2_id__lte=<em><font type="lucinda" color="green">value</font></em></td>
+         <td>record RTS2 identifier &le; <em><font type="lucinda" color="green">value</font></em></td>
+         <td><em><font type="lucinda" color="green">value</font></em>[integer]: number</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?rts2_id__lte=2554" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?rts2_id__lte=2554</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?user_id__gte=<em><font type="lucinda" color="green">value</font></em></td>
+         <td>record user identifier &ge; <em><font type="lucinda" color="green">value</font></em></td>
+         <td><em><font type="lucinda" color="green">value</font></em>[integer]: number</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?user_id__gte=2" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?user_id__gte=2</a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">?user_id__lte=<em><font type="lucinda" color="green">value</font></em></td>
+         <td>record user identifier &le; <em><font type="lucinda" color="green">value</font></em></td>
+         <td><em><font type="lucinda" color="green">value</font></em>[integer]: number</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?user_id__lte=2" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}?user_id__lte=2</a>
+         </td>
+        </tr>
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+  </div>
+
+  <!-- Section -->
+  <div class="row">
+   <div class="col-md-12">
+    <button class="btn-sm btn-outline-info btn-block" data-toggle="collapse"
+      data-target="#Display">Display Modifiers
+    </button>
+   </div>
+  </div>
+  <br>
+  <div class="row">
+   <div class="col-md-12 imgdiv">
+    <div id="Display" class="collapse">
+     <div class="table-responsive">
+      <table class="table table-striped table-sm cart">
+       <thead>
+        <tr>
+         <th>API</th>
+         <th>Return page with ...</th>
+         <th>ArgName[Type]: Description</th>
+         <th>Example</th>
+        </tr>
+       </thead>
+       <tbody>
+        <tr>
+         <td class="blue">&amp;?page=<em><font type="lucinda" color="green">num</font></em></td>
+         <td>given page number</td>
+         <td><em><font type="lucinda" color="green">num</font></em>[None]: page number</td>
+         <td>
+          <a href="{{ url['url'] }}/view_requests/{{ user.username }}?page=2" class="hasTooltip">{{ url['url'] }}/view_requests/{{ user.username }}&?page=2
+           <span></span>
+          </a>
+         </td>
+        </tr>
+        <tr>
+         <td class="blue">&amp;?format=<em><font type="lucinda" color="green">fmt</font></em></td>
+         <td>given format</td>
+         <td><em><font type="lucinda" color="green">fmt</font></em>[string]: JSON</td>
+         <td>
+          <a href="{{ url['url'] }}/show/{{ user.username }}?dbid=38&?format=json" class="hasTooltip">{{ url['url'] }}/show/{{ user.username }}?dbid=38&?format=json
+           <span class="tooltiptext">Only JSON is supported at present</span>
+          </a>
+         </td>
+        </tr>
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+  </div>
+
+<hr>
+{% endblock %}
+
+    # user records with id = value (API: ?id=20)
+    # user records with id >= value (API: ?id__gte=20)
+    # user records with id <= value (API: ?id__lte=20)
+    # user records with firstname like value (API: ?firstname=demo)
+    # user records with lastname like value (API: ?lastname=demo)
+    # user records with username like value (API: ?username=demo)
+    # user records with email like value (API: ?email=demo@example.com)
+    # user records with affiliation like value (API: ?affiliation='Example Inc')
+    # user records with a created_iso >= date (API: ?created_iso__gte=2018-07-17)
+    # user records with a created_iso <= date (API: ?created_iso__lte=2018-07-17)
+    # user records with created_mjd >= value (API: ?created_mjd__gte=58526.54609935184998903)
+    # user records with created_mjd <= value (API: ?created_mjd__lte=58526.54609935184998903)
+    # user records with a last_seen_iso >= date (API: ?last_seen_iso__gte=2018-07-17)
+    # user records with a last_seen_iso <= date (API: ?last_seen_iso__lte=2018-07-17)
+    # user records with last_seen_mjd >= value (API: ?last_seen_mjd__gte=58526.54609935184998903)
+    # user records with last_seen_mjd <= value (API: ?last_seen_mjd__lte=58526.54609935184998903)
+    # user records with is_admin == bool (API: ?is_admin=True)
+    # user records with is_disabled == bool (API: ?is_disabled=False)

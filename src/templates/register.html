@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block content %}
+ <hr>
+ <form action="" method="post">
+
+  {{ form.hidden_tag() }}
+
+  <div class="row">
+   <div class="col-md-4">
+    <p>
+     {{ form.firstname.label }}<br>
+     {{ form.firstname(size=32) }}<br>
+     {% for error in form.firstname.errors %}
+      <span style="color: red;"><small>[{{ error }}]</small></span>
+     {% endfor %}
+     <small><font color="purple">(The name you would like to be known by)</font></small>
+    </p>
+   </div>
+   <div class="col-md-4">
+    <p>
+     {{ form.lastname.label }}<br>
+     {{ form.lastname(size=32) }}<br>
+     {% for error in form.lastname.errors %}
+      <span style="color: red;"><small>[{{ error }}]</small></span>
+     {% endfor %}
+     <small><font color="purple">(Your family name)</font></small>
+    </p>
+   </div>
+   <div class="col-md-4">
+    <p>
+     {{ form.username.label }}<br>
+     {{ form.username(size=32) }}<br>
+     {% for error in form.username.errors %}
+      <span style="color: red;"><small>[{{ error }}]</small></span>
+     {% endfor %}
+     <small><font color="purple">(A unique username and we'll check it's available)</font></small>
+     <br>
+    </p>
+   </div>
+  </div>
+
+  <div class="row">
+   <div class="col-md-4">
+    <p>
+     {{ form.email.label }}<br>
+     {{ form.email(size=32) }}<br>
+     {% for error in form.email.errors %}
+      <span style="color: red;"><small>[{{ error }}]</small></span>
+     {% endfor %}
+     <small><font color="purple">(A valid email address, one per username)</font></small>
+    </p>
+   </div>
+   <div class="col-md-4">
+    <p>
+     {{ form.affiliation.label }}<br>
+     {{ form.affiliation(size=73) }}<br>
+     {% for error in form.affiliation.errors %}
+      <span style="color: red;"><small>[{{ error }}]</small></span>
+     {% endfor %}
+     <small><font color="purple">(Your home institution)</font></small>
+    </p>
+   </div>
+  </div>
+
+  <div class="row">
+   <div class="col-md-4">
+    <p>
+     {{ form.password.label }}<br>
+     {{ form.password(size=16) }}<br>
+     {% for error in form.password.errors %}
+      <span style="color: red;"><small>[{{ error }}]</small></span>
+     {% endfor %}
+     <small><font color="purple">(Password rules: &ge; 8 characters, one of [A-Z], [a-z], [0-9])</font></small>
+    </p>
+   </div>
+   <div class="col-md-8">
+    <p>
+     {{ form.passphrase.label }}<br>
+     {{ form.passphrase(size=73) }}<br>
+     {% for error in form.passphrase.errors %}
+       <span style="color: red;"><small>[{{ error }}]</small></span>
+     {% endfor %}
+     <small><font color="purple">(Passphrase is required to request a password reset. This is plain text and does not have to conform to password rules.)</font></small>
+    </p>
+   </div>
+  </div>
+
+  <div class="row">
+   <div class="col-md-4">
+    <p>
+     {{ form.confirm.label }}<br>
+     {{ form.confirm(size=16) }}<br>
+     {% for error in form.confirm.errors %}
+      <span style="color: red;"><small>[{{ error }}]</small></span>
+     {% endfor %}
+     <small><font color="purple">(Confirmation password must match the one above!)</font></small>
+    </p>
+   </div>
+  </div>
+  <div class="row">
+  <div class="col-md-12">
+    <p>
+     {{ form.policy_ok() }} {{ form.policy_ok.label }}
+     <span><a href="https://www.as.arizona.edu/sites/default/files/ComputerSupport.pdf">Steward Observatory Computer Support Policy</a></span>
+     {% for error in form.policy_ok.errors %}
+      <span style="color: red;"><small>[{{ error }}]</small></span>
+     {% endfor %}
+     <small><font color="purple">(... because we need to know you are one of the good guys!)</font></small>
+    </p>
+   </div>
+  </div>
+
+  <div class="row">
+   <div class="col-md-12">
+   <div class="d-flex justify-content-between">
+    <div class="row">
+     <button type="submit" class="btn btn-md btn-warning">Register</button>
+    </div>
+    <div>
+     <a href="{{ url_for('orp_home') }}" class="btn btn-md btn-danger">Cancel</a>
+    </div>
+   </div>
+   </div>
+  </div>
+ </form>
+ <hr>
+{% endblock %}

@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+
+ {{ super() }}
+
+{% block content %}
+<hr>
+ <form action="" method="post">
+
+  {{ form.hidden_tag() }}
+
+  <div class="d-flex justify-content-between">
+   <div class="row">
+    {% if current_user.is_admin %}
+    <h4><i>Create observation request</i></h4>
+    {% else %}
+    <h4><i>Create observation request for {{ current_user.firstname }} {{ current_user.lastname }}, {{ current_user.affiliation }}</i></h4>
+    {% endif %}
+   </div>
+   <div class="d-flex justify-content-between">
+    {% if current_user.is_admin %}
+     <div class="col-md-1 mr-auto">
+      {{ form.username.label }}<br>
+      {{ form.username(size=12) }}<br>
+      {% for error in form.username.errors %}
+       <span class="error-label"><small>[{{ error }}]</small></span>
+      {% endfor %}
+     </div>
+    {% endif %}
+    <div class="col-md-1 mr-auto">
+     {{ form.telescope.label }}<br>
+     {{ form.telescope(disabled=true) }}<br>
+     {% for error in form.telescope.errors %}
+      <span class="error-label"><small>[{{ error }}]</small></span>
+     {% endfor %}
+    </div>
+    <div class="col-md-1 mr-auto">
+     {{ form.instrument.label }}<br>
+     {{ form.instrument(disabled=true) }}<br>
+     {% for error in form.instrument.errors %}
+      <span class="error-label"><small>[{{ error }}]</small></span>
+     {% endfor %}
+    </div>
+   </div>
+  </div>
+
+  <br>
+
+  <div class="container">
+   <div class="row">
+    <div class="col-md-4">
+     {{ form.object_name.label }}<br>
+     {{ form.object_name(size=32) }}<br>
+     {% for error in form.object_name.errors %}
+      <span class="error-label"><small>[{{ error }}]</small></span>
+     {% endfor %}
+     <!-- <span class="purple-label"><small>Click <a>here</a> for Astropy lookup</small></span><br> -->
+     <span class="purple-label"><small>Astronomical name</small></span><br>
+    </div>
+    <div class="col-md-4">
+     {{ form.begin_iso.label }}<br>
+     {{ form.begin_iso(size=32) }}<br>
+     {% for error in form.begin_iso.errors %}
+      <span class="error-label"><small>[{{ error }}]</small></span>
+     {% endfor %}
+     <span class="purple-label"><small>YYYY-MM-DD hh:mm:ss, defaults to now</small></span><br>
+    </div>
+    <div class="col-md-4">
+     {{ form.end_iso.label }}<br>
+     {{ form.end_iso(size=32) }}<br>
+     {% for error in form.end_iso.errors %}
+      <span class="error-label"><small>[{{ error }}]</small></span>
+     {% endfor %}
+     <span class="purple-label"><small>YYYY-MM-DD hh:mm:ss, defaults to now + 30 days</small></span><br>
+    </div>
+   </div>
+
+   <br>
+
+   <div class="row">
+    <div class="col-md-2">
+     {{ form.ra_hms.label }}<br>
+     {{ form.ra_hms(size=16) }}<br>
+     {% for error in form.ra_hms.errors %}
+      <span class="error-label"><small>[{{ error }}]</small></span>
+     {% endfor %}
+     <span class="purple-label"><small>HH:MM:SS.S (J2k)</small></span><br>
+    </div>
+    <div class="col-md-2">
+     {{ form.dec_dms.label }}<br>
+     {{ form.dec_dms(size=16) }}<br>
+     {% for error in form.dec_dms.errors %}
+      <span class="error-label"><small>[{{ error }}]</small></span>
+     {% endfor %}
+     <span class="purple-label"><small>&plusmn; dd:mm:ss.s (J2k)</small></span><br>
+    </div>
+    <div class="col-md-2">
+     {{ form.airmass.label }}<br>
+     {{ form.airmass(size=6) }}<br>
+     {% for error in form.airmass.errors %}
+      <span class="error-label"><small>[{{ error }}]</small></span>
+     {% endfor %}
+     <span class="purple-label"><small>&prop; sec Z</small></span><br>
+    </div>
+    <div class="col-md-2">
+     {{ form.lunarphase.label }}<br>
+     {{ form.lunarphase }}<br>
+     {% for error in form.lunarphase.errors %}
+      <span class="error-label"><small>[{{ error }}]</small></span>
+     {% endfor %}
+    </div>
+    <div class="col-md-1 col-md-offset-1">
+     {{ form.guiding.label }}<br>
+     {{ form.guiding(size=1) }}<br>
+     {% for error in form.guiding.errors %}
+      <span class="error-label"><small>[{{ error }}]</small></span>
+     {% endfor %}
+    </div>
+    <div class="col-md-1 col-md-offset-1">
+     {{ form.photometric.label }}<br>
+     {{ form.photometric(size=1) }}<br>
+     {% for error in form.photometric.errors %}
+      <span class="error-label"><small>[{{ error }}]</small></span>
+     {% endfor %}
+    </div>
+    <div class="col-md-2 col-centered">
+     {{ form.non_sidereal.label }}<br>
+     {{ form.non_sidereal(size=1) }}<br>
+     {% for error in form.non_sidereal.errors %}
+      <span class="error-label"><small>[{{ error }}]</small></span>
+     {% endfor %}
+    </div>
+   </div>
+
+   <br>
+
+   <div class="row" id="ns_params">
+    <div class="col-md-10">
+     {{ form.ns_params.label }}<br>
+     <small>{{ form.ns_params(size=146) }}</small><br>
+     {% for error in form.ns_params.errors %}
+      <span class="error-label"><small>[{{ error }}]</small></span>
+     {% endfor %}
+     <span class="purple-label"><small>JSON Object (rates in arcsec/second)</small></span><br>
+    </div>
+   </div>
+
+   <br>
+
+   <div class="row">
+    <div class="col-md-2">
+     {{ form.filter_name.label }}<br>
+     {{ form.filter_name }}<br>
+     {% for error in form.filter_name.errors %}
+      <span class="error-label"><small>[{{ error }}]</small></span>
+     {% endfor %}
+    </div>
+    <div class="col-md-2">
+     {{ form.exp_time.label }}<br>
+     {{ form.exp_time(size=6) }}<br>
+     {% for error in form.exp_time.errors %}
+      <span class="error-label"><small>[{{ error }}]</small></span>
+     {% endfor %}
+     <span class="purple-label"><small>seconds</small></span><br>
+    </div>
+    <div class="col-md-2">
+     {{ form.num_exp.label }}<br>
+     {{ form.num_exp(size=4) }}<br>
+     {% for error in form.num_exp.errors %}
+      <span class="error-label"><small>[{{ error }}]</small></span>
+     {% endfor %}
+    </div>
+    <div class="col-md-2">
+     {{ form.priority.label }}<br>
+     {{ form.priority(disabled=true) }}<br>
+     {% for error in form.priority.errors %}
+      <span class="error-label"><small>[{{ error }}]</small></span>
+     {% endfor %}
+    </div>
+    <div class="col-md-1">
+     {{ form.binning.label }}<br>
+     {{ form.binning }}<br>
+     {% for error in form.binning.errors %}
+      <span class="error-label"><small>[{{ error }}]</small></span>
+     {% endfor %}
+    </div>
+    <div class="col-md-1">
+     {{ form.dither.label }}<br>
+     {{ form.dither(disabled=true) }}<br>
+     {% for error in form.dither.errors %}
+      <span class="error-label"><small>[{{ error }}]</small></span>
+     {% endfor %}
+    </div>
+    <div class="col-md-1">
+     {{ form.cadence.label }}<br>
+     {{ form.cadence(disabled=true) }}<br>
+     {% for error in form.cadence.errors %}
+      <span class="error-label"><small>[{{ error }}]</small></span>
+     {% endfor %}
+    </div>
+   </div>
+
+   <br>
+
+   <div class="d-flex justify-content-between">
+    <div class="row">
+     {{ form.submit(class_="btn btn-md btn-primary") }}
+    </div>
+    <div>
+     <a href="{{ url_for('orp_user', username=current_user.username) }}" class="btn btn-md btn-danger">Cancel</a>
+    </div>
+   </div>
+  </div>
+ </form>
+ <hr>
+{% endblock %}
+
+{% block js %}
+ <script type="text/javascript">
+  if ($("#non_sidereal").is(':checked')){
+    $("#ns_params").show();
+  } else {
+    $("#ns_params").hide();
+  }
+ </script>
+ <script type="text/javascript">
+  $(document).ready(function() {
+    $("#non_sidereal").change(function() {
+      if(this.checked) {
+        $('#ns_params').show();
+      } else {
+        $('#ns_params').hide();
+      }
+    });
+  });
+ </script>
+{% endblock %}

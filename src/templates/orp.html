@@ -1,0 +1,48 @@
+<!DOCTYPE html5>
+<html>
+<head>
+ <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+ <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/landing.css') }}">
+ <title>ARTN ORP - Steward Observatory</title>
+</head>
+<body>
+<!-- header -->
+<div class="container">
+ <div id="landing-header">
+  <h1><big><i><font color="white">A</font>rizona <font color="white">R</font>obotic <font color="white">T</font>elescope
+   <font color="white">N</font>etwork</i></big></h1>
+  <h1><big><i><font color="white">O</font>bservation <font color="white">R</font>equest <font
+    color="white">P</font>ortal</i></big></h1>
+  <a href="{{ url_for('orp_login') }}" class="btn btn-lg btn-success">Login</a>
+  {% if current_user.is_authenticated %}
+    <a href="{{ url_for('orp_logout') }}" class="btn btn-lg btn-primary">Logout</a>
+  {% else %}
+    <a href="{{ url_for('orp_register') }}" class="btn btn-lg btn-warning">Register</a>
+  {% endif %}
+  <br><br>
+  <h2>Viewing the sky through multiple apertures</h2>
+ </div>
+</div>
+<!-- slideshow (placeholder) -->
+<ul class="slideshow">
+ <li></li>
+ <li></li>
+ <li></li>
+ <li></li>
+ <li></li>
+ <li></li>
+ <li></li>
+ <li></li>
+ <li></li>
+ <li></li>
+</ul>
+<!-- footer -->
+<footer id="landing-footer">
+ <div class="container">
+  <h5>&copy; 2018&ndash;2019 <a href="https://www.as.arizona.edu">Steward Observatory</a>, <a
+    href="https://www.arizona.edu">The University of Arizona</a></h5>
+  <h6>&copy; Mount Lemmon Sky Center, all background images</h6>
+ </div>
+</footer>
+</body>
+</html>

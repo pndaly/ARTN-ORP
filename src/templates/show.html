@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+
+<!-- description -->
+{% block content %}
+
+<!--suppress ALL -->
+<hr>
+
+ {% if record is defined %}
+ <div class="container">
+
+  <div class="container">
+   <p>
+    <center>
+     <img src="{{ image }}">
+    </center>
+   </p>
+  </div>
+
+   <!-- Table -->
+   <div class="col-md-12">
+    <div class="table-responsive">
+
+     <table class="table table-striped table-bordered table-hover table-lg">
+      <thead>
+       <tr>
+        <th><font color="blue">Item</font></th>
+        <th><font color="blue">Value</font></th>
+       </tr>
+      </thead>
+
+      <tbody>
+       <tr>
+        <td>Database ID</td>
+        <td>{{ record.id }}</td>
+       </tr>
+       <tr class="table-warning">
+        <td>Username</td>
+        <td>{{ record.username }}</td>
+       </tr>
+       <tr class="table-warning">
+        <td>Principal Investigator</td>
+        <td>{{ record.pi }}</td>
+       </tr>
+       <tr class="table-warning" >
+        <td>Observation Creation Date</td>
+        <td>{{ record.created_iso }}</td>
+       </tr>
+       <tr class="table-warning">
+        <td>Observation Creation MJD</td>
+        <td>{{ record.created_mjd }}</td>
+       </tr>
+       <tr class="table-warning">
+        <td>Observation Id(s)</td>
+        <td>{{ record.observation_id }}</td>
+       </tr>
+       <tr class="table-warning">
+        <td>Group Id</td>
+        <td>{{ record.group_id }}</td>
+       </tr>
+       <tr class="table-warning">
+        <td>Object Name</td>
+        <td>{{ record.object_name }}</td>
+       </tr>
+       <tr class="table-success">
+        <td>Telescope</td>
+        <td>{{ record.telescope }}</td>
+       </tr>
+       <tr class="table-success">
+        <td>RA (J2000)</td>
+        <td>{{ record.ra_hms }}</td>
+       </tr>
+       <tr class="table-success">
+        <td>RA (&deg;)</td>
+        {% if record.ra_deg|float("NaN") == "NaN" %}
+         <td>{{ record.ra_deg }}</td>
+        {% else %}
+         <td>{{ "%.3f"|format(record.ra_deg) }}</td>
+        {% endif %}
+       </tr>
+       <tr class="table-success">
+        <td>Dec (J2000)</td>
+        <td>{{ record.dec_dms }}</td>
+       </tr>
+       <tr class="table-success">
+        <td>Dec (&deg;)</td>
+        {% if record.dec_deg|float("NaN") == "NaN" %}
+         <td>{{ record.dec_deg }}</td>
+        {% else %}
+         <td>{{ "%.3f"|format(record.dec_deg) }}</td>
+        {% endif %}
+       </tr>
+       <tr class="table-success">
+        <td>Airmass (maximum)</td>
+        <td>{{ record.airmass }}</td>
+       </tr>
+       <tr class="table-success">
+        <td>Lunar Phase</td>
+        <td>{{ record.lunarphase }}</td>
+       </tr>
+       <tr class="table-success">
+        <td>Moon Phase (assigned)</td>
+        {% if record.moonphase|float("NaN") == "NaN" %}
+         <td>{{ record.moonphase }}</td>
+        {% else %}
+         <td>{{ "%.3f"|format(record.moonphase) }}</td>
+        {% endif %}
+       </tr>
+       <tr class="table-success">
+        <td>Non-Sidereal</td>
+        <td>{{ record.non_sidereal }}</td>
+       </tr>
+       <tr class="table-success">
+        <td>Non-Sidereal JSON</td>
+        <td>{{ record.non_sidereal_json }}</td>
+       </tr>
+       <tr class="table-primary">
+        <td>Instrument</td>
+        <td>{{ record.instrument }}</td>
+       </tr>
+       <tr class="table-primary">
+        <td>Filter Name</td>
+        <td>{{ record.filter_name }}</td>
+       </tr>
+       <tr class="table-primary">
+        <td>Exposure Time</td>
+        <td>{{ record.exp_time }}</td>
+       </tr>
+       <tr class="table-primary">
+        <td>Number of Exposures</td>
+        <td>{{ record.num_exp }}</td>
+       </tr>
+       <tr class="table-primary">
+        <td>Binning</td>
+        <td>{{ record.binning }}</td>
+       </tr>
+       <tr class="table-primary">
+        <td>Dither</td>
+        <td>{{ record.dither }}</td>
+       </tr>
+       <tr class="table-primary">
+        <td>Cadence</td>
+        <td>{{ record.cadence }}</td>
+       </tr>
+       <tr class="table-primary">
+        <td>Priority</td>
+        <td>{{ record.priority }}</td>
+       </tr>
+       <tr class="table-primary">
+        <td>Photometric</td>
+        <td>{{ record.photometric }}</td>
+       </tr>
+       <tr class="table-primary">
+        <td>Guiding</td>
+        <td>{{ record.guiding }}</td>
+       </tr>
+       <tr class="table-info">
+        <td>Observation Begin UTC</td>
+        <td>{{ record.begin_iso }}</td>
+       </tr>
+       <tr class="table-info">
+        <td>Observation Begin MJD</td>
+        <td>{{ record.begin_mjd }}</td>
+       </tr>
+       <tr class="table-info">
+        <td>Observation End UTC</td>
+        <td>{{ record.end_iso }}</td>
+       </tr>
+       <tr class="table-info">
+        <td>Observation End MJD</td>
+        <td>{{ record.end_mjd }}</td>
+       </tr>
+       <tr class="table-info">
+        <td>Observation Queued?</td>
+        <td>{{ record.queued }}</td>
+       </tr>
+       <tr class="table-info">
+        <td>Observation Completed?</td>
+        <td>{{ record.completed }}</td>
+       </tr>
+       <tr class="table-danger">
+        <td>RTS2 JSON Doc</td>
+        <td>{{ record.rts2_doc }}</td>
+       </tr>
+       <tr class="table-danger">
+        <td>RTS2 Id</td>
+        <td>{{ record.rts2_id }}</td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+   </div>
+  </div>
+ {% endif %}
+ <div class="d-flex justify-content-between">
+  <div class="row">
+   <div class="col-md-4"><a href="{{ url_for('orp_view_requests', username=record.username) }}" class="btn btn-md btn-info"><i class="fas fa-backward"></i></a></div>
+  </div>
+  <div>
+   {% if not expired %}
+    {% if current_user.is_admin %}
+     <div class="col-md-2"><a href="{{ url_for('orp_observe', username=current_user.username) }}?dbid={{ record.id }}" class="btn btn-md btn-warning">Observe</a></div>
+    {% endif %}
+   {% endif %}
+  </div>
+  <div>
+    <div class="col-md-2"><a href="{{ url_for('orp_delete', username=current_user.username) }}?dbid={{ record.id }}" class="btn btn-md btn-primary">Delete</a></div>
+  </div>
+ </div>
+ <hr>
+{% endblock %}
+
+{% block js %}
+{% endblock %}

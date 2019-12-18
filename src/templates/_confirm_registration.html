@@ -1,0 +1,10 @@
+<p>Dear ARTN Operator,</p>
+<p>A new user has requested confirmation of registration:</p>
+<p>First Name: {{ user.firstname }}</p>
+<p>Last Name: {{ user.lastname }}</p>
+<p>Username: {{ user.username }}</p>
+<p>Email: {{ user.email }}</p>
+<p>Affiliation: {{ user.affiliation }}</p>
+<p>If this is correct use this link: <a href="{{ url_for('orp_confirm_registration', token=token, _external=True) }}">link</a>.</p>
+<p>Sincerely,</p>
+<p>ARTN ORP</p>

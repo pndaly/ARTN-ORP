@@ -1,0 +1,163 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+ <!-- (required) meta tags -->
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+ <!-- CSS loaded locally-->
+ <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+ <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+
+ <!-- font awesome -->
+ <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css"
+    integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+ <!--
+ <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css"
+    integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+ -->
+
+ <!-- favicon ico -->
+ <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/favicon64.ico') }}">
+ <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon16.ico') }}">
+
+ <!-- title -->
+ <title>Observation Request Portal</title>
+
+ {% block css %}
+ {% endblock %}
+</head>
+
+<body>
+
+<!-- navigation bar -->
+<nav class="navbar navbar-expand-md navbar-light fixed-top header">
+ <div class="container">
+
+  <a class="navbar-brand" href="http://www.arizona.edu">
+   <img title="UA" src="{{ url_for('static', filename='img/UA-transparent.png') }}"></a>
+  <a class="navbar-brand" href="http://www.as.arizona.edu">
+   <img title="SO" src="{{ url_for('static', filename='img/Steward-transparent.png') }}"></a>
+  <div class="branding">
+   <span class="branding-lg blue-label"><a href="{{ url_for('orp_home') }}">ARTN ORP</a></span><br/>
+   <span class="branding-lg text-muted"><small><i>Arizona Robotic Telescope Network Observation Request Portal</i></small></span>
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
+    aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+   <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+
+   <ul class="navbar-nav ml-auto">
+    <li class="nav-item"><a class="nav-link" href="{{ url_for('orp_home') }}">
+     <i class="fa fa-home" aria-hidden="true"></i><span class="sr-only">(current)</span></a></li>
+    <li class="nav-item"><a class="nav-link" href="mailto:artn.operator@gmail.com">
+     <i class="fa fa-envelope"></i></a></li>
+    <li class="nav-item"><a class="nav-link" href="tel:+1(520) 990-7621">
+    <!-- <li class="nav-item"><a class="nav-link" href="tel:+1(520) 621-3648"> -->
+     <i class="fa fa-phone"></i></a>
+    </li>
+    <li class="nav-item"><a class="nav-link" href="{{ url_for('orp_help') }}">
+     <i class="fa fa-info" aria-hidden="true"></i></a>
+    </li>
+    <li class="nav-item"><a class="nav-link" href="{{ url_for('orp_api') }}">
+     <i class="fa fa-book" aria-hidden="true"></i></a></li>
+    {% if current_user.is_authenticated %}
+     <li class="nav-item"><a class="nav-link" href="{{ url_for('orp_feedback', username=current_user.username) }}">
+      <i class="fas fa-comments" aria-hidden="true"></i></a>
+     </li>
+     <li class="nav-item"><a class="nav-link" href="{{ url_for('orp_user', username=current_user.username) }}">
+      <i class="fas fa-user" aria-hidden="true"></i></a>
+     </li>
+    {% endif %}
+
+    {% if current_user.is_anonymous %}
+     <li class="nav-item"><a href="{{ url_for('orp_register') }}" class="btn btn-md btn-warning">Register</a></li>
+    {% else %}
+     <li class="nav-item"><a class="nav-link" href="{{ url_for('orp_logout') }}">
+      <i class="fa fa-sign-out" aria-hidden="true"></i></a>
+     </li>
+    {% endif %}
+   </ul>
+  </div>
+ </div>
+
+ <script src="https://use.fontawesome.com/6819192c3d.js"></script>
+ <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+ <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+</nav>
+
+<div class="container">
+ <div class="jumbotron">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+   {% if messages %}
+    {% for message in messages %}
+     {% if "ERROR" not in message[1]: %}
+      <div class="alert alert-info">{{ message[1] }}</div>
+     {% endif %}
+     {% if "ERROR" in message[1]: %}
+      <div class="alert alert-danger" role="alert"><strong>{{ message[1][7:] }}</strong></div>
+     {% endif %}
+    {% endfor %}
+   {% endif %}
+  {% endwith %}
+ </div>
+</div>
+
+<!-- main -->
+<main role="main" class="container" id="main">
+ <hr class="rainbow"/>
+ <p>
+  The <i><strong>A</strong>rizona <strong>R</strong>obotic <strong>T</strong>elescope <strong>N</strong>etwork
+  <strong>O</strong>bservation <strong>R</strong>equest <strong>P</strong>ortal </i> (ARTN ORP) allows registered
+  astronomers, scientists and engineers to request observations on a variety of telescopes and instrumentation
+  within the network. The telescope network is described in a symposium paper by <a
+   href="https://doi.org/10.1117/12.2314265"
+   title="Proc. SPIE 10704">Benjamin J. Weiner <i>et al</i></a>.
+ </p>
+ <hr class="rainbow"/>
+<!--
+ <center><a class="nav-link" href="http://www.cleardarksky.com/c/Kpr61AZcsk.gif?c=468017">
+     <img src="http://www.cleardarksky.com/c/Kpr61AZcs0.gif?1"></a></center>
+-->
+ {% block content %}
+ {% endblock %}
+</main>
+
+<!-- footer -->
+<footer class="footer">
+ <!--suppress Annotator -->
+    <div class="container">
+  <p class="thanks">
+   <h4>Telescopes</h4>
+   <figure>
+    <a href="https://www.as.arizona.edu/kuiper-61-telescope">
+     <img title="Kuiper" src="{{ url_for('static', filename='img/KuiperTelescope.jpg') }}" hspace="50">
+    </a>
+    <figcaption>Kuiper 61&Prime; (1.6m)</figcaption>
+   </figure>
+   <figure>
+    <a href="https://www.as.arizona.edu/vatican-advanced-technology-telescope">
+     <img title="Vatt" src="{{ url_for('static', filename='img/VattTelescope.jpg') }}" hspace="50">
+    </a>
+    <figcaption>Vatt 1.8m (71&Prime;)</figcaption>
+   </figure>
+   <figure>
+    <a href="https://www.as.arizona.edu/bok-23m-telescope">
+     <img title="Bok" src="{{ url_for('static', filename='img/BokTelescope.jpg') }}" hspace="50">
+    </a>
+    <figcaption>Bok 90&Prime; (2.3m)</figcaption>
+   </figure>
+   <br>
+   <strong>ARTN ORP &copy; 2018&ndash;2019</strong> <a href="https://www.as.arizona.edu">Steward Observatory</a>,
+   <a href="https://www.arizona.edu">The University of Arizona</a>
+  </p>
+ </div>
+</footer>
+{% block js %}
+{% endblock %}
+</body>
+</html>

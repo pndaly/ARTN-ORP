@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+ <hr>
+ <form action="" method="post">
+
+  {{ form.hidden_tag() }}
+
+  <div class="row">
+   <div class="col-md-4">
+    <p>
+     {{ form.firstname.label }}<br>
+     {{ form.firstname(size=32) }}<br>
+     {% for error in form.firstname.errors %}
+      <span style="color: red;"><small>[{{ error }}]</small></span>
+     {% endfor %}
+    </p>
+   </div>
+   <div class="col-md-4">
+    <p>
+     {{ form.lastname.label }}<br>
+     {{ form.lastname(size=32) }}<br>
+     {% for error in form.lastname.errors %}
+      <span style="color: red;"><small>[{{ error }}]</small></span>
+     {% endfor %}
+    </p>
+   </div>
+   <div class="col-md-4">
+    <p>
+     {{ form.username.label }}<br>
+     {{ form.username(size=32) }}<br>
+     {% for error in form.username.errors %}
+      <span style="color: red;"><small>[{{ error }}]</small></span>
+     {% endfor %}
+     <br>
+    </p>
+   </div>
+  </div>
+
+  <div class="row">
+   <div class="col-md-4">
+    <p>
+     {{ form.email.label }}<br>
+     {{ form.email(size=32) }}<br>
+     {% for error in form.email.errors %}
+      <span style="color: red;"><small>[{{ error }}]</small></span>
+     {% endfor %}
+    </p>
+   </div>
+   <div class="col-md-4">
+    <p>
+     {{ form.affiliation.label }}<br>
+     {{ form.affiliation(size=73) }}<br>
+     {% for error in form.affiliation.errors %}
+      <span style="color: red;"><small>[{{ error }}]</small></span>
+     {% endfor %}
+    </p>
+   </div>
+
+   <div class="col-md-4">
+    <p>
+     {{ form.is_disabled() }} {{ form.is_disabled.label }}
+     {% for error in form.is_disabled.errors %}
+      <span style="color: red;"><small>[{{ error }}]</small></span>
+     {% endfor %}
+    </p>
+   </div>
+  </div>
+
+  <div class="row">
+   <div class="col-md-12">
+   <div class="d-flex justify-content-between">
+    <div class="row">
+     <button type="submit" class="btn btn-md btn-warning">Confirm Registration</button>
+    </div>
+    <div>
+     <a href="{{ url_for('orp_home') }}" class="btn btn-md btn-danger">Cancel</a>
+    </div>
+   </div>
+   </div>
+  </div>
+ </form>
+ <hr>
+{% endblock %}

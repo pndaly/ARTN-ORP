@@ -1,0 +1,15 @@
+Dear ARTN Operator,
+
+A new user has requested confirmation of registration:
+
+First Name: {{ user.firstname }}
+Last Name: {{ user.lastname }}
+Username: {{ user.username }}
+Email: {{ user.email }}
+Affiliation: {{ user.affiliation }}
+
+If this is correct use this link: {{ url_for('orp_confirm_registration', token=token, _external=True) }}.
+
+Sincerely,
+
+ARTN ORP

@@ -1,0 +1,339 @@
+{% extends 'base.html' %}
+
+<!-- description -->
+{% block content %}
+
+<!--suppress ALL -->
+<hr>
+  <div class="row">
+   <div class="container">
+    <h5><span class="left"><img src="{{ current_user.get_avatar(24) }}">&nbsp;<i>Welcome back {{ current_user.firstname }} {{ current_user.lastname }} </i></span></h5>
+    <span class="right">
+     {% if current_user.is_admin %}
+      <a href="{{ url_for('orp_view_observable', username=current_user.username) }}" class="btn btn-sm btn-success">View Observable Request(s)</a>
+      <a href="{{ url_for('orp_view_requests', username=current_user.username) }}" class="btn btn-sm btn-warning">View All Request(s)</a>
+      <a href="{{ url_for('orp_view_users') }}?username=" class="btn btn-sm btn-info">View User(s)</a>
+      <a href="{{ url_for('orp_logout') }}" class="btn btn-sm btn-danger">Log Out</a>
+     {% else %}
+      <a href="{{ url_for('orp_view_observable', username=current_user.username) }}?username={{ current_user.username }}" class="btn btn-sm btn-success">View My Observable Request(s)</a>
+      <a href="{{ url_for('orp_view_requests', username=current_user.username) }}?username={{ current_user.username }}" class="btn btn-sm btn-warning">View My Request(s)</a>
+      <a href="{{ url_for('orp_logout') }}" class="btn btn-sm btn-danger">Log Out</a>
+     {% endif %}
+    </span>
+   </div>
+  </div>
+  <br>
+  <div class="row">
+   <div class="container">
+    <span class="right">
+     <a href="{{ url_for('orp_history') }}?username={{ current_user.username }}" class="btn btn-sm btn-outline-info">Observation History</a>
+     <a href="{{ url_for('orp_obsreq', username=current_user.username) }}" class="btn btn-sm btn-outline-info">Create Observation Request</a>
+     <a href="{{ url_for('orp_upload', username=current_user.username) }}" class="btn btn-sm btn-outline-info">File Upload</a>
+     <a href="{{ url_for('orp_profile', username=current_user.username) }}" class="btn btn-sm btn-outline-info">Edit Profile</a>
+    </span>
+   </div>
+  </div>
+
+ <br>
+
+ <hr>
+
+ <div class="container">
+  <!-- <h2>PND is working on this now - ignore output(s)!</h2> -->
+
+  <!-- sort section -->
+  <!--suppress HtmlUnknownAttribute -->
+  <div class="row">
+
+   <!-- Table -->
+   <div class="col-md-12">
+    <div class="table-responsive">
+     <div class="row">
+      <div class="col">
+       <div align="left">
+        {% if context.has_prev %}
+         <a href="{{ url_for('orp_view_observable', username=current_user.username) }}?{{ arg_str }}&page={{ page - 1 }}" class="btn btn-sm btn-outline-secondary">Prev</a>
+        {% else %}
+         <a href="#" class="btn btn-outline-secondary disabled">Prev</a>
+        {% endif %}
+       </div>
+      </div>
+      <div class="col-md-8">
+       <div align="center">
+        {{ context.total }} record(s) found. Showing page {{ page }} / {{ context.pages }}.
+       </div>
+      </div>
+      <div class="col">
+       <div align="right">
+        {% if context.has_next %}
+         <a href="{{ url_for('orp_view_observable', username=current_user.username) }}?{{ arg_str }}&page={{ page + 1 }}" class="btn btn-sm btn-outline-secondary">Next</a>
+        {% else %}
+         <a href="#" class="btn btn-outline-secondary disabled">Next</a>
+        {% endif %}
+       </div>
+      </div>
+     </div>
+
+     <br>
+
+     <table class="table table-striped table-sm">
+      <thead>
+      <tr>
+       <!-- Eyeglass | Completed -->
+       <th><font color="blue"></font></th>
+       <!-- Microscope -->
+       <th><font color="blue"></font></th>
+       <!-- Delete -->
+       <!-- <th><font color="blue"></font></th> -->
+       <!-- Edit -->
+       <!-- <th><font color="blue"></font></th> -->
+       <!-- Owner -->
+       <th><font color="blue">Owner</font></th>
+       <!-- Telescope -->
+       <!-- <th><font color="blue">Telescope</font></th> -->
+       <!-- Instrument -->
+       <!-- <th><font color="blue">Instrument</font></th> -->
+       <!-- Object -->
+       <th><font color="blue">Object</font></th>
+       <!-- RA -->
+       <th><font color="blue">RA</font></th>
+       <!-- Dec -->
+       <th><font color="blue">Dec</font></th>
+       <!-- Filter -->
+       <th><font color="blue">Filter</font></th>
+       <!-- Exp Time -->
+       <th><font color="blue">Exp Time</font></th>
+       <!-- # Exp -->
+       <th><font color="blue"># Exp</font></th>
+       <!-- Airmass -->
+       <th><font color="blue">Airmass</font></th>
+       <!-- Lunarphase -->
+       <th><font color="blue">Lunarphase</font></th>
+       <!-- Priority -->
+       <!-- <th><font color="blue">Priority</font></th> -->
+       <!-- Photometric -->
+       <th><font color="blue">Photometric</font></th>
+       <!-- Guiding -->
+       <th><font color="blue">Guiding</font></th>
+       <!-- Non-Sidereal -->
+       <th><font color="blue">Non-Sidereal</font></th>
+       <!-- Begin ISO -->
+       <th><font color="blue">Begin</font></th>
+       <!-- End ISO -->
+       <th><font color="blue">End</font></th>
+       <!-- Binning -->
+       <th><font color="blue">Binning</font></th>
+       <!-- Dither -->
+       <!-- <th><font color="blue">Dither</font></th> -->
+       <!-- Cadence -->
+       <!-- <th><font color="blue">Cadence</font></th> -->
+       <!-- Queued -->
+       <!-- <th><font color="blue">Queued</font></th> -->
+       <!-- Completed -->
+       <!-- <th><font color="blue">Completed</font></th> -->
+       <!-- RTS2 Document -->
+       <!-- <th><font color="blue">RTS2 Doc</font></th> -->
+       <!-- RTS2 Id -->
+       <!-- <th><font color="blue">RTS2 Id</font></th> -->
+       <!-- Non-Sidereal JSON -->
+       <!-- <th><font color="blue">Non-Sidereal Doc</font></th> -->
+      </tr>
+      <tr>
+       <!-- Eyeglass | Completed -->
+       <th><font color="grey"></font></th>
+       <!-- Microscope -->
+       <th><font color="grey"></font></th>
+       <!-- Delete -->
+       <!-- <th><font color="grey"></font></th> -->
+       <!-- Edit -->
+       <!-- <th><font color="grey"></font></th> -->
+       <!-- Owner -->
+       <th><font color="grey"></font></th>
+       <!-- Telescope -->
+       <!-- <th><font color="grey"><center></center></font></th> -->
+       <!-- Instrument -->
+       <!-- <th><font color="grey"><center></center></font></th> -->
+       <!-- Object -->
+       <th><font color="grey"><center></center></font></th>
+       <!-- RA -->
+       <th><font color="grey"><center>J2k &deg;</center></font></th>
+       <!-- Dec -->
+       <th><font color="grey"><center>J2k &deg;</center></font></th>
+       <!-- Filter -->
+       <th><font color="grey"><center></center></font></th>
+       <!-- Exp Time -->
+       <th><font color="grey"><center>s</center></font></th>
+       <!-- # Exp -->
+       <th><font color="grey"><center></center></font></th>
+       <!-- Airmass -->
+       <th><font color="grey"><center>1 &lt;&gt; 3.5</center></font></th>
+       <!-- Lunarphase -->
+       <th><font color="grey"><center></center></font></th>
+       <!-- Priority -->
+       <!-- <th><font color="grey"><center></center></font></th> -->
+       <th><font color="grey"><center></center></font></th>
+       <!-- Photometric -->
+       <th><font color="grey"><center></center></font></th>
+       <!-- Guiding -->
+       <th><font color="grey"><center></center></font></th>
+       <!-- Non-Sidereal -->
+       <th><font color="grey"><center>UTC</center></font></th>
+       <!-- Begin ISO -->
+       <th><font color="grey"><center>UTC</center></font></th>
+       <!-- End ISO -->
+       <th><font color="grey"><center></center></font></th>
+       <!-- Dither -->
+       <!-- <th><font color="grey"><center></center></font></th> -->
+       <!-- Cadence -->
+       <!-- <th><font color="grey"><center></center></font></th> -->
+       <!-- Queued -->
+       <!-- <th><font color="grey"><center></center></font></th> -->
+       <!-- Completed -->
+       <!-- <th><font color="grey"><center></center></font></th> -->
+       <!-- RTS2 Document -->
+       <!-- <th><font color="grey"><center></center></font>jsonb</th> -->
+       <!-- RTS2 Identifier -->
+       <!-- <th><font color="grey"><center></center></font></th> -->
+       <!-- Non-Sidereal Document -->
+       <!-- <th><font color="grey"><center></center></font>jsonb</th> -->
+      </tr>
+      </thead>
+      <tbody>
+      {% for record in context.results %}
+      <tr>
+       <!-- Eyeglass | Completed -->
+       {% if record.completed %}
+        <td><i title="Observation request {{ record.id }} complete" class="far fa-check-circle fa-lg" aria-hidden="true"></i></a></td>
+       {% else %}
+        <td><a href="/orp/observe/{{ current_user.username }}?dbid={{ record.id }}" title="Observe obsreq {{ record.id }}"><i class="fa fa-eye fa-lg" aria-hidden="true"></i></a></td>
+       {% endif %}
+       <!-- Microscope -->
+       <td><a href="/orp/show/{{ current_user.username }}?dbid={{ record.id }}" title="Show obsreq {{ record.id }}"><i class="fas fa-microscope fa-lg" aria-hidden="true"></i></a></td>
+       <!-- Delete -->
+       <!-- <td><a href="/orp/delete/{{ current_user.username }}?dbid={{ record.id }}" title="Delete obsreq {{ record.id }}"><i class="fa fa-trash fa-lg" aria-hidden="true"></i></a></td> -->
+       <!-- Edit -->
+       <!-- <td><a href="/orp/update/{{ current_user.username }}?dbid={{ record.id }}" title="Edit obsreq {{ record.id }}"><i class="fa fa-edit fa-lg" aria-hidden="true"></i></a></td> -->
+       <!-- Owner -->
+       <td><center><img src="{{ record.avatar }}" title="{{ record.username }}"></center></td>
+       <!-- Telescope -->
+       <!-- <td>{{ record.telescope }}</td> -->
+       <!-- Instrument -->
+       <!-- <td>{{ record.instrument }}</td> -->
+       <!-- Object -->
+       <td>{{ record.object_name }}</td>
+       <!-- RA -->
+       <td>{{ record.ra_deg }}</td>
+       <!-- Dec -->
+       <td>{{ record.dec_deg }}</td>
+       <!-- Filter -->
+       <td>{{ record.filter_name }}</td>
+       <!-- Exp Time -->
+       <td>{{ record.exp_time }}</td>
+       <!-- # Exp -->
+       <td>{{ record.num_exp }}</td>
+       <!-- Airmass -->
+       <td>{{ record.airmass }}</td>
+       <!-- Lunarphase -->
+       <td>{{ record.lunarphase }}</td>
+       <!-- Priority -->
+       <!-- <td>{{ record.priority }}</td> -->
+       <!-- Photometric -->
+       {% if record.photometric %}
+        <td><i class="fa fa-thumbs-o-up" aria-hidden="true"></i></td>
+       {% else %}
+        <td><i class="fa fa-thumbs-o-down" aria-hidden="true"></i></td>
+       {% endif %}
+       <!-- Guiding -->
+       {% if record.guiding %}
+        <td><i class="fa fa-thumbs-o-up" aria-hidden="true"></i></td>
+       {% else %}
+        <td><i class="fa fa-thumbs-o-down" aria-hidden="true"></i></td>
+       {% endif %}
+       <!-- Non-Sidereal -->
+       {% if record.non_sidereal %}
+        <td><i class="fa fa-thumbs-o-up" aria-hidden="true"></i></td>
+       {% else %}
+        <td><i class="fa fa-thumbs-o-down" aria-hidden="true"></i></td>
+       {% endif %}
+       <!-- Begin ISO -->
+       <td>{{ record.begin_iso }}</td>
+       <!-- End ISO -->
+       <td>{{ record.end_iso }}</td>
+       <!-- Binning -->
+       <td>{{ record.binning }}</td>
+       <!-- Dither -->
+       <!-- <td>{{ record.dither }}</td> -->
+       <!-- Cadence -->
+       <!-- <td>{{ record.cadence }}</td> -->
+       <!-- Queued -->
+       <!-- {% if record.queued %} -->
+       <!--  <td><i class="fa fa-thumbs-o-up" aria-hidden="true"></i></td> -->
+       <!-- {% else %} -->
+       <!--  <td><i class="fa fa-thumbs-o-down" aria-hidden="true"></i></td> -->
+       <!-- {% endif %} -->
+       <!-- Completed -->
+       <!-- {% if record.completed %} -->
+       <!--  <td><i class="fa fa-thumbs-o-up" aria-hidden="true"></i></td> -->
+       <!-- {% else %} -->
+       <!--  <td><i class="fa fa-thumbs-o-down" aria-hidden="true"></i></td> -->
+       <!-- {% endif %} -->
+       <!-- RTS2 Document -->
+       <!-- <td>{{ record.rts2_doc }}</td> -->
+       <!-- RTS2 Id -->
+       <!-- <td>{{ record.rts2_id }}</td> -->
+       <!-- Non-sidereal JSON -->
+       <!-- <td>{{ record.non_sidereal_json }}</td> -->
+      </tr>
+      {% endfor %}
+      </tbody>
+     </table>
+
+     <div class="row">
+      <div class="col">
+       <div align="left">
+        {% if context.has_prev %}
+         <a href="{{ url_for('orp_view_observable', username=current_user.username) }}?{{ arg_str }}&page={{ page - 1 }}" class="btn btn-sm btn-outline-secondary">Prev</a>
+        {% else %}
+         <a href="#" class="btn btn-outline-secondary disabled">Prev</a>
+        {% endif %}
+       </div>
+      </div>
+
+      <div class="col-md-8">
+       <div align="center">
+        {{ context.total }} record(s) found. Showing page {{ page }} / {{ context.pages }}.
+       </div>
+      </div>
+
+      <div class="col">
+       <div align="right">
+        {% if context.has_next %}
+         <a href="{{ url_for('orp_view_observable', username=current_user.username) }}?{{ arg_str }}&page={{ page + 1 }}" class="btn btn-sm btn-outline-secondary">Next</a>
+        {% else %}
+         <a href="#" class="btn btn-outline-secondary disabled">Next</a>
+        {% endif %}
+       </div>
+      </div>
+     </div>
+     <br>
+    </div>
+   </div>
+  </div>
+ </div>
+ <hr>
+{% endblock %}
+
+{% block js %}
+<!-- toggle script -->
+<script type="text/javascript">
+function toggle_check(check) {
+  if (check.value == "1") {
+    check.value = "0";
+    console.log('check.value: True -> False');
+  } else {
+    check.value = "1";
+    console.log('check.value: False -> True');
+  }
+}
+</script>
+{% endblock %}

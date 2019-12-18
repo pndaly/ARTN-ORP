@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+<!-- description -->
+{% block content %}
+
+<!--suppress ALL -->
+<hr>
+
+ <div class="container">
+
+  <!-- sort section -->
+  <!--suppress HtmlUnknownAttribute -->
+  <div class="row">
+
+   <!-- Table -->
+   <div class="col-md-10">
+    <div class="table-responsive">
+     <table class="table table-striped table-sm">
+      <thead>
+       <tr>
+        <th><font color="blue">Name</font></th>
+        <th><font color="blue">Status</font></th>
+       </tr>
+      </thead>
+      <tbody>
+      {% for _response in response.results %}
+       <tr>
+       {% if _response.OK %}
+        <td><a href="{{ url_for('orp_get_file', download_file=_response.name) }}">{{ _response.name }}</a></td>
+        <td><font color="green"><i class="far fa-thumbs-up"></i></font></i></td>
+       {% else %}
+        <td>{{ _response.name }}</td>
+        <td><font color="red"><i class="far fa-thumbs-down"></i></font></i></td>
+       {% endif %}
+       </tr>
+      {% endfor %}
+      </tbody>
+     </table>
+    </div>
+   </div>
+  </div>
+ </div>
+ <hr>
+{% endblock %}
+
+{% block js %}
+{% endblock %}

@@ -1,0 +1,440 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<hr>
+<div class="row">
+ <div class="col-md-12">
+
+  <!-- Section -->
+  <div class="row">
+   <div class="col-md-12">
+    <button class="btn-sm btn-outline-info btn-block" data-toggle="collapse"
+      data-target="#ARTNORPWebsiteStyling">ARTN ORP Website Styling
+    </button>
+   </div>
+  </div>
+
+  <br>
+
+  <div class="row">
+   <div class="col-md-12 imgdiv">
+    <div id="ARTNORPWebsiteStyling" class="collapse">
+     <p>Each (non-landing) page consists of the following sections.</p>
+
+     <h4>Navigation Bar</h4>
+     <img title="ORP NavBar" src="{{ url_for('static', filename='img/ORP_NavBar.png') }}" class="myimg img-responsive thumbnail">
+     <p><font color="blue">The <i>navigation bar</i> is fixed to the top of the page and controls access to various sub-pages. 
+     Iconography used through the portal is explained elsewhere.</font></p>
+     <br>
+     <h4>Jumbotron</h4>
+     <img title="ORP Jumbotron" src="{{ url_for('static', filename='img/ORP_JumboTron.png') }}" class="myimg img-responsive thumbnail">
+     <p><font color="blue">The <i>jumbotron</i> is where flash messages are displayed. Routine messages are displayed in a pastel blue shade and error
+     messages in pastel red.</font></p>
+     <br>
+     <h4>Citation Header</h4>
+     <img title="ORP Citation" src="{{ url_for('static', filename='img/ORP_Citation.png') }}" class="myimg img-responsive thumbnail">
+     <p><font color="blue">The <i>citation header</i> reminds users of the purpose of the ARTN ORP and references the founding document(s).</font></p>
+     <br>
+     <h4>Page Specifics</h4>
+     <img title="ORP Specifics" src="{{ url_for('static', filename='img/ORP_Specifics.png') }}" class="myimg img-responsive thumbnail">
+     <p><font color="blue">The <i>page specifics</i> section is dynamically created by various RESTful routes.</font></p>
+     <br>
+     <h4>Footer</h4>
+     <img title="ORP Footer" src="{{ url_for('static', filename='img/ORP_Footer.png') }}" class="myimg img-responsive thumbnail">
+     <p><font color="blue">The <i>footer</i> shows the telescopes that make up the network and the site ownership.</font></p>
+    </div>
+   </div>
+  </div>
+
+  <!-- Section -->
+  <div class="row">
+   <div class="col-md-12">
+    <button class="btn-sm btn-outline-info btn-block" data-toggle="collapse"
+      data-target="#Iconography">Iconography
+    </button>
+   </div>
+  </div>
+
+  <br>
+
+  <div class="row">
+   <div class="col-md-12 imgdiv">
+    <div id="Iconography" class="collapse">
+     <table class="table table-striped table-bordered table-hover table-lg">
+      <thead>
+       <tr>
+        <th><font color="blue">Icon</font></th>
+        <th><font color="blue">Description</font></th>
+       </tr>
+      </thead>
+      <tbody>
+       <tr>
+        <td><i class="fa fa-2x fa-home" aria-hidden="true"></i></td>
+	<td>Navigate to the landing page</td>
+       </tr>
+       <tr>
+        <td><i class="fa fa-2x fa-envelope"></i></td>
+	<td>Contact the ARTN Operator via email</td>
+       </tr>
+       <tr>
+        <td><i class="fa fa-2x fa-phone"></i></td>
+	<td>Contact the ARTN Operator via phone</td>
+       </tr>
+       <tr>
+        <td><i class="fa fa-2x fa-info" aria-hidden="true"></i></td>
+	<td>Navigate to the help page</td>
+       </tr>
+       <tr>
+        <td><i class="fa fa-2x fa-book" aria-hidden="true"></i></td>
+	<td>Navigate to the API page</td>
+       </tr>
+       <tr>
+        <td><i class="fas fa-2x fa-comments" aria-hidden="true"></i></td>
+	<td>Navigate to the feedback page</td>
+       </tr>
+       <tr>
+        <td><i class="fas fa-2x fa-user" aria-hidden="true"></i></td>
+	<td>Navigate to the user home page</td>
+       </tr>
+       <tr>
+        <td><i class="fa fa-2x fa-sign-out" aria-hidden="true"></i></td>
+	<td>Log out of the ORP</td>
+       </tr>
+       <tr>
+        <td><i class="fas fa-2x fa-backward"></i></td>
+	<td>Navigate to the previous page</td>
+       </tr>
+       <tr>
+        <td><i class="fa fa-2x fa-eye fa-lg" aria-hidden="true"></i></td>
+	<td>Object is observable at the present time (admins only)</td>
+       </tr>
+       <tr>
+        <td><i class="fa fa-2x fa-eye-slash fa-lg" aria-hidden="true"></i></td>
+	<td>Object is not observable at the present time (admins only)</td>
+       </tr>
+       <tr>
+        <td><font coor="grey"><i class="far fa-2x fa-check-circle fa-lg" aria-hidden="true"></font></i></td>
+	<td>Object has been observed (admins only)</td>
+       </tr>
+       <tr>
+        <td><i class="fas fa-2x fa-microscope fa-lg" aria-hidden="true"></i></td>
+	<td>Show details of observation record</td>
+       </tr>
+       <tr>
+        <td><i class="fa fa-2x fa-trash fa-lg" aria-hidden="true"></i></td>
+	<td>Delete observation record (requires confirmation is object is queued)</td>
+       </tr>
+       <tr>
+        <td><i class="fa fa-2x fa-edit fa-lg" aria-hidden="true"></i></td>
+	<td>Edit observation record</td>
+       </tr>
+       <tr>
+        <td><i class="fa fa-2x fa-thumbs-o-up" aria-hidden="true"></i></td>
+	<td>True</td>
+       </tr>
+       <tr>
+        <td><i class="fa fa-2x fa-thumbs-o-down" aria-hidden="true"></i></td>
+	<td>False</td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+   </div>
+  </div>
+
+  <!-- Section -->
+  <div class="row">
+   <div class="col-md-12">
+    <button class="btn-sm btn-outline-info btn-block" data-toggle="collapse"
+      data-target="#LandingPage">Landing Page
+    </button>
+   </div>
+  </div>
+  <br>
+  <div class="row">
+   <div class="col-md-12 imgdiv">
+    <div id="LandingPage" class="collapse">
+     <img title="ORP Landing Page" src="{{ url_for('static', filename='img/LandingPage2.png') }}" class="myimg img-responsive thumbnail">
+     <p><font color="blue">This page is the front-facing page for user access. Only 2 actions are available
+     from this page: <i>Login</i> and <i>Register</i>.</font></p>
+     <p></p>
+    </div>
+   </div>
+  </div>
+
+  <!-- Section -->
+  <div class="row">
+   <div class="col-md-12">
+    <button class="btn-sm btn-outline-info btn-block" data-toggle="collapse"
+      data-target="#RegistrationPage">Registration Page
+    </button>
+   </div>
+  </div>
+  <br>
+  <div class="row">
+   <div class="col-md-12 imgdiv">
+    <div id="RegistrationPage" class="collapse">
+     <img title="ORP Registration Page" src="{{ url_for('static', filename='img/RegistrationPage2.png') }}" class="myimg img-responsive thumbnail">
+     <p><font color="blue">This page allows users to request an account on the ORP. When the form is submitted, and the inputs are verified, the user
+     is sent an email notifying them that the moderator has been asked for approval for the new account. Once approval is granted, the user
+     receives another email with an embedded login link.</font></p>
+     <p><font color="blue">Note that passwords must be a minimum of 8 characters and include at least 1 uppercase, 1 lowercase and
+     1 numeric character. The pass phrase has no such restrictions, just some memorable data, and is required along
+     with a valid email address when requesting a password reset.</font></p>
+     <p></p>
+    </div>
+   </div>
+  </div>
+
+  <!-- Section -->
+  <div class="row">
+   <div class="col-md-12">
+    <button class="btn-sm btn-outline-info btn-block" data-toggle="collapse"
+      data-target="#LoginPage">Login Page
+    </button>
+   </div>
+  </div>
+  <br>
+  <div class="row">
+   <div class="col-md-12 imgdiv">
+    <div id="LoginPage" class="collapse">
+     <img title="ORP Login Page" src="{{ url_for('static', filename='img/LoginPage2.png') }}" class="myimg img-responsive thumbnail">
+     <p><font color="blue">This page allows users access to their account, providing the account is not disabled. If account access is blocked, please
+     contact the <a href="mailto:artn.operator@gmail.com">ARTN Operator</a>. The 'remember me' button uses a browser-based token to
+     keep the user logged in during a session. Please remember to logout when you are finished with the ORP.</font></p>
+     <p></p>
+    </div>
+   </div>
+  </div>
+
+  <!-- Section -->
+  <div class="row">
+   <div class="col-md-12">
+    <button class="btn-sm btn-outline-info btn-block" data-toggle="collapse"
+      data-target="#DisabledAccountPage">Disabled Account Page
+    </button>
+   </div>
+  </div>
+  <br>
+  <div class="row">
+   <div class="col-md-12 imgdiv">
+    <div id="DisabledAccountPage" class="collapse">
+     <img title="ORP Disabled Account Page" src="{{ url_for('static', filename='img/DisabledAccountPage2.png') }}" class="myimg img-responsive thumbnail">
+     <p><font color="blue">This page indicates that the account is disabled. Please contact the <a href="mailto:artn.operator@gmail.com">ARTN Operator</a>.</font></p>
+     <p></p>
+    </div>
+   </div>
+  </div>
+
+  <!-- Section -->
+  <div class="row">
+   <div class="col-md-12">
+    <button class="btn-sm btn-outline-info btn-block" data-toggle="collapse"
+      data-target="#RequestPasswordResetPage">Request Password Reset Page
+    </button>
+   </div>
+  </div>
+  <br>
+  <div class="row">
+   <div class="col-md-12 imgdiv">
+    <div id="RequestPasswordResetPage" class="collapse">
+     <img title="ORP Request Password Reset Page" src="{{ url_for('static', filename='img/RequestPasswordResetPage2.png') }}" class="myimg img-responsive thumbnail">
+     <p><font color="blue">This page allows the user to request a password reset link be sent by email to the registered account. The pass phrase must be known.
+	     The link is valid for 600 seconds, after which it expires and the user must request another one.</font></p>
+     <p></p>
+    </div>
+   </div>
+  </div>
+
+  <!-- Section -->
+  <div class="row">
+   <div class="col-md-12">
+    <button class="btn-sm btn-outline-info btn-block" data-toggle="collapse"
+      data-target="#UserHomePage">User Home Page
+    </button>
+   </div>
+  </div>
+  <br>
+  <div class="row">
+   <div class="col-md-12 imgdiv">
+    <div id="UserHomePage" class="collapse">
+     <img title="ORP User Home Page" src="{{ url_for('static', filename='img/UserHomePage2.png') }}" class="myimg img-responsive thumbnail">
+     <p><font color="blue">This page is the user home page and provides buttons to create or view your observation requests, edit your profile and access help and API pages.</font></p>
+     <p></p>
+    </div>
+   </div>
+  </div>
+
+  <!-- Section -->
+  <div class="row">
+   <div class="col-md-12">
+    <button class="btn-sm btn-outline-info btn-block" data-toggle="collapse"
+      data-target="#EditProfilePage">Edit Profile Page
+    </button>
+   </div>
+  </div>
+  <br>
+  <div class="row">
+   <div class="col-md-12 imgdiv">
+    <div id="EditProfilePage" class="collapse">
+     <img title="ORP Edit Profile Page" src="{{ url_for('static', filename='img/EditProfilePage2.png') }}" class="myimg img-responsive thumbnail">
+     <p><font color="blue">This page allows the user to change some aspects of their account profile.</font></p>
+     <p></p>
+    </div>
+   </div>
+  </div>
+
+  <!-- Section -->
+  <div class="row">
+   <div class="col-md-12">
+    <button class="btn-sm btn-outline-info btn-block" data-toggle="collapse"
+      data-target="#FeedbackPage">Feedback Page
+    </button>
+   </div>
+  </div>
+  <br>
+  <div class="row">
+   <div class="col-md-12 imgdiv">
+    <div id="FeedbackPage" class="collapse">
+     <img title="ORP Feedback Page" src="{{ url_for('static', filename='img/FeedbackPage2.png') }}" class="myimg img-responsive thumbnail">
+     <p><font color="blue">This page allows the user to send appropriate feedback (with uploadable screen shots) to the ARTN ORP developers.</font></p>
+     <p></p>
+    </div>
+   </div>
+  </div>
+
+  <!-- Section -->
+  <div class="row">
+   <div class="col-md-12">
+    <button class="btn-sm btn-outline-info btn-block" data-toggle="collapse"
+      data-target="#FileUploadPage">File Upload Page
+    </button>
+   </div>
+  </div>
+  <br>
+  <div class="row">
+   <div class="col-md-12 imgdiv">
+    <div id="FileUploadPage" class="collapse">
+     <img title="ORP File Upload Page" src="{{ url_for('static', filename='img/FileUploadPage2.png') }}" class="myimg img-responsive thumbnail">
+     <p><font color="blue">This page allows the user to upload multiple requests via a CSV or TSV-formatted file. If the file is &lt; 100 entries, the upload is performed
+     synchronously. Larger files are uploaded asynchronously in a separate thread and the user should refresh the screen to see new records arrive.</font></p>
+     <p><font color="blue">Only requests that are identified as belonging to the current user will be uploaded from within the file. If, however, the current user is
+     an admin, all valid records will be created. A template
+     <a href="/orp/download/artn_template.v2.tsv">TSV v2</a> file can be downloaded.
+     Comment characters in this file include '#%!&lt;&gt;+-\/'.</font></p>
+     <p></p>
+    </div>
+   </div>
+  </div>
+
+  <!-- Section -->
+  <div class="row">
+   <div class="col-md-12">
+    <button class="btn-sm btn-outline-info btn-block" data-toggle="collapse"
+      data-target="#CreateObservationRequestPage">Create Observation Request Page
+    </button>
+   </div>
+  </div>
+  <br>
+  <div class="row">
+   <div class="col-md-12 imgdiv">
+    <div id="CreateObservationRequestPage" class="collapse">
+     <img title="ORP Create Observation Request Page" src="{{ url_for('static', filename='img/CreateObservationRequestPage2.png') }}" class="myimg img-responsive thumbnail">
+     <p><font color="blue">This page allows users to create observation requests using a combination of telescope, instrument,
+	     dither, cadence, priority and other parameters.</font></p>
+     <p></p>
+    </div>
+   </div>
+  </div>
+
+  <!-- Section -->
+  <div class="row">
+   <div class="col-md-12">
+    <button class="btn-sm btn-outline-info btn-block" data-toggle="collapse"
+      data-target="#ShowDatabaseRecordPage">Show Database Record Page
+    </button>
+   </div>
+  </div>
+  <br>
+  <div class="row">
+   <div class="col-md-12 imgdiv">
+    <div id="ShowDatabaseRecordPage" class="collapse">
+     <img title="ORP Show Database Record Page" src="{{ url_for('static', filename='img/ShowDatabaseRecordPage2.png') }}" class="myimg img-responsive thumbnail">
+     <p><font color="blue">This page shows tabular information derived from the complete, given, database record.</font></p>
+     <p></p>
+    </div>
+   </div>
+  </div>
+
+  <!-- Section -->
+  <div class="row">
+   <div class="col-md-12">
+    <button class="btn-sm btn-outline-info btn-block" data-toggle="collapse"
+      data-target="#ViewObservationRequestsPage">View Observation Requests Page
+    </button>
+   </div>
+  </div>
+  <br>
+  <div class="row">
+   <div class="col-md-12 imgdiv">
+    <div id="ViewObservationRequestsPage" class="collapse">
+     <img title="ORP View Observation Requests Page" src="{{ url_for('static', filename='img/ViewObservationRequestsPage2.png') }}" class="myimg img-responsive thumbnail">
+     <p><font color="blue">This page allows users to view all their observation requests. Admin users can view the requests of all registered users.</font></p>
+     <p></p>
+    </div>
+   </div>
+  </div>
+
+  <!-- Section -->
+  <div class="row">
+   <div class="col-md-12">
+    <button class="btn-sm btn-outline-info btn-block" data-toggle="collapse"
+      data-target="#HelpPage">Help Page
+    </button>
+   </div>
+  </div>
+  <br>
+  <div class="row">
+   <div class="col-md-12 imgdiv">
+    <div id="HelpPage" class="collapse">
+     <img title="ORP Help Page" src="{{ url_for('static', filename='img/HelpPage2.png') }}" class="myimg img-responsive thumbnail">
+     <p><font color="blue">Congratulations! You found the help page within the help page!</font></p>
+     <p></p>
+    </div>
+   </div>
+  </div>
+
+  <!-- Section -->
+  <div class="row">
+   <div class="col-md-12">
+    <button class="btn-sm btn-outline-info btn-block" data-toggle="collapse"
+      data-target="#APIPage">API Page
+    </button>
+   </div>
+  </div>
+  <br>
+  <div class="row">
+   <div class="col-md-12 imgdiv">
+    <div id="APIPage" class="collapse">
+     <img title="ORP API Page" src="{{ url_for('static', filename='img/APIPage2.png') }}" class="myimg img-responsive thumbnail">
+     <p><font color="blue">This page documents the callable API for the the ORP.</font></p>
+     <p></p>
+    </div>
+   </div>
+  </div>
+
+ </div>
+</div>
+<!-- toggle script -->
+<script type="text/javascript">
+var _hidediv = null;
+function ToggleContent(id) {
+ if (_hidediv)
+  _hidediv();
+ var div = document.getElementById(id);
+ div.style.display = 'block';
+ _hidediv = function () { div.style.display = 'none'; };
+}
+</script>
+<hr>
+{% endblock %}
