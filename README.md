@@ -25,7 +25,7 @@ to use the system.
 
 ## Create and Populate The Database and Tables
 
-NB: All utility bash-shell scripts in ${ARTN_BIN} support the `--help` argument for further information 
+NB: All utility bash-shell scripts in ${ORP_BIN} support the `--help` argument for further information 
 and the `--dry-run` option to show executable commands without invoking them. You would be well-advised
 to use them!
 
@@ -53,7 +53,7 @@ to use them!
     | Demo4         | FooBar4       | No        | No           |
     | Demo5         | FooBar5       | No        | No           |
     
-    *NB: You are, however, advised to edit the `${ARTN_BIN}/artn.users.sh` script and change these defaults!*
+    *NB: You are, however, advised to edit the `${ORP_BIN}/artn.users.sh` script and change these defaults!*
     
     To create a *users* table within the *artn* database created above (using credentials
     *artn:my_secret* on the PostGreSQL server of *localhost:5432*), execute:
@@ -103,7 +103,7 @@ to use them!
 
 ## Configure For Local Site
 
-You should now *copy* `${ARTN_BIN}/ORP.template.sh`, `${ARTN_ETC}/ARTN.template.sh` and `${ARTN_ETC}/ORP.template.sh` 
+You should now *copy* `${ORP_BIN}/ORP.template.sh`, `${ORP_ETC}/ARTN.template.sh` and `${ORP_ETC}/ORP.template.sh` 
 and edit the copies to suit your site and change:
 
    - local installation directory
@@ -159,7 +159,7 @@ If you carried out the above, and assuming the codebase is in /home/artn/ARTN-OR
 
 ## RTS2 Users Only
 
-You should *copy* `${ARTN_SRC}/telescopes/rts2_config.template.json` and edit the copy to suit your site:
+You should *copy* `${ORP_SRC}/telescopes/rts2_config.template.json` and edit the copy to suit your site:
 
 ```bash
 % cp ${ORP_SRC}/telescopes/rts2_config.template.json ${ORP_SRC}/telelscopes/rts2_config.json
