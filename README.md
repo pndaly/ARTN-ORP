@@ -130,8 +130,8 @@ If you carried out the above, and assuming the codebase is in /home/artn/ARTN-OR
     % cd /home/artn/ARTN-ORP
     % source etc/ARTN.sh
     % source etc/ORP.sh
-    % bash bin/ORP.sh --type=dev --source=/home/artn/ARTN-ORP --command=start --dry-run
-    % bash bin/ORP.sh --type=dev --source=/home/artn/ARTN-ORP --command=start
+    % bash ${ORP_BIN}/ORP.sh --type=dev --source=/home/artn/ARTN-ORP --command=start --dry-run
+    % bash ${ORP_BIN}/ORP.sh --type=dev --source=/home/artn/ARTN-ORP --command=start
     ```
     
     then point a browser to the local [ORP development server](http://localhost:5000/orp).
@@ -142,8 +142,8 @@ If you carried out the above, and assuming the codebase is in /home/artn/ARTN-OR
     % cd /home/artn/ARTN-ORP
     % source etc/ARTN.sh
     % source etc/ORP.sh
-    % bash bin/ORP.sh --type=prod --source=/home/artn/ARTN-ORP --command=start --dry-run
-    % bash bin/ORP.sh --type=prod --source=/home/artn/ARTN-ORP --command=start
+    % bash ${ORP_BIN}/ORP.sh --type=prod --source=/home/artn/ARTN-ORP --command=start --dry-run
+    % bash ${ORP_BIN}/ORP.sh --type=prod --source=/home/artn/ARTN-ORP --command=start
     ```
     
     then point a browser to the local [ORP production server](http://localhost:7500/orp).
