@@ -129,7 +129,7 @@ If you carried out the above, and assuming the codebase is in /home/artn/ARTN-OR
     ```bash
     % cd /home/artn/ARTN-ORP
     % source etc/ARTN.sh
-    % source etc/ORP.sh
+    % source etc/ORP.sh `pwd` localhost 5000
     % bash ${ORP_BIN}/ORP.sh --type=dev --source=/home/artn/ARTN-ORP --command=start --dry-run
     % bash ${ORP_BIN}/ORP.sh --type=dev --source=/home/artn/ARTN-ORP --command=start
     ```
@@ -141,7 +141,7 @@ If you carried out the above, and assuming the codebase is in /home/artn/ARTN-OR
     ```bash
     % cd /home/artn/ARTN-ORP
     % source etc/ARTN.sh
-    % source etc/ORP.sh
+    % source etc/ORP.sh `pwd` `hostname -i` 7500
     % bash ${ORP_BIN}/ORP.sh --type=prod --source=/home/artn/ARTN-ORP --command=start --dry-run
     % bash ${ORP_BIN}/ORP.sh --type=prod --source=/home/artn/ARTN-ORP --command=start
     ```
