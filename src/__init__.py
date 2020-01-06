@@ -165,7 +165,6 @@ PYTHONPATH = os.getenv('PYTHONPATH', '.')
 # +
 # class: UtilsLogger() inherits from the object class
 # -
-# noinspection PyBroadException
 class UtilsLogger(object):
 
     # +
@@ -183,10 +182,10 @@ class UtilsLogger(object):
         self.__msg = None
         logname = '{}'.format(self.__name)
 
-        # logger dictionary
+        # noinspection PyPep8,PyBroadException
         try:
             logfile = '{}/{}.log'.format(os.getenv("ARTN_LOGS"), logname)
-        except:
+        except Exception:
             logfile = '{}/{}.log'.format(os.getcwd(), logname)
         logconsole = '/tmp/console-{}.log'.format(logname)
 
