@@ -22,16 +22,16 @@ try:
     # noinspection PyUnresolvedReferences
     from rts2solib import Queue, stellar, so_exposure
 except Exception as e:
-    raise Exception(f'Failed to load rts2solib, src={RTS2SOLIBSRC}, error={e}')
+    tel_logger.critical(f'failed to load rts2solib, src={RTS2SOLIBSRC}, error={e}')
 
 
 # +
 # logging
 # -
-_rts2_log = UtilsLogger('RTS2-Logger').logger
-_rts2_log.debug(f'PYTHONPATH = {PYTHONPATH}')
-_rts2_log.debug(f'RTS2SOLIBPATH={RTS2SOLIBPATH}')
-_rts2_log.debug(f'RTS2SOLIBSRC={RTS2SOLIBSRC}')
+#tel_logger = UtilsLogger('RTS2-Logger').logger
+#tel_logger.debug(f'PYTHONPATH = {PYTHONPATH}')
+#tel_logger.debug(f'RTS2SOLIBPATH={RTS2SOLIBPATH}')
+#tel_logger.debug(f'RTS2SOLIBSRC={RTS2SOLIBSRC}')
 
 
 # +
@@ -41,11 +41,12 @@ def kuiper_observe(_obsreq=None, _user=None):
 
     # check input(s)
     if _obsreq is None:
-        raise Exception(f'Invalid input, _obsreq={_obsreq}')
+        tel_logger.error(f'invalid input, _obsreq={_obsreq}')
+        return '{}', -1
     if _user is None:
-        raise Exception(f'Invalid input, _user={_user}')
-
-    _rts2_log.debug(f"kuiper_observe(_obsreq={_obsreq.__repr__()}, _user=()) ... entry")
+        tel_logger.error(f'invalid input, _user={_user}')
+        return '{}', -1
+    tel_logger.debug(f"kuiper_observe(_obsreq={_obsreq.__repr__()}, _user=()) ... entry")
 
     # set default(s)
     _queue = None
@@ -66,90 +67,75 @@ def kuiper_observe(_obsreq=None, _user=None):
     _object_name = _object_name.replace(' ', '_')
     if _object_name.lower().endswith(f'target'):
         _object_name = _object_name[:-6].strip()
-    tel_log(f'Queueing {_object_name} ({_ra_hms} {_dec_dms} {_exp_time}s {_num_exp}x {_filter_name}-band)', True, True)
-    _rts2_log.debug(f'Queueing {_object_name} ({_ra_hms} {_dec_dms} {_exp_time}s {_num_exp}x {_filter_name}-band)')
+    tel_logger.debug(f'Queueing {_object_name} ({_ra_hms} {_dec_dms} {_exp_time}s {_num_exp}x {_filter_name}-band)')
 
     # create the target
     try:
-        _rts2_log.debug(f'Calling stellar()')
+        tel_logger.debug(f'Calling stellar()')
         _target = stellar(name=_observation_id[:4]+_object_name, ra=_ra_hms, dec=_dec_dms,
                           obs_info=[so_exposure(Filter=_filter_name, exptime=_exp_time, amount=_num_exp)],
                           artn_obs_id=_observation_id, artn_group_id=_group_id)
-        _rts2_log.debug(f'Called stellar() OK, _target={_target}')
-        tel_log(f'Created target OK, _target={_target}', True, False)
+        tel_logger.debug(f'Called stellar() OK, _target={_target}')
     except Exception as _e:
-        _rts2_log.error(f'ERROR: Calling stellar(), _target={_target}, error={_e}')
-        tel_log(f'ERROR: Failed to create _target, error={_e}', True, True)
+        tel_logger.error(f'Failed calling stellar(), _target={_target}, error={_e}')
         return '{}', -1
 
     # create the json script
     try:
-        _rts2_log.debug(f'Calling _target.create_target_api()')
+        tel_logger.debug(f'Calling _target.create_target_api()')
         _id = _target.create_target_api()
-        _rts2_log.debug(f'Called _target.create_target_api() OK, _id={_id}')
-        tel_log(f'Saved target OK, id={_id}', True, False)
+        tel_logger.debug(f'Called _target.create_target_api() OK, _id={_id}')
     except Exception as _e:
-        _rts2_log.error(f'ERROR: Calling _target.create_target_api(), _id={_id}')
-        tel_log(f'ERROR: Failed to save target, error={_e}', True, True)
+        tel_logger.error(f'Failed calling _target.create_target_api(), _id={_id}')
         return '{}', -1
 
     # dictify the target
     try:
-        _rts2_log.debug(f'Calling _target.dictify()')
+        tel_logger.debug(f'Calling _target.dictify()')
         _json = _target.dictify()
-        _rts2_log.debug(f'Called _target.dictify() OK, _json={_json}')
-        tel_log(f'Dictified target OK, _json={_json}', True, False)
+        tel_logger.debug(f'Called _target.dictify() OK, _json={_json}')
     except Exception as _e:
-        _rts2_log.error(f'ERROR: Calling _target.dictify(), _json={_json}')
-        tel_log(f'ERROR: Failed to dictify target, error={_e}', True, True)
+        tel_logger.error(f'Failed calling _target.dictify(), _json={_json}')
         return '{}', -1
 
     # create queue
     try:
-        _rts2_log.debug(f'Calling Queue()')
+        tel_logger.debug(f'Calling Queue()')
         _queue = Queue(f'plan')
-        _rts2_log.debug(f'Called Queue() OK, _queue={_queue}')
-        tel_log(f'Created queue OK, _queue={_queue}', True, False)
+        tel_logger.debug(f'Called Queue() OK, _queue={_queue}')
     except Exception as _e:
-        _rts2_log.error(f'FAILED: Calling Queue() OK, _queue={_queue}')
-        tel_log(f'ERROR: Failed to create queue, error={_e}', True, True)
+        tel_logger.error(f'Failed calling Queue() OK, _queue={_queue}')
         return '{}', -1
 
     # add target to queue
     try:
-        _rts2_log.debug(f'Calling _queue.add_target()')
+        tel_logger.debug(f'Calling _queue.add_target()')
         _queue.add_target(_id)
-        _rts2_log.debug(f'Called _queue.add_target() OK')
-        tel_log(f'Added target(s) to queue OK', True, False)
+        tel_logger.debug(f'Called _queue.add_target() OK')
     except Exception as _e:
-        _rts2_log.error(f'ERROR: Calling _queue.add_target()')
-        tel_log(f'ERROR: Failed to add target(s) to queue, error={_e}', True, True)
+        tel_logger.error(f'Failed calling _queue.add_target()')
         return '{}', -1
 
     # load the queue
     try:
-        _rts2_log.debug(f'Calling _queue.load()')
+        tel_logger.debug(f'Calling _queue.load()')
         _queue.load()
-        _rts2_log.debug(f'Called _queue.load() OK')
-        tel_log(f'Loaded queue OK', True, False)
+        tel_logger.debug(f'Called _queue.load() OK')
     except Exception as _e:
-        _rts2_log.error(f'ERROR: Calling _queue.load()')
-        tel_log(f'ERROR: Failed to load queue, error={_e}', True, True)
+        tel_logger.error(f'Failed calling _queue.load()')
         return '{}', -1
 
     # save the queue (in effect, send to rts2)
     try:
-        _rts2_log.debug(f'Calling _queue.save()')
+        tel_logger.debug(f'Calling _queue.save()')
         _queue.save()
-        _rts2_log.debug(f'Called _queue.save() OK')
-        tel_log(f'Saved queue OK', True, False)
+        tel_logger.debug(f'Called _queue.save() OK')
     except Exception as _e:
-        _rts2_log.error(f'ERROR: Calling _queue.save()')
-        tel_log(f'ERROR: Failed to save queue, error={_e}', True, True)
+        tel_logger.error(f'Failed calling _queue.save()')
         return '{}', -1
 
     # return
     tel_log(f'Queued {_object_name} ({_ra_hms} {_dec_dms} {_exp_time}s {_num_exp}x {_filter_name}-band) OK', True, True)
-    _rts2_log.debug(f'Queued {_object_name} ({_ra_hms} {_dec_dms} {_exp_time}s {_num_exp}x {_filter_name}-band) OK')
-    _rts2_log.debug(f"kuiper_observe(_obsreq={_obsreq.__repr__()}, _user=()) ... exit")
+    tel_logger.debug(f'Queued {_object_name} ({_ra_hms} {_dec_dms} {_exp_time}s {_num_exp}x {_filter_name}-band) OK')
+    tel_logger.debug(f"kuiper_observe(_obsreq={_obsreq.__repr__()}, _user=()) ... exit")
     return _json, _id

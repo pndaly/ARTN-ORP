@@ -290,8 +290,8 @@ class ResetPasswordRequestForm(FlaskForm):
 class UpdateObsReqForm(FlaskForm):
 
     # fields
-    username = StringField('Username', validators=[DataRequired()])
-    # username = StringField('Username', default='')
+    # username = StringField('Username', default='', validators=[DataRequired()])
+    username = StringField('Username', default='')
     priority = SelectField('Priority', choices=PRIORITY, default=PRIORITY[0][0], validators=[DataRequired()])
     object_name = StringField('Object Name', default='', validators=[DataRequired()])
     ra_hms = StringField('RA', default='', validators=[

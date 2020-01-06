@@ -1722,7 +1722,7 @@ def orp_telescope_name(name=''):
 @app.route('/update/<username>', methods=['GET', 'POST'])
 @login_required
 def orp_update(username=''):
-    msg_out(f'/orp/update/{username} entry', True, True)
+    msg_out(f'/orp/update/{username} entry', True, False)
     get_client_ip(request)
 
     # look up user (as required)
@@ -1769,7 +1769,7 @@ def orp_update(username=''):
     if form.validate_on_submit():
 
         # update records
-        _obsreq.username = form.username.data
+        _obsreq.username = _u.username
         _obsreq.object_name = encode_verboten(form.object_name.data.strip(), ARTN_ENCODE_DICT)
         _obsreq.ra_hms = form.ra_hms.data.strip()
         _obsreq.dec_dms = form.dec_dms.data.strip()

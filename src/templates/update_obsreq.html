@@ -28,22 +28,20 @@
 
   <div class="d-flex justify-content-between">
    <div class="row">
-    {% if current_user.is_admin %}
     <h4><i>Update observation record {{ dbid }}</i></h4>
-    {% else %}
-    <h4><i>Update observation record {{ dbid }} for {{ current_user.firstname }} {{ current_user.lastname }}, {{ current_user.affiliation }}</i></h4>
-    {% endif %}
    </div>
    <div class="d-flex justify-content-between">
-    {% if current_user.is_admin %}
      <div class="col-md-1 mr-auto">
       {{ form.username.label }}<br>
-      {{ form.username(size=12) }}<br>
+      {% if current_user.is_admin %}
+       {{ form.username(size=12, disabled=false) }}<br>
+      {% else %}
+       {{ form.username(size=12, disabled=true) }}<br>
+      {% endif %}
       {% for error in form.username.errors %}
        <span class="error-label"><small>[{{ error }}]</small></span>
       {% endfor %}
      </div>
-    {% endif %}
     <div class="col-md-1 mr-auto">
      {{ form.telescope.label }}<br>
      {{ form.telescope(disabled=true) }}<br>

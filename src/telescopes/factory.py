@@ -762,7 +762,8 @@ def _telescope_factory(iargs=None):
 
     # check input(s)
     if iargs is None:
-        raise Exception('Invalid input, iargs={iargs}')
+        tel_log('ERROR: invalid input, iargs={iargs}', True, False)
+        return
 
     # set default(s)
     objects = iargs.objects.strip().upper() if \
@@ -781,7 +782,8 @@ def _telescope_factory(iargs=None):
     except Exception as _e:
         if verbose:
             print(f"Failed instantiating Telescope(name='{telescope}')")
-        raise Exception(f'Error detected, e={_e}')
+        tel_log(f'ERROR: error detected, e={_e}', True, False)
+        return
     else:
         if verbose:
             print(_t.dump())

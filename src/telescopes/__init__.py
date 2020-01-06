@@ -11,7 +11,7 @@ from flask import flash
 # +
 # variable(s)
 # -
-TEL_LOG = UtilsLogger('Tel-Logger').logger
+tel_logger = UtilsLogger('Tel-Logger').logger
 
 
 # +
@@ -19,6 +19,6 @@ TEL_LOG = UtilsLogger('Tel-Logger').logger
 # -
 def tel_log(_text='', _logger_msg=True, _flash_msg=True):
     if _logger_msg:
-        TEL_LOG.debug(_text)
+        tel_logger.debug(_text)
     if _flash_msg:
         flash(_text)

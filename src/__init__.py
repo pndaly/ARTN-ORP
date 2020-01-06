@@ -187,7 +187,7 @@ class UtilsLogger(object):
         # logger dictionary
         try:
             logfile = '{}/{}.log'.format(os.getenv("ARTN_LOGS"), logname)
-        except Exception:
+        except:
             logfile = '{}/{}.log'.format(os.getcwd(), logname)
         logconsole = '/tmp/console-{}.log'.format(logname)
 
@@ -469,7 +469,7 @@ def is_json(_json=''):
 # +
 # logger
 # -
-_jlog = UtilsLogger('JSON-Logger').logger
+_json_log = UtilsLogger('JSON-Logger').logger
 
 
 # +
@@ -483,7 +483,7 @@ def check_json(_json='', refresh=True):
         ARTN_JSON_SCHEMA['UTC_At_Position']['min'] = get_date_time(-180).isoformat()
         # noinspection PyTypeChecker
         ARTN_JSON_SCHEMA['UTC_At_Position']['max'] = get_date_time(+180).isoformat()
-    _jlog.debug(f"schema={ARTN_JSON_SCHEMA}")
+    _json_log.debug(f"schema={ARTN_JSON_SCHEMA}")
 
     # convert single quotes to double quotes throughout
     _json = encode_verboten(_json, ARTN_ENCODE_DICT)
@@ -492,43 +492,43 @@ def check_json(_json='', refresh=True):
 
     # if it's not JSON, return
     if not is_json(_json):
-        # _jlog.error(f"_json={_json} is not correctly formed json")
+        _json_log.error(f"_json={_json} is not correctly formed json")
         return False
-    _jlog.debug(f"_json={_json} is OK")
+    _json_log.debug(f"_json={_json} is OK")
 
     # check element(s) against min, max value(s)
     _json_dict = json.loads(_json)
-    _jlog.debug(f"_json_dict={_json_dict}")
+    _json_log.debug(f"_json_dict={_json_dict}")
     for _k in ARTN_JSON_SCHEMA:
         if _k not in _json_dict:
-            # _jlog.error(f"key {_k} not found")
+            _json_log.error(f"key {_k} not found")
             return False
         _val = _json_dict[_k]
         _max = ARTN_JSON_SCHEMA[_k]['max']
         _min = ARTN_JSON_SCHEMA[_k]['min']
         if isinstance(_max, float) and isinstance(_min, float):
             if not (_min <= float(_val) <= _max):
-                _jlog.error(f"{_k} value {_val} not in range {_min}:{_max}")
+                _json_log.error(f"{_k} value {_val} not in range {_min}:{_max}")
                 return False 
         elif isinstance(_max, int) and isinstance(_min, int):
             if not (_min <= int(_val) <= _max):
-                _jlog.error(f"{_k} value {_val} not in range {_min}:{_max}")
+                _json_log.error(f"{_k} value {_val} not in range {_min}:{_max}")
                 return False 
         elif isinstance(_max, str) and isinstance(_min, str):
             if re.match(ARTN_DATE_RULE, f'{_val}') is None:
-                _jlog.error(f"{_k} value {_val} no match for rule {ARTN_DATE_RULE}")
+                _json_log.error(f"{_k} value {_val} no match for rule {ARTN_DATE_RULE}")
                 return False 
             _max_jd = float(Time(_max, format='isot').mjd)
             _min_jd = float(Time(_min, format='isot').mjd)
             _val_jd = float(Time(_val, format='isot').mjd)
             if not (_min_jd <= _val_jd <= _max_jd):
-                _jlog.error(f"{_k} value {_val_jd} not in range {_min_jd}:{_max_jd}")
+                _json_log.error(f"{_k} value {_val_jd} not in range {_min_jd}:{_max_jd}")
                 return False 
         else:
             return False
 
     # passed all checks ok
-    _jlog.debug(f"_json={_json} validated OK")
+    _json_log.debug(f"_json={_json} validated OK")
     return True
 
 

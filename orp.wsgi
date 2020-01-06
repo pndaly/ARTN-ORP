@@ -20,6 +20,7 @@ KEY = hashlib.sha256(BASE.encode('utf-8')).hexdigest()
 # +
 # path(s)
 # -
+os.environ["ARTN_LOGS"] = f'{BASE}/logs'
 os.environ["PYTHONPATH"] = f'{RTS2}:{BASE}:{BASE}/src'
 os.environ["RTS2SOLIBPATH"] = f'{BASE}/src/telescopes'
 os.environ["RTS2SOLIBSRC"] = f'{RTS2}'
