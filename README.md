@@ -101,6 +101,13 @@ to use them!
     % bash ${ORP_BIN}/artn.docker.sh --help
     ```
 
+    If you decide to use Docker, remember to restart the container after a reboot via root's `crontab` (and, of 
+    course, replace `<path_to_shell_script>` with your installation path in the following):
+    
+    ```
+    @reboot bash <path_to_shell_script>/artn.docker.sh --command=start
+    ```
+
 ## Configure For Local Site
 
 You should now *copy* `${ORP_BIN}/ORP.template.sh`, `${ORP_ETC}/ARTN.template.sh` and `${ORP_ETC}/ORP.template.sh` 
