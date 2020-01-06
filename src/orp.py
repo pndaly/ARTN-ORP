@@ -23,6 +23,8 @@ from src.models.Models import db, obsreq_filters, ObsReq, User, user_filters
 from src.telescopes.factory import *
 from src.telescopes.kuiper import *
 
+from __init__ import *
+
 import csv
 import glob
 import json
@@ -35,6 +37,21 @@ import time
 # -
 logger = UtilsLogger('ORP-Logger').logger
 logger.info(f'PYTHONPATH = {PYTHONPATH}')
+logger.info(f'ARTN_DB_HOST = {ARTN_DB_HOST}')
+logger.info(f'ARTN_DB_NAME = {ARTN_DB_NAME}')
+logger.info(f'ARTN_DB_PASS = {ARTN_DB_PASS}')
+logger.info(f'ARTN_DB_PORT = {ARTN_DB_PORT}')
+logger.info(f'ARTN_DB_USER = {ARTN_DB_USER}')
+logger.info(f'ARTN_MAIL_SERVER = {ARTN_MAIL_SERVER}')
+logger.info(f'ARTN_MAIL_PORT = {ARTN_MAIL_PORT}')
+logger.info(f'ARTN_MAIL_USE_TLS = {ARTN_MAIL_USE_TLS}')
+logger.info(f'ARTN_MAIL_USE_SSL = {ARTN_MAIL_USE_SSL}')
+logger.info(f'ARTN_MAIL_USERNAME = {ARTN_MAIL_USERNAME}')
+logger.info(f'ARTN_MAIL_PASSWORD = {ARTN_MAIL_PASSWORD}')
+logger.info(f'ORP_APP_HOST = {ORP_APP_HOST}')
+logger.info(f'ORP_APP_PORT = {ORP_APP_PORT}')
+logger.info(f'ORP_APP_URL = {ORP_APP_URL}')
+logger.info(f'ORP_HOME = {ORP_HOME}')
 
 
 # +

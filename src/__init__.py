@@ -130,7 +130,7 @@ TRUE_VALUES = ['true', 't', '1']
 # +
 # credential(s)
 # -
-ARTN_DB_HOST = os.getenv("ARTN_DB_HOST", "scopenet.as.arizona.edu")
+ARTN_DB_HOST = os.getenv("ARTN_DB_HOST", "localhost")
 ARTN_DB_NAME = os.getenv("ARTN_DB_NAME", "artn")
 ARTN_DB_PASS = os.getenv("ARTN_DB_PASS", "********")
 ARTN_DB_PORT = os.getenv("ARTN_DB_PORT", 5432)
@@ -140,7 +140,7 @@ ARTN_MAIL_SERVER = os.getenv('MAIL_SERVER', "smtp.googlemail.com")
 ARTN_MAIL_PORT = os.getenv('MAIL_PORT', 587)
 ARTN_MAIL_USE_TLS = bool(os.getenv('MAIL_USE_TLS', 1))
 ARTN_MAIL_USE_SSL = bool(os.getenv('MAIL_USE_SSL', 1))
-ARTN_MAIL_USERNAME = os.getenv('MAIL_USERNAME', "artn.operator@gmail.com")
+ARTN_MAIL_USERNAME = os.getenv('MAIL_USERNAME', "artn@dev.null")
 ARTN_MAIL_PASSWORD = os.getenv('MAIL_PASSWORD', "********")
 
 ARTN_DATE_RULE = re.compile("\d{4}-\d{2}-\d{2}[ T]?\d{2}:\d{2}:\d")
@@ -150,9 +150,8 @@ ARTN_PASSWORD_RULE = re.compile("(^(?=.*?[A-Z])(?=.*[a-z])(?=.*?[0-9]).{8,}$)")
 # +
 # ORP env(s)
 # -
-ORP_APP_HOST = os.getenv("ORP_APP_HOST", "scopenet.as.arizona.edu")
+ORP_APP_HOST = os.getenv("ORP_APP_HOST", "localhost")
 ORP_APP_PORT = os.getenv("ORP_APP_PORT", 7500)
-# ORP_APP_URL = f'http://{ORP_APP_HOST}:{ORP_APP_PORT}/orp'
 ORP_APP_URL = f'https://{ORP_APP_HOST}/orp'
 ORP_HOME = os.getenv("ORP_HOME", ".")
 
