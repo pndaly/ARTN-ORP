@@ -18,6 +18,7 @@
 today=$(date "+%Y%m%d")
 default_authorization="artn:********"
 default_database="artn"
+default_directory="${PWD}"
 default_filename="psql.${default_database}.${today}.sql"
 default_filename_compressed="psql.${default_database}.${today}.db"
 default_server="localhost"
@@ -63,27 +64,28 @@ write_cyan () {
   printf "${CYAN}${1}${NCOL}\n"
 }
 usage () {
-  write_blue   ""                                                                                                                   2>&1
-  write_blue   "Restore a PostGreSQL database"                                                                                      2>&1
-  write_blue   ""                                                                                                                   2>&1
-  write_green  "Use:"                                                                                                               2>&1
-  write_green  " %% bash $0 --authorization=<str> --database=<str> --filename=<path> --server=<address> [--compressed] [--dry-run]" 2>&1
-  write_yellow ""                                                                                                                   2>&1
-  write_yellow "Input(s):"                                                                                                          2>&1
-  write_yellow "  --authorization=<str>, where <str> is of the form 'username:password',  default=${default_authorization}"         2>&1
-  write_yellow "  --database=<str>,      where <str> is a database name,                  default=${default_database}"              2>&1
-  write_yellow "  --filename=<path>,     where <path> is a database backup file path,     default=${default_filename}"              2>&1
-  write_yellow "  --port=<int>,          where <int> is a port number,                    default=${default_port}"                  2>&1
-  write_yellow "  --server=<address>,    where <address> is a hostname or IP-address,     default=${default_server}"                2>&1
-  write_yellow ""                                                                                                                   2>&1
-  write_cyan   "Flag(s):"                                                                                                           2>&1
-  write_cyan   "  --compressed,          use compressed backup format,                    default=false"                            2>&1
-  write_cyan   "  --dry-run,             show (but do not execute) commands,              default=false"                            2>&1
-  write_cyan   ""                                                                                                                   2>&1
-  echo         "Output(s):"                                                                                                         2>&1
-  echo         "  database restored from ${default_filename}, --compressed=0"                                                       2>&1
-  echo         "  database restored from ${default_filename_compressed},  --compressed=1"                                           2>&1
-  echo         ""                                                                                                                   2>&1
+  write_blue   ""                                                                                                                                     2>&1
+  write_blue   "Restore a PostGreSQL database"                                                                                                        2>&1
+  write_blue   ""                                                                                                                                     2>&1
+  write_green  "Use:"                                                                                                                                 2>&1
+  write_green  " %% bash $0 --authorization=<str> --database=<str> --directory=<path> --filename=<str> --server=<address> [--compressed] [--dry-run]" 2>&1
+  write_yellow ""                                                                                                                                     2>&1
+  write_yellow "Input(s):"                                                                                                                            2>&1
+  write_yellow "  --authorization=<str>, where <str> is of the form 'username:password',  default=${default_authorization}"                           2>&1
+  write_yellow "  --database=<str>,      where <str> is a database name,                  default=${default_database}"                                2>&1
+  write_yellow "  --directory=<path>,    where <path> is a directory name,                default=${default_directory}"                               2>&1
+  write_yellow "  --filename=<str>,      where <str> is a database backup file name,      default=${default_filename}"                                2>&1
+  write_yellow "  --port=<int>,          where <int> is a port number,                    default=${default_port}"                                    2>&1
+  write_yellow "  --server=<address>,    where <address> is a hostname or IP-address,     default=${default_server}"                                  2>&1
+  write_yellow ""                                                                                                                                     2>&1
+  write_cyan   "Flag(s):"                                                                                                                             2>&1
+  write_cyan   "  --compressed,          use compressed backup format,                    default=false"                                              2>&1
+  write_cyan   "  --dry-run,             show (but do not execute) commands,              default=false"                                              2>&1
+  write_cyan   ""                                                                                                                                     2>&1
+  echo         "Output(s):"                                                                                                                           2>&1
+  echo         "  --compressed=0: database restored from ${default_directory}/${default_filename}"                                                    2>&1
+  echo         "  --compressed=1: database restored from ${default_directory}/${default_filename_compressed}"                                         2>&1
+  echo         ""                                                                                                                                     2>&1
 }
 
 
@@ -102,6 +104,10 @@ while test $# -gt 0; do
       ;;
     --database*|--DATABASE*)
       rs_database=$(echo $1 | cut -d'=' -f2)
+      shift
+      ;;
+    --directory*|--DIRECTORY*)
+      rs_directory=$(echo $1 | cut -d'=' -f2)
       shift
       ;;
     --filename*|--FILENAME*)
@@ -131,28 +137,19 @@ done
 # +
 # check and (re)set variable(s)
 # -
-if [[ -z ${rs_authorization} ]]; then
-  rs_authorization=${default_authorization}
-fi
-
-if [[ -z ${rs_database} ]]; then
-  rs_database=${default_database}
-fi
+[[ -z ${rs_authorization} ]] && rs_authorization=${default_authorization}
+[[ -z ${rs_database} ]] && rs_database=${default_database}
+[[ -z ${rs_directory} ]] && rs_directory=${default_directory}
+[[ ! -d ${rs_directory} ]] && rs_directory=${PWD}
+[[ -z ${rs_port} ]] && rs_port=${default_port}
+[[ -z ${rs_server} ]] && rs_server=${default_server}
 
 if [[ -z ${rs_filename} ]]; then
   if [[ ${compressed} -eq 1 ]]; then
-    rs_filename="/data/backups/psql.${rs_database}.${today}.db"
+    rs_filename="psql.${rs_database}.${today}.db"
   else
-    rs_filename="/data/backups/psql.${rs_database}.${today}.sql"
+    rs_filename="psql.${rs_database}.${today}.sql"
   fi
-fi
-
-if [[ -z ${rs_port} ]]; then
-  rs_port=${default_port}
-fi
-
-if [[ -z ${rs_server} ]]; then
-  rs_server=${default_server}
 fi
 
 rs_username=$(echo ${rs_authorization} | cut -d':' -f1)
@@ -172,8 +169,8 @@ if [[ -z "${rs_filename}" ]]; then
   exit 0 
 fi
 
-if [[ ! -f "${rs_filename}" ]]; then
-  write_red "<ERROR> filename (${rs_filename}) does not exist ... exiting"
+if [[ ! -f "${rs_directory}/${rs_filename}" ]]; then
+  write_red "<ERROR> filename (${rs_directory}/${rs_filename}) does not exist ... exiting"
   exit 0 
 fi
 
@@ -191,38 +188,31 @@ fi
 # +
 # execute (dry-run)
 # -
+write_blue "%% bash $0 --authorization=${rs_username}:${rs_password} --database=${rs_database} --directory=${rs_directory} --filename=${rs_filename} --port=${rs_port} --server=${rs_server} --compressed=${compressed} --dry-run=${dry_run}"
 if [[ ${dry_run} -eq 1 ]]; then
-
-  write_green "%% bash $0 -a=${rs_username}:${rs_password} -d=${rs_database} -f=${rs_filename} -p=${rs_port} -s=${rs_server} -c=${compressed} -n=${dry_run}"
-
   if [[ ${compressed} -eq 1 ]]; then
-    write_yellow "Dry-Run>> PGPASSWORD=${rs_password} pg_restore -h ${rs_server} -p ${rs_port} -U ${rs_username} -d ${rs_database} ${rs_filename} 2>&1 >> /dev/null"
+    write_yellow "Dry-Run>> PGPASSWORD=${rs_password} pg_restore -h ${rs_server} -p ${rs_port} -U ${rs_username} -d ${rs_database} ${rs_directory}/${rs_filename} 2>&1 >> /dev/null"
   else
-    write_yellow "Dry-Run>> PGPASSWORD=${rs_password} PGOPTIONS='--client-min-messages=warning' psql -X -q -1 -v ON_ERROR_STOP=1 --pset pager=off -h ${rs_server} -p ${rs_port} -U ${rs_username} -d ${rs_database} < ${rs_filename} 2>&1 >> /dev/null"
+    write_yellow "Dry-Run>> PGPASSWORD=${rs_password} PGOPTIONS='--client-min-messages=warning' psql -X -q -1 -v ON_ERROR_STOP=1 --pset pager=off -h ${rs_server} -p ${rs_port} -U ${rs_username} -d ${rs_database} < ${rs_directory}/${rs_filename} 2>&1 >> /dev/null"
   fi
-
-  write_yellow "Database backup restored from ${rs_filename}"
+  write_yellow "Database backup restored from ${rs_directpry}/${rs_filename}"
 
 
 # +
 # execute (for-real)
 # -
 else
-
-  write_blue "%% bash $0 -a=${rs_username}:${rs_password} -d=${rs_database} -f=${rs_filename} -p=${rs_port} -s=${rs_server} -c=${compressed} -n=${dry_run}"
-
   if [[ ${compressed} -eq 1 ]]; then
-    write_yellow "Dry-Run>> PGPASSWORD=${rs_password} pg_restore -h ${rs_server} -p ${rs_port} -U ${rs_username} -d ${rs_database} ${rs_filename} 2>&1 >> /dev/null"
-    PGPASSWORD=${rs_password} pg_restore -h ${rs_server} -p ${rs_port} -U ${rs_username} -d ${rs_database} ${rs_filename} 2>&1 >> /dev/null
+    write_yellow "Dry-Run>> PGPASSWORD=${rs_password} pg_restore -h ${rs_server} -p ${rs_port} -U ${rs_username} -d ${rs_database} ${rs_directpry}/${rs_filename} 2>&1 >> /dev/null"
+    PGPASSWORD=${rs_password} pg_restore -h ${rs_server} -p ${rs_port} -U ${rs_username} -d ${rs_database} ${rs_directpry}/${rs_filename} 2>&1 >> /dev/null
   else
-  write_yellow "Executing>> PGPASSWORD=${rs_password} PGOPTIONS='--client-min-messages=warning' psql -X -q -1 -v ON_ERROR_STOP=1 --pset pager=off -h ${rs_server} -p ${rs_port} -U ${rs_username} -d ${rs_database} < ${rs_filename} 2>&1 >> /dev/null"
-  PGPASSWORD=${rs_password} PGOPTIONS='--client-min-messages=warning' psql -X -q -1 -v ON_ERROR_STOP=1 --pset pager=off -h ${rs_server} -p ${rs_port} -U ${rs_username} -d ${rs_database} < ${rs_filename} 2>&1 >> /dev/null
+  write_yellow "Executing>> PGPASSWORD=${rs_password} PGOPTIONS='--client-min-messages=warning' psql -X -q -1 -v ON_ERROR_STOP=1 --pset pager=off -h ${rs_server} -p ${rs_port} -U ${rs_username} -d ${rs_database} < ${rs_directory}/${rs_filename} 2>&1 >> /dev/null"
+  PGPASSWORD=${rs_password} PGOPTIONS='--client-min-messages=warning' psql -X -q -1 -v ON_ERROR_STOP=1 --pset pager=off -h ${rs_server} -p ${rs_port} -U ${rs_username} -d ${rs_database} < ${rs_directory}/${rs_filename} 2>&1 >> /dev/null
   fi
-
   if [[ $? == 0 ]]; then
-    write_yellow "Database backup restored from ${rs_filename}"
+    write_yellow "Database backup restored from ${rs_directory}/${rs_filename}"
   else
-    write_red "<ERROR> invalid access to database (${rs_database}) on server (${rs_server}:${rs_port}) using authorization (${rs_username}:${rs_password}) ... exiting"
+    write_red "<ERROR> invalid access to database (${rs_directory}/${rs_database}) on server (${rs_server}:${rs_port}) using authorization (${rs_username}:${rs_password}) ... exiting"
   fi
 fi
 
