@@ -148,9 +148,9 @@ ARTN_PASSWORD_RULE = re.compile("(^(?=.*?[A-Z])(?=.*[a-z])(?=.*?[0-9]).{8,}$)")
 
 
 # +
-# ORP env(s)
+# ORP env(s) - edit as required
 # -
-ORP_APP_HOST = os.getenv("ORP_APP_HOST", "localhost")
+ORP_APP_HOST = os.getenv("ORP_APP_HOST", "scopenet.as.arizona.edu")
 ORP_APP_PORT = os.getenv("ORP_APP_PORT", 7500)
 ORP_APP_URL = f'https://{ORP_APP_HOST}/orp'
 ORP_HOME = os.getenv("ORP_HOME", ".")

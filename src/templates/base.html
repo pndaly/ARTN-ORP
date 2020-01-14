@@ -119,6 +119,7 @@
   within the network. The telescope network is described in a symposium paper by <a
    href="https://doi.org/10.1117/12.2314265"
    title="Proc. SPIE 10704">Benjamin J. Weiner <i>et al</i></a>.
+   You must be a <i>registered</i> and <i>authorized</i> user to use this site.
  </p>
  <hr class="rainbow"/>
 
@@ -128,8 +129,10 @@
     <h5><img src="{{ current_user.get_avatar(24) }}">&nbsp;<i>Logged in as {{ current_user.firstname }} {{ current_user.lastname }}</i></h5>
    </span>
    <span class="right">
-    Clear Dark Sky Map: <a href="http://www.cleardarksky.com/c/Kpr61AZcsk.gif?c=468017">
-     <img src="http://www.cleardarksky.com/c/Kpr61AZcs0.gif?1"></a>
+    Clear Sky Map(s):
+    <a href="http://www.cleardarksky.com/c/KittAZcsk.gif?c=1249207"><font family="optima">Bok</font></a>
+    <a href="http://www.cleardarksky.com/c/Kpr61AZcsk.gif?c=1206047"><font family="optima">Kuiper</font></a>
+    <a href="http://www.cleardarksky.com/c/MtGrahamAZcsk.gif?c=1224045"><font family="optima">Vatt</font></a>
    </span>
   </div>
  </div>
@@ -157,7 +160,9 @@
     <a href="{{ url_for('orp_history') }}?username={{ current_user.username }}" class="btn btn-sm btn-outline-info">Observation History</a>
     <a href="{{ url_for('orp_obsreq', username=current_user.username) }}" class="btn btn-sm btn-outline-info">Create Observation Request</a>
     <a href="{{ url_for('orp_upload', username=current_user.username) }}" class="btn btn-sm btn-outline-info">File Upload</a>
-    <a href="{{ url_for('orp_profile', username=current_user.username) }}" class="btn btn-sm btn-outline-info">Edit Profile</a>
+    {% if not current_user.is_admin %}
+     <a href="{{ url_for('orp_profile', username=current_user.username) }}" class="btn btn-sm btn-outline-info">Edit Profile</a>
+    {% endif %}
    </span>
   </div>
  </div>
@@ -169,30 +174,42 @@
 <!-- footer -->
 <footer class="footer">
  <!--suppress Annotator -->
-    <div class="container">
+ <div class="container">
   <p class="thanks">
-   <h4>Telescopes</h4>
-   <figure>
-    <a href="https://www.as.arizona.edu/kuiper-61-telescope">
-     <img title="Kuiper" src="{{ url_for('static', filename='img/KuiperTelescope.jpg') }}" hspace="50">
-    </a>
-    <figcaption>Kuiper 61&Prime; (1.6m)</figcaption>
-   </figure>
-   <figure>
-    <a href="https://www.as.arizona.edu/vatican-advanced-technology-telescope">
-     <img title="Vatt" src="{{ url_for('static', filename='img/VattTelescope.jpg') }}" hspace="50">
-    </a>
-    <figcaption>Vatt 1.8m (71&Prime;)</figcaption>
-   </figure>
-   <figure>
-    <a href="https://www.as.arizona.edu/bok-23m-telescope">
-     <img title="Bok" src="{{ url_for('static', filename='img/BokTelescope.jpg') }}" hspace="50">
-    </a>
-    <figcaption>Bok 90&Prime; (2.3m)</figcaption>
-   </figure>
-   <br>
-   <strong>ARTN ORP &copy; 2018&ndash;2019</strong> <a href="https://www.as.arizona.edu">Steward Observatory</a>,
-   <a href="https://www.arizona.edu">The University of Arizona</a>
+   <center> <h4>ARTN Telescopes</h4> </center>
+   <center>
+    <figure>
+     <a href="https://www.as.arizona.edu/kuiper-61-telescope">
+      <img title="Kuiper" src="{{ url_for('static', filename='img/KuiperTelescope.jpg') }}" hspace="50">
+     </a>
+     <figcaption>
+      <small>Kuiper 61&Prime; (1.6m)<br></small>
+      <a href="http://www.cleardarksky.com/c/Kpr61AZcsk.gif?c=1206047"><img src="http://www.cleardarksky.com/c/Kpr61AZcs0.gif?1"></a>
+     </figcaption>
+    </figure>
+    <figure>
+     <a href="https://www.as.arizona.edu/vatican-advanced-technology-telescope">
+      <img title="Vatt" src="{{ url_for('static', filename='img/VattTelescope.jpg') }}" hspace="50">
+     </a>
+     <figcaption>
+      <small>Vatt 1.8m (71&Prime;)<br></small>
+      <a href="http://www.cleardarksky.com/c/MtGrahamAZcsk.gif?c=1224045"><img src="http://www.cleardarksky.com/c/MtGrahamAZcs0.gif?1"></a>
+     </figcaption>
+    </figure>
+    <figure>
+     <a href="https://www.as.arizona.edu/bok-23m-telescope">
+      <img title="Bok" src="{{ url_for('static', filename='img/BokTelescope.jpg') }}" hspace="50">
+     </a>
+     <figcaption>
+      <small>Bok 90&Prime; (2.3m)<br></small>
+      <a href="http://www.cleardarksky.com/c/KittAZcsk.gif?c=1249207"><img src="http://www.cleardarksky.com/c/KittAZcs0.gif?1"></a>
+     </figcaption>
+    </figure>
+   </center>
+   <small>
+    <strong>ARTN ORP &copy; 2018&ndash;2020</strong> <a href="https://www.as.arizona.edu">Steward Observatory</a>,
+    <a href="https://www.arizona.edu">The University of Arizona</a>
+   </small>
   </p>
  </div>
 </footer>

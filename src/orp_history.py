@@ -95,6 +95,15 @@ _organization_.append('Steward Observatory')
 _version_.append('2.0')
 
 
+# v2.1
+_author_.append('P. N. Daly')
+_comment_.append('Added clear sky maps, re-worked control section of page(s)')
+_date_.append('01/14/2020')
+_email_.append('pndaly@email.arizona.edu')
+_organization_.append('Steward Observatory')
+_version_.append('2.1')
+
+
 # reverse list(s)
 _author_.reverse()
 _comment_.reverse()
@@ -102,7 +111,6 @@ _date_.reverse()
 _email_.reverse()
 _organization_.reverse()
 _version_.reverse()
-
 
 # +
 # function: get_history()
@@ -119,7 +127,7 @@ def get_history(_file='', _copy='', _list=None):
 # -
 HISTORY = get_history(
     f'Project: {os.getenv("ARTN-ORP")}.', 
-    f'\u00a9 2019 {_organization_[0]}. All rights reserved. Released under the GPL v3.\n',
+    f'\u00a9 2018\u20142020 {_organization_[0]}. All rights reserved. Released under the GPL v3.\n',
     zip(_author_, _comment_, _date_, _email_, _organization_, _version_)
 )
 HISTORY_HTML = f'<span style="white-space: pre-wrap">{HISTORY}</span>'
