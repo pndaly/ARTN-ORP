@@ -1,11 +1,12 @@
 {% extends 'base.html' %}
-
 {% block content %}
 {% if incoming %}
+ <hr class="normal">
  <div class="row">
-     <div class="col-md-12"><h4>{{ incoming.text }}</h4></div>
-     <div class="col-md-12"><a href="{{ incoming.url }}" class="btn btn-md btn-info">Landing Page</a></div>
+  <div class="col-md-12"><h4>{{ incoming.text }}</h4></div>
+  <div class="col-md-12"><a href="{{ incoming.url }}" class="btn btn-md btn-info">Landing Page</a></div>
  </div>
+ <hr class="normal">
 {% endif %}
 {% endblock %}
 {% block js %}

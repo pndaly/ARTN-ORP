@@ -1,13 +1,9 @@
 {% extends "base.html" %}
-
  {{ super() }}
-
 {% block content %}
-<hr>
+ <hr class="normal">
  <form action="" method="post">
-
   {{ form.hidden_tag() }}
-
   <div class="d-flex justify-content-between">
    <div class="row">
     {% if current_user.is_admin %}
@@ -42,9 +38,7 @@
     </div>
    </div>
   </div>
-
   <br>
-
   <div class="container">
    <div class="row">
     <div class="col-md-4">
@@ -73,9 +67,7 @@
      <span class="purple-label"><small>YYYY-MM-DD hh:mm:ss, defaults to now + 30 days</small></span><br>
     </div>
    </div>
-
    <br>
-
    <div class="row">
     <div class="col-md-2">
      {{ form.ra_hms.label }}<br>
@@ -130,9 +122,7 @@
      {% endfor %}
     </div>
    </div>
-
    <br>
-
    <div class="row" id="ns_params">
     <div class="col-md-10">
      {{ form.ns_params.label }}<br>
@@ -143,9 +133,7 @@
      <span class="purple-label"><small>JSON Object (rates in arcsec/second)</small></span><br>
     </div>
    </div>
-
    <br>
-
    <div class="row">
     <div class="col-md-2">
      {{ form.filter_name.label }}<br>
@@ -198,9 +186,7 @@
      {% endfor %}
     </div>
    </div>
-
    <br>
-
    <div class="d-flex justify-content-between">
     <div class="row">
      {{ form.submit(class_="btn btn-md btn-primary") }}
@@ -211,9 +197,8 @@
    </div>
   </div>
  </form>
- <hr>
+ <hr class="normal">
 {% endblock %}
-
 {% block js %}
  <script type="text/javascript">
   if ($("#non_sidereal").is(':checked')){

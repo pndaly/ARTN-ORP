@@ -2,7 +2,7 @@
 
 {% block content %}
 <!--suppress HtmlUnknownAttribute -->
-<hr>
+<hr class="normal">
 
   <!-- Section -->
   <div class="row">
@@ -795,24 +795,5 @@
    </div>
   </div>
 
-<hr>
+<hr class="normal">
 {% endblock %}
-
-    # user records with id = value (API: ?id=20)
-    # user records with id >= value (API: ?id__gte=20)
-    # user records with id <= value (API: ?id__lte=20)
-    # user records with firstname like value (API: ?firstname=demo)
-    # user records with lastname like value (API: ?lastname=demo)
-    # user records with username like value (API: ?username=demo)
-    # user records with email like value (API: ?email=demo@example.com)
-    # user records with affiliation like value (API: ?affiliation='Example Inc')
-    # user records with a created_iso >= date (API: ?created_iso__gte=2018-07-17)
-    # user records with a created_iso <= date (API: ?created_iso__lte=2018-07-17)
-    # user records with created_mjd >= value (API: ?created_mjd__gte=58526.54609935184998903)
-    # user records with created_mjd <= value (API: ?created_mjd__lte=58526.54609935184998903)
-    # user records with a last_seen_iso >= date (API: ?last_seen_iso__gte=2018-07-17)
-    # user records with a last_seen_iso <= date (API: ?last_seen_iso__lte=2018-07-17)
-    # user records with last_seen_mjd >= value (API: ?last_seen_mjd__gte=58526.54609935184998903)
-    # user records with last_seen_mjd <= value (API: ?last_seen_mjd__lte=58526.54609935184998903)
-    # user records with is_admin == bool (API: ?is_admin=True)
-    # user records with is_disabled == bool (API: ?is_disabled=False)

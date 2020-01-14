@@ -30,7 +30,12 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 }
 
 hr {
-  margin: 25px 0;   
+  margin: 25px 0;
+}
+
+hr.normal {
+  border: 1px solid green;
+  border-radius: 5px;
 }
 
 hr.rainbow {

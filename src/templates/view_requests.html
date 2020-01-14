@@ -1,46 +1,10 @@
 {% extends 'base.html' %}
-
 <!-- description -->
-{% block content %}
-
 <!--suppress ALL -->
-<hr>
-
-  <div class="row">
-   <div class="container">
-    <h5><span class="left"><img src="{{ current_user.get_avatar(24) }}">&nbsp;<i>Welcome back {{ current_user.firstname }} {{ current_user.lastname }} </i></span></h5>
-    <span class="right">
-     {% if current_user.is_admin %}
-      <a href="{{ url_for('orp_view_observable', username=current_user.username) }}" class="btn btn-sm btn-success">View Observable Request(s)</a>
-      <a href="{{ url_for('orp_view_requests', username=current_user.username) }}" class="btn btn-sm btn-warning">View All Request(s)</a>
-      <a href="{{ url_for('orp_view_users') }}?username=" class="btn btn-sm btn-info">View User(s)</a>
-      <a href="{{ url_for('orp_logout') }}" class="btn btn-sm btn-danger">Log Out</a>
-     {% else %}
-      <a href="{{ url_for('orp_view_observable', username=current_user.username) }}?username={{ current_user.username }}" class="btn btn-sm btn-success">View My Observable Request(s)</a>
-      <a href="{{ url_for('orp_view_requests', username=current_user.username) }}?username={{ current_user.username }}" class="btn btn-sm btn-warning">View My Request(s)</a>
-      <a href="{{ url_for('orp_logout') }}" class="btn btn-sm btn-danger">Log Out</a>
-     {% endif %}
-    </span>
-   </div>
-  </div>
-  <br>
-  <div class="row">
-   <div class="container">
-    <span class="right">
-     <a href="{{ url_for('orp_history') }}?username={{ current_user.username }}" class="btn btn-sm btn-outline-info">Observation History</a>
-     <a href="{{ url_for('orp_obsreq', username=current_user.username) }}" class="btn btn-sm btn-outline-info">Create Observation Request</a>
-     <a href="{{ url_for('orp_upload', username=current_user.username) }}" class="btn btn-sm btn-outline-info">File Upload</a>
-     <a href="{{ url_for('orp_profile', username=current_user.username) }}" class="btn btn-sm btn-outline-info">Edit Profile</a>
-    </span>
-   </div>
-  </div>
-
- <hr>
-
+{% block content %}
+ <hr class="normal">
  <div class="container">
-
   <!-- sort section -->
-  <!--suppress HtmlUnknownAttribute -->
   <div class="row">
    <div class="col-md-2">
     <form method="GET" action="/orp/view_requests/{{ current_user.username }}">
@@ -53,9 +17,7 @@
         <a href="{{ url_for('orp_view_requests', username=current_user.username) }}?username={{ current_user.username }}" class="btn btn-warning">Reset</a>
      {% endif %}
      </div>
-
      <br>
-
      <!-- Sort By ... group -->
      <div class="form-group">
       <label><b>Sort By ...</b></label>
@@ -620,7 +582,7 @@
    </div>
   </div>
  </div>
- <hr>
+ <hr class="normal">
 {% endblock %}
 
 {% block js %}

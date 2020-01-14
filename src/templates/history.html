@@ -1,9 +1,8 @@
 {% extends 'base.html' %}
-
-{% block content %}
-
 <!--suppress ALL -->
-<!-- globl container -->
+{% block content %}
+<hr class="normal">
+<!-- global container -->
 <div class="container">
  <div class="col-md-12">
   <h4>Observation History ({{ total }} records)</h4>
@@ -17,7 +16,6 @@
        <th>Observation Date</th>
        <th>JD</th>
        <th>File on scopenet.as.arizona.edu</th>
-       <!-- <th>Email</th> -->
       </tr>
     </thead>
     <tbody>
@@ -37,7 +35,7 @@
   {{ pagination.links }}
   <div class="col-md-2"><a href="{{ url_for('orp_user', username=current_user.username) }}" class="btn btn-md btn-info"><i class="fas fa-backward"></i></a></div>
 </div>
+<hr class="normal">
 {% endblock %}
-
 {% block js %}
 {% endblock %}

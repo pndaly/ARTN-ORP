@@ -1,16 +1,11 @@
 {% extends "base.html" %}
-
 {% block content %}
-<hr>
+ <hr class="normal">
  <form action="" method="post">
-
   {{ form.hidden_tag() }}
-
   <h4>Reporting feedback from {{ current_user.firstname }} {{ current_user.lastname }}, {{ current_user.affiliation }}</h4>
   <h5>Username: <i>{{ current_user.username }}</i>, Email: <i>{{ current_user.email }}</i></h5>
-
   <br>
-
   <div class="row">
    <div class="col-md-4">
     {{ form.category.label }}<br>
@@ -37,9 +32,7 @@
     <span class="purple-label"><small>Upload an optional screenshot</small></span><br>
    </div>
   </div>
-
   <br>
-
   <div class="row">
    <div class="col-md-12">
     {{ form.report.label }}<br>
@@ -50,9 +43,7 @@
     <span class="purple-label">Please provide as much detail as possible<small></small></span><br>
    </div>
   </div>
-
   <br>
-
   <div class="d-flex justify-content-between">
    <div class="row">
     {{ form.submit(class_="btn btn-md btn-primary") }}
@@ -61,7 +52,6 @@
     <a href="{{ url_for('orp_user', username=current_user.username) }}" class="btn btn-md btn-danger">Cancel</a>
    </div>
   </div>
- 
  </form>
- <hr>
+ <hr class="normal">
 {% endblock %}

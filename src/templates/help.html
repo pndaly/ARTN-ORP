@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<hr>
+<hr class="normal">
 <div class="row">
  <div class="col-md-12">
 
@@ -87,6 +87,10 @@
        <tr>
         <td><i class="fa fa-2x fa-book" aria-hidden="true"></i></td>
 	<td>Navigate to the API page</td>
+       </tr>
+       <tr>
+        <td><i class="fas fa-2x fa-history" aria-hidden="true"></i></td>
+	<td>Navigate to the software history page</td>
        </tr>
        <tr>
         <td><i class="fas fa-2x fa-comments" aria-hidden="true"></i></td>
@@ -436,5 +440,5 @@ function ToggleContent(id) {
  _hidediv = function () { div.style.display = 'none'; };
 }
 </script>
-<hr>
+<hr class="normal">
 {% endblock %}

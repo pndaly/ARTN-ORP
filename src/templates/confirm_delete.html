@@ -1,15 +1,10 @@
 {% extends "base.html" %}
-
 {% block content %}
-<hr>
+ <hr class="normal">
  <form action="" method="post">
-
   {{ form.hidden_tag() }}
-
   <h2>Are you sure you want to delete this record?</h2>
-
   <br>
-
   <div class="d-flex justify-content-between">
    <div class="row">
     {{ form.submit(class_="btn btn-md btn-primary") }}
@@ -18,7 +13,6 @@
     <a href="{{ url_for('orp_view_requests', username=current_user.username) }}" class="btn btn-md btn-danger">Cancel</a>
    </div>
   </div>
- 
  </form>
- <hr>
+ <hr class="normal">
 {% endblock %}
