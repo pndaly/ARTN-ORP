@@ -192,6 +192,7 @@ class Telescope(object):
         self.name = name
 
         # set default(s)
+        self.__simulation = False
         self.__altitude = TEL__ALTITUDE[f'{self.__name}']
         self.__latitude = TEL__LATITUDE[f'{self.__name}']
         self.__longitude = TEL__LONGITUDE[f'{self.__name}']
@@ -209,6 +210,15 @@ class Telescope(object):
     @name.setter
     def name(self, name=''):
         self.__name = name.lower() if (isinstance(name, str) and name.lower() in TEL__NAME) else DEF__TELESCOPE
+
+    @property
+    def simulation(self):
+        return self.__simulation
+
+    @simulation.setter
+    def simulation(self, simulation=False):
+        tel_logger.critical(f"simulation.setter()> simulation={simulation}, type={type(simulation)}")
+        self.__simulation = simulation if isinstance(simulation, bool) else False
 
     # +
     # getter(s) with no setter(s)
@@ -308,6 +318,7 @@ class Telescope(object):
         _str = f'{_str}\nself.__longitude={self.__longitude}'
         _str = f'{_str}\nself.__observatory={self.__observatory}'
         _str = f'{_str}\nself.__observer={self.__observer}'
+        _str = f'{_str}\nself.__simulation={self.__simulation}'
         for _k, _v in TEL__NODES[f"{self.__name}"].items():
             _str = f'{_str}\n{_k}={_v}'
         return _str

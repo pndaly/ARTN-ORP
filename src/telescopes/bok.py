@@ -33,14 +33,14 @@ _seed = random.seed()
 
 
 # +
-# function: kuiper_observe()
+# function: bok_observe()
 # -
-def kuiper_observe(_obsreq=None, _user=None, _sim=False):
+def bok_observe(_obsreq=None, _user=None, _sim=False):
 
     if _sim:
-        tel_log(f'kuiper_observe> entry _obsreq={_obsreq.__repr__()}, _user={_user.__repr__()}, _sim={str(_sim)}', True, False)
+        tel_log(f'bok_observe> entry _obsreq={_obsreq.__repr__()}, _user={_user.__repr__()}, _sim={str(_sim)}', True, False)
     else:
-        tel_logger.info(f'kuiper_observe> entry _obsreq={_obsreq.__repr__()}, _user={_user.__repr__()}, _sim={str(_sim)}')
+        tel_logger.info(f'bok_observe> entry _obsreq={_obsreq.__repr__()}, _user={_user.__repr__()}, _sim={str(_sim)}')
 
     # check input(s)
     if _obsreq is None:
@@ -180,13 +180,14 @@ def kuiper_observe(_obsreq=None, _user=None, _sim=False):
         return '{}', -1
 
     # return
-    tel_log(f'Queued {_object_name} on the {_tel_name} telescope', False, True)
-    tel_log(f'Queued {_object_name} on the {_tel_name} telescope ({_ra_hms} {_dec_dms} {_exp_time}s {_num_exp}x {_filter_name}-band)', True, False)
     if _sim:
-        tel_log(f'_sim_json={_sim_json}, _sim_id={_sim_id}', True, False)
-        tel_log(f'kuiper_observe> exit _obsreq={_obsreq.__repr__()}, _user={_user.__repr__()}, _sim={str(_sim)}', True, False)
+        tel_log(f'Queued {_object_name} on the {_tel_name} telescope', False, True)
+        tel_log(f'Queued {_object_name} on the {_tel_name} telescope ({_ra_hms} {_dec_dms} {_exp_time}s {_num_exp}x {_filter_name}-band)', True, False)
+        tel_log(f'_sim_json={_sim_json}, _sim_id={_sim_id}', True, True)
+        tel_log(f'bok_observe> exit _obsreq={_obsreq.__repr__()}, _user={_user.__repr__()}, _sim={str(_sim)}', True, False)
         return _sim_json, _sim_id
     else:
-        tel_logger.info(f'_json={_json}, _id={_id}')
-        tel_logger.info(f'kuiper_observe> exit _obsreq={_obsreq.__repr__()}, _user={_user.__repr__()}, _sim={str(_sim)}')
+        tel_logger.info(f'Queued {_object_name} on the {_tel_name} telescope ({_ra_hms} {_dec_dms} {_exp_time}s {_num_exp}x {_filter_name}-band) OK')
+        tel_logger.info(f'_json={_json} _id={_id}')
+        tel_logger.info(f'bok_observe> exit _obsreq={_obsreq.__repr__()}, _user={_user.__repr__()}, _sim={str(_sim)}')
         return _json, _id

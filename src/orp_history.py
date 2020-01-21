@@ -104,6 +104,15 @@ _organization_.append('Steward Observatory')
 _version_.append('2.1')
 
 
+# v2.2
+_author_.append('P. N. Daly')
+_comment_.append('Added new telescope objects and simulation mode')
+_date_.append('01/20/2020')
+_email_.append('pndaly@email.arizona.edu')
+_organization_.append('Steward Observatory')
+_version_.append('2.2')
+
+
 # reverse list(s)
 _author_.reverse()
 _comment_.reverse()
@@ -111,6 +120,7 @@ _date_.reverse()
 _email_.reverse()
 _organization_.reverse()
 _version_.reverse()
+
 
 # +
 # function: get_history()

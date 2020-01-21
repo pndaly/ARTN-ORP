@@ -21,7 +21,9 @@ from src.forms.Forms import ConfirmDeleteForm, ConfirmRegistrationForm, Feedback
     ResetPasswordRequestForm, UpdateObsReqForm, UploadForm
 from src.models.Models import db, obsreq_filters, ObsReq, User, user_filters
 from src.telescopes.factory import *
+from src.telescopes.bok import *
 from src.telescopes.kuiper import *
+from src.telescopes.vatt import *
 
 from __init__ import *
 
@@ -62,8 +64,9 @@ TELESCOPES = {
     'kuiper': Telescope(name='kuiper'),
     'vatt': Telescope(name='vatt')
 }
-
-TELESCOPES['kuiper'].observe = kuiper_observe()
+TELESCOPES['bok'].observe = bok_observe
+TELESCOPES['kuiper'].observe = kuiper_observe
+TELESCOPES['vatt'].observe = vatt_observe
 
 
 # +
@@ -1182,27 +1185,37 @@ def orp_observe(username=''):
     except Exception as _e:
         msg_out(f'ERROR: Failed to get observation request {_dbid}, error={_e}', True, True)
         return redirect(url_for('orp_view_requests', username=_u.username))
+    else:
+        msg_out(f"orp_observe> observation request: _dbid={_dbid}, _object_name={decode_verboten(_obsreq.object_name, ARTN_DECODE_DICT)}, _user={_u.username}", True, False)
 
     # call telescope-specific routine
     _rts2_doc = None
     _rts2_id = -1
 
-    if _obsreq is not None and _obsreq.telescope.lower() == 'kuiper':
-        _rts2_doc, _rts2_id = TELESCOPES['kuiper'].observe(_obsreq=_obsreq, _user=_u)
-        if _rts2_doc is not None and _rts2_id > 0:
-            try:
-                _obsreq.completed = False
-                _obsreq.queued = True
-                _obsreq.rts2_doc = _rts2_doc
-                _obsreq.rts2_id = _rts2_id
-                db.session.commit()
-                msg_out(f'Observation request {_dbid} sent to telescope OK', True, True)
-            except Exception as _e:
-                db.session.rollback()
-                msg_out(f'ERROR: Failed to send observation request {_dbid} to telescope, error={_e}', True, True)
+    if _obsreq is not None:
+
+        _tel_name = _obsreq.telescope.lower()
+        msg_out(f"orp_observe> calling TELESCOPES['{_tel_name}'].observe()", True, False)
+        _rts2_doc, _rts2_id = TELESCOPES[f'{_tel_name}'].observe(_obsreq=_obsreq, _user=_u)
+        msg_out(f"orp_observe> called TELESCOPES['{_tel_name}'].observe()", True, False)
+
+        if _rts2_doc is not None:
+            if _rts2_id != -1:
+                msg_out(f'Observation request {_dbid} sent to telescope OK', True, False)
+            if _rts2_id > 0:
+                try:
+                    _obsreq.completed = False
+                    _obsreq.queued = True
+                    _obsreq.rts2_doc = _rts2_doc
+                    _obsreq.rts2_id = _rts2_id
+                    db.session.commit()
+                    msg_out(f'Observation request {_dbid} committed to database OK', True, False)
+                except Exception as _e:
+                    db.session.rollback()
+                    msg_out(f'ERROR: Failed to send observation request {_dbid} to telescope, error={_e}', True, True)
 
     # return for GET
-    return redirect(url_for('orp_view_requests', username=_u.username))
+    return redirect(url_for('orp_user', username=_u.username))
 
 
 # +
@@ -1716,15 +1729,47 @@ def orp_telescopes():
 # +
 # route(s): /orp/telescope/<name>/
 # -
-@app.route('/orp/orp/telescope/<name>')
-@app.route('/orp/telescope/<name>')
-@app.route('/telescope/<name>')
+#@app.route('/orp/orp/telescope/<name>')
+#@app.route('/orp/telescope/<name>')
+#@app.route('/telescope/<name>')
+#@login_required
+#def orp_telescope_name(name=''):
+#    msg_out(f'/orp/telescope/{name} entry', True, False)
+#    get_client_ip(request)
+#
+#    # return data
+#    if name.lower() in TEL__NODES:
+#        return jsonify({'telescope': TEL__NODES[f'{name.lower()}']})
+#    else:
+#        return jsonify({})
+
+
+# +
+# route(s): /orp/telescope/<name>?simulation=<bool>, requires login
+# -
+@app.route('/orp/orp/telescope/<name>', methods=['GET', 'POST'])
+@app.route('/orp/telescope/<name>', methods=['GET', 'POST'])
+@app.route('/telescope/<name>', methods=['GET', 'POST'])
 @login_required
 def orp_telescope_name(name=''):
     msg_out(f'/orp/telescope/{name} entry', True, False)
     get_client_ip(request)
 
-    # return data
+    # set simulation
+    # _simulation = request.args.get('simulation', '')
+    # if str(_simulation).lower() in FALSE_VALUES:
+    #     TELESCOPES[f'{name}'].simulation = False
+    #     msg_out(f"{name} telescope simulation {TELESCOPES[name].simulation}", True, True)
+    #     logger.info(f"TELESCOPES[{name}].dump() =' {TELESCOPES[name].dump()}")
+    #     return redirect(url_for('orp_user', username=current_user.username))
+    # elif str(_simulation).lower() in TRUE_VALUES:
+    #     TELESCOPES[f'{name}'].simulation = True
+    #     msg_out(f"{name} telescope simulation {TELESCOPES[name].simulation}", True, True)
+    #     logger.info(f"TELESCOPES[{name}].dump() =' {TELESCOPES[name].dump()}")
+    #     return redirect(url_for('orp_user', username=current_user.username))
+
+    # return telescope data
+    # else:
     if name.lower() in TEL__NODES:
         return jsonify({'telescope': TEL__NODES[f'{name.lower()}']})
     else:
@@ -2032,7 +2077,7 @@ def orp_view_observable(username=''):
         }
 
     # add avatars to response dictionary
-    msg_out(f'response={response}', True, False)
+    # msg_out(f'response={response}', True, False)
     for _e in response['results']:
         _tu = User.query.filter_by(username=_e['username']).first()
         _e['avatar'] = _e['username'] if _tu is None else _tu.get_avatar(16)
@@ -2147,7 +2192,7 @@ def orp_view_requests(username=''):
         }
 
     # add avatars to response dictionary
-    msg_out(f'response={response}', True, False)
+    # msg_out(f'response={response}', True, False)
     for _e in response['results']:
         _tu = User.query.filter_by(username=_e['username']).first()
         _e['avatar'] = _e['username'] if _tu is None else _tu.get_avatar(16)

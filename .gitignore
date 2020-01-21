@@ -5,6 +5,11 @@
 __pycache__
 
 # +
+# backup(s)
+# -
+*.py.2020*
+
+# +
 # Packages
 # -
 *.dmg
