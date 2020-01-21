@@ -49,18 +49,18 @@ write_cyan () {
   printf "${CYAN}${1}${NCOL}\n"
 }
 usage () {
-  write_blue   ""                                                                                                                                 2>&1
-  write_blue   "ARTN Docker Control"                                                                                                              2>&1
-  write_blue   ""                                                                                                                                 2>&1
-  write_green  "Use:"                                                                                                                             2>&1
-  write_green  "  %% bash $0 --command=<str> [--dry-run]"                                                                                         2>&1
-  write_yellow ""                                                                                                                                 2>&1
-  write_yellow "Input(s):"                                                                                                                        2>&1
-  write_yellow "  --command=<str>,   -c=<str>  command where <str> is { build | connect | run | start | status | stop },  default=${def_command}" 2>&1
-  write_yellow ""                                                                                                                                 2>&1
-  write_cyan   "Flag(s):"                                                                                                                         2>&1
-  write_cyan   "  --dry-run,         -d        show (but do not execute) command(s),                                      default=false"          2>&1
-  write_cyan   ""                                                                                                                                 2>&1
+  write_blue   ""                                                                                                                       2>&1
+  write_blue   "ARTN Docker Control"                                                                                                    2>&1
+  write_blue   ""                                                                                                                       2>&1
+  write_green  "Use:"                                                                                                                   2>&1
+  write_green  "  %% bash $0 --command=<str> [--dry-run]"                                                                               2>&1
+  write_yellow ""                                                                                                                       2>&1
+  write_yellow "Input(s):"                                                                                                              2>&1
+  write_yellow "  --command=<str>,   command where <str> is { build | connect | run | start | status | stop },  default=${def_command}" 2>&1
+  write_yellow ""                                                                                                                       2>&1
+  write_cyan   "Flag(s):"                                                                                                               2>&1
+  write_cyan   "  --dry-run,         show (but do not execute) command(s),                                      default=false"          2>&1
+  write_cyan   ""                                                                                                                       2>&1
 }
 
 
