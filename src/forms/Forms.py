@@ -46,7 +46,7 @@ EXP_TIME_MIN = 0.0
 EXP_TIME_MAX = 1800.0
 FILTER_NAMES = [('U', 'U'), ('B', 'B'), ('V', 'V'), ('R', 'R'), ('I', 'I'), ('Clear', 'Clear')]
 HISTORY = [('All', 'All'), ('30 Days', '30 Days'), ('60 Days', '60 Days'),
-           ('90 Days', '90 Days'), ('180 Days', '180 Days')]
+           ('90 Days', '90 Days'), ('180 Days', '180 Days'), ('365 Days', '365 Days')]
 LUNARPHASE = [('Dark', 'Dark'), ('Grey', 'Grey'), ('Bright', 'Bright'), ('mBright', 'mBright'), ('Any', 'Any')]
 PRIORITY = [('Routine', 'Routine'), ('Urgent', 'Urgent')]
 QUALITY = [('None', 'None'), ('S/N>10', 'S/N>10')]
@@ -349,6 +349,19 @@ class UserHistoryForm(FlaskForm):
     # fields
     username = StringField('Username', default='')
     history = SelectField('Period', choices=HISTORY, default=HISTORY[0][0], validators=[DataRequired()])
+
+    # submit
+    submit = SubmitField('Submit')
+
+
+# +
+# class: NightLogForm(), inherits from FlaskForm
+# -
+class NightLogForm(FlaskForm):
+
+    # fields
+    log_iso = DateTimeField('Night Log Date', default=get_iso().split('T')[0], format='%Y-%m-%d', validators=[
+        DataRequired()])
 
     # submit
     submit = SubmitField('Submit')
