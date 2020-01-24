@@ -844,6 +844,14 @@ def _telescope_factory(iargs=None):
 # -
 if __name__ == '__main__':
 
+    # noinspection PyBroadException
+    try:
+        # import(s)
+        from src import get_iers, ASTROPLAN_IERS_URL
+        get_iers(_url='https://datacenter.iers.org/data/9/finals2000A.all')
+    except Exception:
+        pass
+
     # get command line argument(s)
     _p = argparse.ArgumentParser(description=f'Telescope Factory',
                                  formatter_class=argparse.RawTextHelpFormatter)
@@ -857,6 +865,7 @@ if __name__ == '__main__':
 
     # noinspection PyBroadException
     try:
+        # execute
         args = _p.parse_args()
         args.func(args)
     except Exception:

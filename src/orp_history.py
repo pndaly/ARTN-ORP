@@ -113,6 +113,15 @@ _organization_.append('Steward Observatory')
 _version_.append('2.2')
 
 
+# v2.3
+_author_.append('P. N. Daly')
+_comment_.append('Added user history form and rudimentary night log')
+_date_.append('01/24/2020')
+_email_.append('pndaly@email.arizona.edu')
+_organization_.append('Steward Observatory')
+_version_.append('2.3')
+
+
 # reverse list(s)
 _author_.reverse()
 _comment_.reverse()

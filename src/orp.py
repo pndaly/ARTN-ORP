@@ -17,15 +17,15 @@ from urllib.parse import urlencode
 from werkzeug.urls import url_parse
 from werkzeug.utils import secure_filename
 from src.forms.Forms import ConfirmDeleteForm, ConfirmRegistrationForm, FeedbackForm, \
-    LoginForm, ObsReqForm, ProfileForm, RegistrationForm, ResetPasswordForm, \
-    ResetPasswordRequestForm, UpdateObsReqForm, UploadForm
+    LoginForm, NightLogForm, ObsReqForm, ProfileForm, RegistrationForm, ResetPasswordForm, \
+    ResetPasswordRequestForm, UpdateObsReqForm, UploadForm, UserHistoryForm
 from src.models.Models import db, obsreq_filters, ObsReq, User, user_filters
 from src.telescopes.factory import *
 from src.telescopes.bok import *
 from src.telescopes.kuiper import *
 from src.telescopes.vatt import *
 
-from __init__ import *
+from src import *
 
 import csv
 import glob
@@ -85,6 +85,12 @@ app.config['MAIL_USERNAME'] = ARTN_MAIL_USERNAME
 app.config['MAIL_PASSWORD'] = ARTN_MAIL_PASSWORD
 app.config['SCRIPTS_BASH'] = f'{os.getenv("ORP_BIN")}'
 app.config['SCRIPTS_PYTHON'] = f'{os.getenv("ORP_UTILS")}'
+
+
+# +
+# initialize iers
+# -
+get_iers()
 
 
 # +
@@ -494,7 +500,7 @@ def history_search(_flist=None, _lookback=0.0, _name=''):
 
 
 # noinspection PyBroadException
-def get_history(_path=ARTN_DATA_DIRECTORY, _type='.dna.json', _lookback=365, _user=''):
+def get_history(_path=ARTN_DATA_DIRECTORY, _type='.dna.json', _lookback=ARTN_LOOKBACK_PERIOD, _user=''):
 
     # check input(s)
     if not isinstance(_path, str) or _path.strip() == '':
@@ -533,6 +539,31 @@ def get_history(_path=ARTN_DATA_DIRECTORY, _type='.dna.json', _lookback=365, _us
 
 def get_history_page(_results=None, _offset=0, _per_page=ARTN_RESULTS_PER_PAGE):
     return _results[_offset: _offset + _per_page]
+
+
+# noinspection PyBroadException
+def get_nightlog(_path=ARTN_DATA_DIRECTORY):
+    """ returns list of files: size of given type in directory tree or {} """
+
+    # check input(s)
+    _path = os.path.abspath(os.path.expanduser(f'{_path}'))
+    if not os.path.isdir(_path):
+        return {}
+
+    # generator code
+    _fw = (
+        os.path.join(_root, _file)
+        for _root, _dirs, _files in os.walk(_path)
+        for _file in _files
+    )
+
+    # return all files within directory
+    try:
+        return {f'{_k}': int(os.stat(f'{_k}').st_size)
+                for _k in _fw if (not os.path.islink(f'{_k}') and os.path.exists(f'{_k}') and
+                                  _k.endswith('.fits') and int(os.stat(f'{_k}').st_size) > 2)}
+    except Exception:
+        return {}
 
 
 # +
@@ -997,6 +1028,7 @@ def orp_help():
 # +
 # route(s): /orp/history/, requires login
 # -
+# noinspection PyBroadException
 @app.route('/orp/orp/history/', methods=['GET', 'POST'])
 @app.route('/orp/history/', methods=['GET', 'POST'])
 @app.route('/history/', methods=['GET', 'POST'])
@@ -1009,27 +1041,94 @@ def orp_history():
     _user = request.args.get('username', '')
     _u = current_user if current_user.is_authenticated else User.query.filter_by(username=_user).first_or_404()
 
-    # get history
-    if _u.is_admin:
-        _history = get_history(_path=ARTN_DATA_DIRECTORY, _type='.dna.json', _lookback=365, _user=_user)
-    else:
-        if _user.strip().lower() == _u.username.strip().lower():
-            _history = get_history(_path=ARTN_DATA_DIRECTORY, _type='.dna.json', _lookback=365, _user=_user)
-        else:
-            _history = []
-            msg_out(f'ERROR: User {_u.username} does not have permission to view record(s) for {_user}', True, True)
-            return render_template('401.html')
-    _total = len(_history)
-    msg_out(f'/orp/history/ _history={_history}, _total={_total}', True, False)
+    # build form
+    form = UserHistoryForm()
 
-    # output
-    page, per_page, offset = get_page_args(page_parameter='page', per_page_parameter='per_page')
-    per_page = ARTN_RESULTS_PER_PAGE
-    offset = (page - 1) * ARTN_RESULTS_PER_PAGE
-    pagination_history = get_history_page(_history, offset, per_page)
-    pagination = Pagination(page=page, per_page=per_page, offset=offset, total=_total, css_framework='bootstrap4')
-    return render_template('history.html', history=pagination_history, total=_total,
-                           page=page, per_page=per_page, pagination=pagination,)
+    # GET method
+    if request.method == 'GET':
+        if _u.is_admin:
+            form.username.data = _user
+        else:
+            form.username.data = _u.username
+
+    # validate form (POST request)
+    if form.validate_on_submit():
+
+        # get data
+        _username = User.query.filter_by(username=form.username.data.strip()).first_or_404()
+        _lookback = int(form.lookback.data.strip())
+        if isinstance(_username, User):
+            msg_out(f'/orp/history/ _username={repr(_username)}', True, False)
+        else:
+            msg_out(f'/orp/history/ _username={str(_username)}', True, False)
+        msg_out(f'/orp/history/ _lookback={_lookback}', True, False)
+
+        # get history
+        _history = []
+        if _u.is_admin:
+            _history = get_history(_path=ARTN_DATA_DIRECTORY, _type='.dna.json',
+                                   _lookback=_lookback, _user=_username.username)
+        else:
+            if _user.strip().lower() == _u.username.strip().lower():
+                _history = get_history(_path=ARTN_DATA_DIRECTORY, _type='.dna.json',
+                                       _lookback=_lookback, _user=_username.username)
+            else:
+                msg_out(f'ERROR: User {_u.username} does not have permission to view record(s) for {_user}', True, True)
+                return render_template('401.html')
+        _total = len(_history)
+        msg_out(f'/orp/history/ _history={_history}, _total={_total}', True, False)
+
+        # output
+        page, per_page, offset = get_page_args(page_parameter='page', per_page_parameter='per_page')
+        per_page = ARTN_RESULTS_PER_PAGE
+        offset = (page - 1) * ARTN_RESULTS_PER_PAGE
+        pagination_history = get_history_page(_history, offset, per_page)
+        pagination = Pagination(page=page, per_page=per_page, offset=offset, total=_total, css_framework='bootstrap4')
+        return render_template('history.html', history=pagination_history, total=_total, lookback=_lookback,
+                               page=page, per_page=per_page, pagination=pagination, user=_username)
+
+    # return
+    return render_template('user_history.html', form=form)
+
+
+# +
+# route(s): /orp/history/, requires login
+# -
+# @app.route('/orp/orp/history/', methods=['GET', 'POST'])
+# @app.route('/orp/history/', methods=['GET', 'POST'])
+# @app.route('/history/', methods=['GET', 'POST'])
+# @login_required
+# def orp_history():
+#     msg_out(f'/orp/history/ entry', True, False)
+#     get_client_ip(request)
+#
+#     # look up user (as required)
+#     _user = request.args.get('username', '')
+#     _u = current_user if current_user.is_authenticated else User.query.filter_by(username=_user).first_or_404()
+#
+#     # get history
+#     if _u.is_admin:
+#         _history = get_history(_path=ARTN_DATA_DIRECTORY, _type='.dna.json',
+#         lookback=ARTN_LOOKBACK_PERIOD, _user=_user)
+#     else:
+#         if _user.strip().lower() == _u.username.strip().lower():
+#             _history = get_history(_path=ARTN_DATA_DIRECTORY, _type='.dna.json',
+#             _lookback=ARTN_LOOKBACK_PERIOD, _user=_user)
+#         else:
+#             _history = []
+#             msg_out(f'ERROR: User {_u.username} does not have permission to view record(s) for {_user}', True, True)
+#             return render_template('401.html')
+#     _total = len(_history)
+#     msg_out(f'/orp/history/ _history={_history}, _total={_total}', True, False)
+#
+#     # output
+#     page, per_page, offset = get_page_args(page_parameter='page', per_page_parameter='per_page')
+#     per_page = ARTN_RESULTS_PER_PAGE
+#     offset = (page - 1) * ARTN_RESULTS_PER_PAGE
+#     pagination_history = get_history_page(_history, offset, per_page)
+#     pagination = Pagination(page=page, per_page=per_page, offset=offset, total=_total, css_framework='bootstrap4')
+#     return render_template('history.html', history=pagination_history, total=_total,
+#                            page=page, per_page=per_page, pagination=pagination, _user=_user)
 
 
 # +
@@ -1186,7 +1285,9 @@ def orp_observe(username=''):
         msg_out(f'ERROR: Failed to get observation request {_dbid}, error={_e}', True, True)
         return redirect(url_for('orp_view_requests', username=_u.username))
     else:
-        msg_out(f"orp_observe> observation request: _dbid={_dbid}, _object_name={decode_verboten(_obsreq.object_name, ARTN_DECODE_DICT)}, _user={_u.username}", True, False)
+        msg_out(f"orp_observe> observation request: _dbid={_dbid}, "
+                f"_object_name={decode_verboten(_obsreq.object_name, ARTN_DECODE_DICT)}, "
+                f"_user={_u.username}", True, False)
 
     # call telescope-specific routine
     _rts2_doc = None
@@ -1216,6 +1317,69 @@ def orp_observe(username=''):
 
     # return for GET
     return redirect(url_for('orp_user', username=_u.username))
+
+
+# +
+# route(s): /orp/nightlog/, requires login
+# -
+# noinspection PyBroadException
+@app.route('/orp/orp/nightlog/', methods=['GET', 'POST'])
+@app.route('/orp/nightlog/', methods=['GET', 'POST'])
+@app.route('/nightlog/', methods=['GET', 'POST'])
+@login_required
+def orp_nightlog():
+    msg_out(f'/orp/nightlog/ entry', True, False)
+    get_client_ip(request)
+
+    # only admin can do this
+    if not current_user.is_admin:
+        return render_template('403.html')
+
+    # build form
+    form = NightLogForm()
+
+    # GET method
+    if request.method == 'GET':
+        form.iso.data = get_date_time(0)
+
+    # validate form (POST request)
+    if form.validate_on_submit():
+
+        # get form value(s)
+        _obs = form.obs.data.strip()
+        _iso = str(form.iso.data).strip().split()[0].replace('-', '')
+        _tel = form.telescope.data.strip()
+        msg_out(f'/orp/nightlog/ _obs={_obs}, _iso={_iso}, _tel={_tel}', True, False)
+
+        # search for data
+        _all, _darks, _flats, _objects = {}, {}, {}, {}
+        if _obs == 'all':
+            _darks = get_nightlog(_path=f'{ARTN_DARKS_DIRECTORY}/{_iso}/darks')
+            _flats = get_nightlog(_path=f'{ARTN_FLATS_DIRECTORY}/{_iso}/skyflats')
+            _objects = get_nightlog(_path=f'{ARTN_DATA_DIRECTORY}/{_iso}/C0')
+        elif _obs == 'darks':
+            _darks = get_nightlog(_path=f'{ARTN_DARKS_DIRECTORY}/{_iso}/darks')
+        elif _obs == 'flats':
+            _flats = get_nightlog(_path=f'{ARTN_FLATS_DIRECTORY}/{_iso}/skyflats')
+        elif _obs == 'objects':
+            _objects = get_nightlog(_path=f'{ARTN_DATA_DIRECTORY}/{_iso}/C0')
+        else:
+            return render_template('401.html')
+
+        _all = {**_darks, **_flats, **_objects}
+        msg_out(f'/orp/nightlog/ len(_all)={len(_all)}', True, True)
+
+        # output
+        # page, per_page, offset = get_page_args(page_parameter='page', per_page_parameter='per_page')
+        # per_page = ARTN_RESULTS_PER_PAGE
+        # offset = (page - 1) * ARTN_RESULTS_PER_PAGE
+        # pagination_history = get_history_page(_nightlog, offset, per_page)
+        # pagination = Pagination(page=page, per_page=per_page, offset=offset, total=_total, css_framework='bootstrap4')
+        # return render_template('nightlog.html', history=pagination_history, total=_total, lookback=_lookback,
+        #                       page=page, per_page=per_page, pagination=pagination, user=_username)
+
+    # return
+    return render_template('nightlog.html', form=form)
 
 
 # +
@@ -1727,25 +1891,7 @@ def orp_telescopes():
 
 
 # +
-# route(s): /orp/telescope/<name>/
-# -
-#@app.route('/orp/orp/telescope/<name>')
-#@app.route('/orp/telescope/<name>')
-#@app.route('/telescope/<name>')
-#@login_required
-#def orp_telescope_name(name=''):
-#    msg_out(f'/orp/telescope/{name} entry', True, False)
-#    get_client_ip(request)
-#
-#    # return data
-#    if name.lower() in TEL__NODES:
-#        return jsonify({'telescope': TEL__NODES[f'{name.lower()}']})
-#    else:
-#        return jsonify({})
-
-
-# +
-# route(s): /orp/telescope/<name>?simulation=<bool>, requires login
+# route(s): /orp/telescope/<name>, requires login
 # -
 @app.route('/orp/orp/telescope/<name>', methods=['GET', 'POST'])
 @app.route('/orp/telescope/<name>', methods=['GET', 'POST'])
@@ -1755,21 +1901,7 @@ def orp_telescope_name(name=''):
     msg_out(f'/orp/telescope/{name} entry', True, False)
     get_client_ip(request)
 
-    # set simulation
-    # _simulation = request.args.get('simulation', '')
-    # if str(_simulation).lower() in FALSE_VALUES:
-    #     TELESCOPES[f'{name}'].simulation = False
-    #     msg_out(f"{name} telescope simulation {TELESCOPES[name].simulation}", True, True)
-    #     logger.info(f"TELESCOPES[{name}].dump() =' {TELESCOPES[name].dump()}")
-    #     return redirect(url_for('orp_user', username=current_user.username))
-    # elif str(_simulation).lower() in TRUE_VALUES:
-    #     TELESCOPES[f'{name}'].simulation = True
-    #     msg_out(f"{name} telescope simulation {TELESCOPES[name].simulation}", True, True)
-    #     logger.info(f"TELESCOPES[{name}].dump() =' {TELESCOPES[name].dump()}")
-    #     return redirect(url_for('orp_user', username=current_user.username))
-
-    # return telescope data
-    # else:
+    # return data
     if name.lower() in TEL__NODES:
         return jsonify({'telescope': TEL__NODES[f'{name.lower()}']})
     else:
@@ -1850,9 +1982,11 @@ def orp_update(username=''):
         _obsreq.cadence = form.cadence.data.strip()
         _obsreq.telescope = form.telescope.data.strip()
 
-        # does this bugger up the observation history?
+        # reset flags
         _obsreq.queued = False
         _obsreq.completed = False
+        _obsreq.rts2_id = -1
+        _obsreq.rts2_doc = '{}'
 
         # get json
         if _obsreq.non_sidereal:

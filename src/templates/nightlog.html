@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+ <hr class="normal">
+ <form action="" method="post">
+  {{ form.hidden_tag() }}
+  <h4>Night Log Generator</h4>
+  <br>
+  <div class="row">
+   <div class="col-md-4">
+    {{ form.telescope.label }}<br>
+    {{ form.telescope(disabled=true) }}<br>
+    {% for error in form.telescope.errors %}
+     <span class="error-label"><small>[{{ error }}]</small></span>
+    {% endfor %}
+    <span class="purple-label"><small></small></span><br>
+   </div>
+   <div class="col-md-4">
+    {{ form.iso.label }}<br>
+    {{ form.iso }}<br>
+    {% for error in form.iso.errors %}
+     <span class="error-label"><small>[{{ error }}]</small></span>
+    {% endfor %}
+    <span class="purple-label"><small>yyyy-mm-dd</small></span><br>
+   </div>
+   <div class="col-md-4">
+    {{ form.obs.label }}<br>
+    {{ form.obs }}<br>
+    {% for error in form.obs.errors %}
+     <span class="error-label"><small>[{{ error }}]</small></span>
+    {% endfor %}
+    <span class="purple-label"><small></small></span><br>
+   </div>
+   </div>
+ <br>
+  <div class="d-flex justify-content-between">
+   <div class="row">
+    {{ form.submit(class_="btn btn-md btn-primary") }}
+   </div>
+   <div>
+    <a href="{{ url_for('orp_user', username=current_user.username) }}" class="btn btn-md btn-danger">Cancel</a>
+   </div>
+  </div>
+ </form>
+ <hr class="normal">
+{% endblock %}

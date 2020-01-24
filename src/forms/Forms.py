@@ -45,9 +45,10 @@ EXP_TIME_DEFAULT = 30.0
 EXP_TIME_MIN = 0.0
 EXP_TIME_MAX = 1800.0
 FILTER_NAMES = [('U', 'U'), ('B', 'B'), ('V', 'V'), ('R', 'R'), ('I', 'I'), ('Clear', 'Clear')]
-HISTORY = [('All', 'All'), ('30 Days', '30 Days'), ('60 Days', '60 Days'),
-           ('90 Days', '90 Days'), ('180 Days', '180 Days'), ('365 Days', '365 Days')]
+LOOKBACK_PERIOD = [('30', '30 Days'), ('60', '60 Days'),
+                   ('90', '90 Days'), ('180', '180 Days'), ('365', '365 Days')]
 LUNARPHASE = [('Dark', 'Dark'), ('Grey', 'Grey'), ('Bright', 'Bright'), ('mBright', 'mBright'), ('Any', 'Any')]
+OBSERVATION_TYPES = [('all', 'All'), ('darks', 'Darks'), ('flats', 'Flats'), ('objects', 'Objects')]
 PRIORITY = [('Routine', 'Routine'), ('Urgent', 'Urgent')]
 QUALITY = [('None', 'None'), ('S/N>10', 'S/N>10')]
 MOON_DEFAULT = 1.0
@@ -163,10 +164,10 @@ class ObsReqForm(FlaskForm):
         DataRequired(), Regexp(regex=regexp_ra, flags=re.IGNORECASE, message='RA format is HH:MM:SS.S')])
     dec_dms = StringField('Dec', default='', validators=[
         DataRequired(), Regexp(regex=regexp_dec, flags=re.IGNORECASE, message='Dec format is +/-dd:mm:ss.s')])
-    begin_iso = DateTimeField('UTC Begin DateTime', default=get_date_utctime(), format='%Y-%m-%d %H:%M:%S', validators=[
-        DataRequired()])
-    end_iso = DateTimeField('UTC End DateTime', default=get_date_utctime(30), format='%Y-%m-%d %H:%M:%S', validators=[
-        DataRequired()])
+    begin_iso = DateTimeField('UTC Begin DateTime', default=get_date_utctime(), format='%Y-%m-%d %H:%M:%S',
+                              validators=[DataRequired()])
+    end_iso = DateTimeField('UTC End DateTime', default=get_date_utctime(30), format='%Y-%m-%d %H:%M:%S',
+                            validators=[DataRequired()])
     airmass = FloatField('Airmass Maximum', default=AIRMASS_DEFAULT, validators=[
         DataRequired(),
         NumberRange(min=AIRMASS_MIN, max=AIRMASS_MAX, message=f'{AIRMASS_MIN} < airmass < {AIRMASS_MAX}')])
@@ -348,7 +349,8 @@ class UserHistoryForm(FlaskForm):
 
     # fields
     username = StringField('Username', default='')
-    history = SelectField('Period', choices=HISTORY, default=HISTORY[0][0], validators=[DataRequired()])
+    lookback = SelectField('Lookback Period', choices=LOOKBACK_PERIOD,
+                           default=LOOKBACK_PERIOD[0][0], validators=[DataRequired()])
 
     # submit
     submit = SubmitField('Submit')
@@ -360,8 +362,23 @@ class UserHistoryForm(FlaskForm):
 class NightLogForm(FlaskForm):
 
     # fields
-    log_iso = DateTimeField('Night Log Date', default=get_iso().split('T')[0], format='%Y-%m-%d', validators=[
-        DataRequired()])
+    telescope = SelectField('Telescope', choices=TELESCOPES, default=TELESCOPES[0][0], validators=[DataRequired()])
+    obs = SelectField('Observation Type', choices=OBSERVATION_TYPES,
+                      default=OBSERVATION_TYPES[0][0], validators=[DataRequired()])
+    iso = DateTimeField('Date', default=get_date_time(), format='%Y-%m-%d', validators=[DataRequired()])
 
     # submit
     submit = SubmitField('Submit')
+
+    # validator for iso field
+    # noinspection PyUnusedLocal
+    @staticmethod
+    def validate_iso(form, field):
+
+        _today = get_date_time(0)
+        if iso_to_jd(field.data) > iso_to_jd(_today):
+            raise ValidationError("Observation date must not be in the future!")
+
+        _year_ago = get_date_time(-ARTN_LOOKBACK_PERIOD)
+        if iso_to_jd(field.data) < iso_to_jd(_year_ago):
+            raise ValidationError("Observation date must be in the last year!")

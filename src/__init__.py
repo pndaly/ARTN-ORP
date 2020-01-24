@@ -41,16 +41,19 @@ ARTN_CHAR_64 = 64
 ARTN_CHAR_128 = 128
 ARTN_CHAR_256 = 256
 ARTN_COMMENT_CHARS = r' #%!<>+-\/'
+ARTN_DARKS_DIRECTORY = '/data1/artn/rts2images'
 ARTN_DATA_DIRECTORY = '/data1/artn/rts2images/queue'
 ARTN_DATE_PATTERN = "[0-9]{4}-[0-9]{2}-[0-9]{2}[ T?][0-9]{2}:[0-9]{2}:[0-9]{2}"
 ARTN_DEC_PATTERN = "[+-]?[0-9]{2}:[0-9]{2}:[0-9]{2}"
 ARTN_DECODE_DICT = {'.us.': '_', '.sq.': "'", '.ws.': ' ', '.bs.': '\\', '.at.': '@',
                     '.bg.': '!', '.dq.': '"', '.eq.': '='}
 ARTN_ENCODE_DICT = {v: k for k, v in ARTN_DECODE_DICT.items()}
+ARTN_FLATS_DIRECTORY = '/data1/artn/rts2images'
 ARTN_ISO_FORMAT = "{:04d}-{:02d}-{:02d}T{:02d}:{:02d}:{:09.6f}"
 ARTN_ISO_NULL = '0000-00-00T00:00:00.000000'
 ARTN_ISO_PATTERN = '[0-9]{4}-[0-9]{2}-[0-9]{2}[ T?][0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{6}'
 ARTN_ISO_PATTERN_2 = '[0-9]{4}-[0-9]{2}-[0-9]{2}[ T?][0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{2}'
+ARTN_LOOKBACK_PERIOD = 365
 ARTN_MJD_FORMAT = '{:26.20f}'
 ARTN_MJD_PATTERN = '^[0-9]{5}.[0-9]{20}'
 ARTN_RA_PATTERN = "[0-9]{2}:[0-9]{2}:[0-9]{2}"
@@ -122,6 +125,9 @@ ARTN_NODES = {
       }
     },
 }
+
+ASTROPLAN_IERS_URL = 'ftp://cddis.gsfc.nasa.gov/pub/products/iers/finals2000A.all'
+ASTROPLAN_IERS_URL_ALTERNATE = 'https://datacenter.iers.org/data/9/finals2000A.all'
 
 FALSE_VALUES = ['false', 'f', '0']
 TRUE_VALUES = ['true', 't', '1']
@@ -448,7 +454,10 @@ ARTN_JSON_SCHEMA = {
     'RA_BiasRate': {'min': -10.0, 'max': 10.0},
     'Dec_BiasRate': {'min': -10.0, 'max': 10.0},
     'PositionAngle': {'min': -360.0, 'max': 360.0},
-    'UTC_At_Position': {'min': get_date_time(-365).isoformat(), 'max': get_date_time(365).isoformat()} 
+    'UTC_At_Position': {
+        'min': get_date_time(-ARTN_LOOKBACK_PERIOD).isoformat(),
+        'max': get_date_time(ARTN_LOOKBACK_PERIOD).isoformat()
+    }
 }
 
 
@@ -465,15 +474,12 @@ def is_json(_json=''):
 
 
 # +
-# logger
-# -
-_json_log = UtilsLogger('JSON-Logger').logger
-
-
-# +
 # function: check_json():
 # -
 def check_json(_json='', refresh=True):
+
+    # get logger
+    _json_log = UtilsLogger('JSON-Logger').logger
 
     # update date(s), if required
     if refresh:
@@ -539,3 +545,34 @@ def read_png(_file=f'{ARTN_BASE_DIR}/static/img/ObservationExpired.png'):
 
 
 ARTN_OBSERVATION_EXPIRED = read_png()
+
+
+# +
+# function: get_iers():
+# -
+# noinspection PyBroadException
+def get_iers(_url=ASTROPLAN_IERS_URL):
+
+    # get logger
+    _iers_log = UtilsLogger('IERS-Logger').logger
+
+    try:
+        # try astroplan download
+        _iers_log.info("1: from astroplan import download_IERS_A")
+        from astroplan import download_IERS_A
+        _iers_log.info("1: download_IERS_A()")
+        download_IERS_A()
+    except Exception:
+        # try alternate download
+        _iers_log.info("2: from astroplan import download_IERS_A")
+        from astroplan import download_IERS_A
+        _iers_log.info("2: from astropy.utils import iers")
+        from astropy.utils import iers
+        _iers_log.info("2: from astropy.utils.data import clear_download_cache")
+        from astropy.utils.data import clear_download_cache
+        _iers_log.info("2: clear_download_cache()")
+        clear_download_cache()
+        _iers_log.info(f"2: iers.IERS_A_URL = {_url}")
+        iers.IERS_A_URL = f'{_url}'
+        _iers_log.info("2: download_IERS_A()")
+        download_IERS_A()
