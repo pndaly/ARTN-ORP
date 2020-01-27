@@ -48,7 +48,8 @@ FILTER_NAMES = [('U', 'U'), ('B', 'B'), ('V', 'V'), ('R', 'R'), ('I', 'I'), ('Cl
 LOOKBACK_PERIOD = [('30', '30 Days'), ('60', '60 Days'),
                    ('90', '90 Days'), ('180', '180 Days'), ('365', '365 Days')]
 LUNARPHASE = [('Dark', 'Dark'), ('Grey', 'Grey'), ('Bright', 'Bright'), ('mBright', 'mBright'), ('Any', 'Any')]
-OBSERVATION_TYPES = [('all', 'All'), ('darks', 'Darks'), ('flats', 'Flats'), ('objects', 'Objects')]
+OBSERVATION_TYPES = [('all', 'All'), ('darks', 'Darks'), ('flats', 'Flats'), ('focus', 'Focus'),
+                     ('objects', 'Objects'), ('skyflats', 'SkyFlats')]
 PRIORITY = [('Routine', 'Routine'), ('Urgent', 'Urgent')]
 QUALITY = [('None', 'None'), ('S/N>10', 'S/N>10')]
 MOON_DEFAULT = 1.0

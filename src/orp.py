@@ -18,7 +18,7 @@ from werkzeug.urls import url_parse
 from werkzeug.utils import secure_filename
 from src.forms.Forms import ConfirmDeleteForm, ConfirmRegistrationForm, FeedbackForm, \
     LoginForm, NightLogForm, ObsReqForm, ProfileForm, RegistrationForm, ResetPasswordForm, \
-    ResetPasswordRequestForm, UpdateObsReqForm, UploadForm, UserHistoryForm
+    ResetPasswordRequestForm, UpdateObsReqForm, UploadForm, UserHistoryForm, OBSERVATION_TYPES
 from src.models.Models import db, obsreq_filters, ObsReq, User, user_filters
 from src.telescopes.factory import *
 from src.telescopes.bok import *
@@ -492,6 +492,7 @@ def history_search(_flist=None, _lookback=0.0, _name=''):
             _jd = iso_to_jd(_e['timestamp'])
         else:
             _jd = iso_to_jd(get_date_time())
+
         if 'email' in _e and _name in _e['email'] and _jd > _lookback:
             _udata.append(f"{_jd} {_e['timestamp']:26s} {_e['file']:30s} {_e['email']} {_object}")
 
@@ -542,12 +543,14 @@ def get_history_page(_results=None, _offset=0, _per_page=ARTN_RESULTS_PER_PAGE):
 
 
 # noinspection PyBroadException
-def get_nightlog(_path=ARTN_DATA_DIRECTORY):
+def get_nightlog(_path=ARTN_DIR_OBJECTS, _type=''):
     """ returns list of files: size of given type in directory tree or {} """
 
     # check input(s)
     _path = os.path.abspath(os.path.expanduser(f'{_path}'))
     if not os.path.isdir(_path):
+        return {}
+    if _type.lower() not in [_l[0] for _l in OBSERVATION_TYPES]:
         return {}
 
     # generator code
@@ -558,11 +561,50 @@ def get_nightlog(_path=ARTN_DATA_DIRECTORY):
     )
 
     # return all files within directory
-    try:
-        return {f'{_k}': int(os.stat(f'{_k}').st_size)
-                for _k in _fw if (not os.path.islink(f'{_k}') and os.path.exists(f'{_k}') and
-                                  _k.endswith('.fits') and int(os.stat(f'{_k}').st_size) > 2)}
-    except Exception:
+    _type = _type.lower()
+    if _type == 'darks':
+        try:
+            return {f'{_k}': int(os.stat(f'{_k}').st_size)
+                    for _k in _fw if (not os.path.islink(f'{_k}') and os.path.exists(f'{_k}') and
+                                      _k.endswith('.fits') and int(os.stat(f'{_k}').st_size) > 2)}
+        except Exception:
+            return {}
+
+    elif _type == 'flats':
+        try:
+            return {f'{_k}': int(os.stat(f'{_k}').st_size)
+                    for _k in _fw if (not os.path.islink(f'{_k}') and os.path.exists(f'{_k}') and
+                                      (os.path.basename(_k).lower().startswith('flat') and
+                                       _k.lower().endswith('.fits')) and int(os.stat(f'{_k}').st_size) > 2)}
+        except Exception:
+            return {}
+
+    elif _type == 'focus':
+        try:
+            return {f'{_k}': int(os.stat(f'{_k}').st_size)
+                    for _k in _fw if (not os.path.islink(f'{_k}') and os.path.exists(f'{_k}') and
+                                      _k.endswith('.fits') and int(os.stat(f'{_k}').st_size) > 2)}
+        except Exception:
+            return {}
+
+    elif _type == 'objects':
+        try:
+            return {f'{_k}': int(os.stat(f'{_k}').st_size)
+                    for _k in _fw if (not os.path.islink(f'{_k}') and os.path.exists(f'{_k}') and
+                                      _k.endswith('.fits') and int(os.stat(f'{_k}').st_size) > 2 and
+                                      not os.path.basename(_k).lower().startswith('focus') and
+                                      not os.path.basename(_k).lower().startswith('flat'))}
+        except Exception:
+            return {}
+
+    elif _type == 'skyflats':
+        try:
+            return {f'{_k}': int(os.stat(f'{_k}').st_size)
+                    for _k in _fw if (not os.path.islink(f'{_k}') and os.path.exists(f'{_k}') and
+                                      _k.endswith('.fits') and int(os.stat(f'{_k}').st_size) > 2)}
+        except Exception:
+            return {}
+    else:
         return {}
 
 
@@ -1058,10 +1100,9 @@ def orp_history():
         _username = User.query.filter_by(username=form.username.data.strip()).first_or_404()
         _lookback = int(form.lookback.data.strip())
         if isinstance(_username, User):
-            msg_out(f'/orp/history/ _username={repr(_username)}', True, False)
+            msg_out(f'/orp/history/ _username={repr(_username)}, _lookback={_lookback}', True, False)
         else:
-            msg_out(f'/orp/history/ _username={str(_username)}', True, False)
-        msg_out(f'/orp/history/ _lookback={_lookback}', True, False)
+            msg_out(f'/orp/history/ _username={str(_username)}, _lookback={_lookback}', True, False)
 
         # get history
         _history = []
@@ -1069,11 +1110,12 @@ def orp_history():
             _history = get_history(_path=ARTN_DATA_DIRECTORY, _type='.dna.json',
                                    _lookback=_lookback, _user=_username.username)
         else:
-            if _user.strip().lower() == _u.username.strip().lower():
+            if _username.username.strip().lower() == _u.username.strip().lower():
                 _history = get_history(_path=ARTN_DATA_DIRECTORY, _type='.dna.json',
                                        _lookback=_lookback, _user=_username.username)
             else:
-                msg_out(f'ERROR: User {_u.username} does not have permission to view record(s) for {_user}', True, True)
+                msg_out(f'ERROR: User {_username.username} does not have permission to view record(s) for {_user}',
+                        True, True)
                 return render_template('401.html')
         _total = len(_history)
         msg_out(f'/orp/history/ _history={_history}, _total={_total}', True, False)
@@ -1092,43 +1134,43 @@ def orp_history():
 
 
 # +
-# route(s): /orp/history/, requires login
+# route(s): /orp/oldhistory/, requires login
 # -
-# @app.route('/orp/orp/history/', methods=['GET', 'POST'])
-# @app.route('/orp/history/', methods=['GET', 'POST'])
-# @app.route('/history/', methods=['GET', 'POST'])
-# @login_required
-# def orp_history():
-#     msg_out(f'/orp/history/ entry', True, False)
-#     get_client_ip(request)
-#
-#     # look up user (as required)
-#     _user = request.args.get('username', '')
-#     _u = current_user if current_user.is_authenticated else User.query.filter_by(username=_user).first_or_404()
-#
-#     # get history
-#     if _u.is_admin:
-#         _history = get_history(_path=ARTN_DATA_DIRECTORY, _type='.dna.json',
-#         lookback=ARTN_LOOKBACK_PERIOD, _user=_user)
-#     else:
-#         if _user.strip().lower() == _u.username.strip().lower():
-#             _history = get_history(_path=ARTN_DATA_DIRECTORY, _type='.dna.json',
-#             _lookback=ARTN_LOOKBACK_PERIOD, _user=_user)
-#         else:
-#             _history = []
-#             msg_out(f'ERROR: User {_u.username} does not have permission to view record(s) for {_user}', True, True)
-#             return render_template('401.html')
-#     _total = len(_history)
-#     msg_out(f'/orp/history/ _history={_history}, _total={_total}', True, False)
-#
-#     # output
-#     page, per_page, offset = get_page_args(page_parameter='page', per_page_parameter='per_page')
-#     per_page = ARTN_RESULTS_PER_PAGE
-#     offset = (page - 1) * ARTN_RESULTS_PER_PAGE
-#     pagination_history = get_history_page(_history, offset, per_page)
-#     pagination = Pagination(page=page, per_page=per_page, offset=offset, total=_total, css_framework='bootstrap4')
-#     return render_template('history.html', history=pagination_history, total=_total,
-#                            page=page, per_page=per_page, pagination=pagination, _user=_user)
+@app.route('/orp/orp/oldhistory/', methods=['GET', 'POST'])
+@app.route('/orp/oldhistory/', methods=['GET', 'POST'])
+@app.route('/oldhistory/', methods=['GET', 'POST'])
+@login_required
+def orp_oldhistory():
+    msg_out(f'/orp/oldhistory/ entry', True, False)
+    get_client_ip(request)
+
+    # look up user (as required)
+    _user = request.args.get('username', '')
+    _u = current_user if current_user.is_authenticated else User.query.filter_by(username=_user).first_or_404()
+
+    # get history
+    if _u.is_admin:
+        _history = get_history(_path=ARTN_DATA_DIRECTORY, _type='.dna.json',
+                               _lookback=ARTN_LOOKBACK_PERIOD, _user=_user)
+    else:
+        if _user.strip().lower() == _u.username.strip().lower():
+            _history = get_history(_path=ARTN_DATA_DIRECTORY, _type='.dna.json',
+                                   _lookback=ARTN_LOOKBACK_PERIOD, _user=_user)
+        else:
+            _history = []
+            msg_out(f'ERROR: User {_u.username} does not have permission to view record(s) for {_user}', True, True)
+            return render_template('401.html')
+    _total = len(_history)
+    msg_out(f'/orp/oldhistory/ _history={_history}, _total={_total}', True, False)
+
+    # output
+    page, per_page, offset = get_page_args(page_parameter='page', per_page_parameter='per_page')
+    per_page = ARTN_RESULTS_PER_PAGE
+    offset = (page - 1) * ARTN_RESULTS_PER_PAGE
+    pagination_history = get_history_page(_history, offset, per_page)
+    pagination = Pagination(page=page, per_page=per_page, offset=offset, total=_total, css_framework='bootstrap4')
+    return render_template('history.html', history=pagination_history, total=_total,
+                           page=page, per_page=per_page, pagination=pagination, user=_user)
 
 
 # +
@@ -1349,34 +1391,35 @@ def orp_nightlog():
         _obs = form.obs.data.strip()
         _iso = str(form.iso.data).strip().split()[0].replace('-', '')
         _tel = form.telescope.data.strip()
-        msg_out(f'/orp/nightlog/ _obs={_obs}, _iso={_iso}, _tel={_tel}', True, False)
+        msg_out(f'/orp/nightlog/ _obs={_obs}, _iso={_iso}, _tel={_tel}', True, True)
 
         # search for data
-        _all, _darks, _flats, _objects = {}, {}, {}, {}
+        _all, _darks, _focus, _flats, _objects, _skyflats = {}, {}, {}, {}, {}, {}
         if _obs == 'all':
-            _darks = get_nightlog(_path=f'{ARTN_DARKS_DIRECTORY}/{_iso}/darks')
-            _flats = get_nightlog(_path=f'{ARTN_FLATS_DIRECTORY}/{_iso}/skyflats')
-            _objects = get_nightlog(_path=f'{ARTN_DATA_DIRECTORY}/{_iso}/C0')
+            _darks = get_nightlog(_path=f'{ARTN_DIR_DARKS.replace("YYYYMMDD", _iso)}', _type='darks')
+            _flats = get_nightlog(_path=f'{ARTN_DIR_FLATS.replace("YYYYMMDD", _iso)}', _type='flats')
+            _focus = get_nightlog(_path=f'{ARTN_DIR_FOCUS.replace("YYYYMMDD", _iso)}', _type='focus')
+            _objects = get_nightlog(_path=f'{ARTN_DIR_OBJECTS.replace("YYYYMMDD", _iso)}', _type='objects')
+            _skyflats = get_nightlog(_path=f'{ARTN_DIR_SKYFLATS.replace("YYYYMMDD", _iso)}', _type='skyflats')
+            _all = {**_darks, **_flats, **_focus, **_objects, **_skyflats}
+            msg_out(f'/orp/nightlog/ _all={_all}, len(_all)={len(_all)}', True, True)
         elif _obs == 'darks':
-            _darks = get_nightlog(_path=f'{ARTN_DARKS_DIRECTORY}/{_iso}/darks')
+            _darks = get_nightlog(_path=f'{ARTN_DIR_DARKS.replace("YYYYMMDD", _iso)}', _type=_obs)
+            msg_out(f'/orp/nightlog/ _darks={_darks}, len(_darks)={len(_darks)}', True, True)
         elif _obs == 'flats':
-            _flats = get_nightlog(_path=f'{ARTN_FLATS_DIRECTORY}/{_iso}/skyflats')
+            _flats = get_nightlog(_path=f'{ARTN_DIR_FLATS.replace("YYYYMMDD", _iso)}', _type=_obs)
+            msg_out(f'/orp/nightlog/ _flats={_flats}, len(flats)={len(_flats)}', True, True)
+        elif _obs == 'focus':
+            _focus = get_nightlog(_path=f'{ARTN_DIR_FOCUS.replace("YYYYMMDD", _iso)}', _type=_obs)
+            msg_out(f'/orp/nightlog/ _focus={_focus}, len(_focus)={len(_focus)}', True, True)
         elif _obs == 'objects':
-            _objects = get_nightlog(_path=f'{ARTN_DATA_DIRECTORY}/{_iso}/C0')
+            _objects = get_nightlog(_path=f'{ARTN_DIR_OBJECTS.replace("YYYYMMDD", _iso)}', _type=_obs)
+            msg_out(f'/orp/nightlog/ _objects={_objects}, len(_objects)={len(_objects)}', True, True)
+        elif _obs == 'skyflats':
+            _skyflats = get_nightlog(_path=f'{ARTN_DIR_SKYFLATS.replace("YYYYMMDD", _iso)}', _type=_obs)
+            msg_out(f'/orp/nightlog/ _skyflats={_skyflats}, len(_skyflats)={len(_skyflats)}', True, True)
         else:
             return render_template('401.html')
-
-        _all = {**_darks, **_flats, **_objects}
-        msg_out(f'/orp/nightlog/ len(_all)={len(_all)}', True, True)
-
-        # output
-        # page, per_page, offset = get_page_args(page_parameter='page', per_page_parameter='per_page')
-        # per_page = ARTN_RESULTS_PER_PAGE
-        # offset = (page - 1) * ARTN_RESULTS_PER_PAGE
-        # pagination_history = get_history_page(_nightlog, offset, per_page)
-        # pagination = Pagination(page=page, per_page=per_page, offset=offset, total=_total, css_framework='bootstrap4')
-        # return render_template('nightlog.html', history=pagination_history, total=_total, lookback=_lookback,
-        #                       page=page, per_page=per_page, pagination=pagination, user=_username)
 
     # return
     return render_template('nightlog.html', form=form)
