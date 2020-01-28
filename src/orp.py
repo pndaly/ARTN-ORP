@@ -1300,68 +1300,6 @@ def orp_logout():
 
 
 # +
-# route(s): /orp/observe/<username>?dbid=<num>, requires login
-# -
-@app.route('/orp/orp/observe/<username>', methods=['GET', 'POST'])
-@app.route('/orp/observe/<username>', methods=['GET', 'POST'])
-@app.route('/observe/<username>', methods=['GET', 'POST'])
-@login_required
-def orp_observe(username=''):
-    msg_out(f'/orp/observe/{username} entry', True, False)
-    get_client_ip(request)
-
-    # look up user (as required)
-    _u = current_user if current_user.is_authenticated else User.query.filter_by(username=username).first_or_404()
-
-    # just delete it without checking!
-    _dbid = request.args.get('dbid', None)
-    if _dbid is None:
-        msg_out(f'ERROR: Failed to get observation id {_dbid}', True, True)
-        return redirect(url_for('orp_view_requests', username=_u.username))
-
-    # get observation
-    _obsreq = None
-    try:
-        _obsreq = ObsReq.query.filter_by(id=_dbid).first_or_404()
-    except Exception as _e:
-        msg_out(f'ERROR: Failed to get observation request {_dbid}, error={_e}', True, True)
-        return redirect(url_for('orp_view_requests', username=_u.username))
-    else:
-        msg_out(f"orp_observe> observation request: _dbid={_dbid}, "
-                f"_object_name={decode_verboten(_obsreq.object_name, ARTN_DECODE_DICT)}, "
-                f"_user={_u.username}", True, False)
-
-    # call telescope-specific routine
-    _rts2_doc = None
-    _rts2_id = -1
-
-    if _obsreq is not None:
-
-        _tel_name = _obsreq.telescope.lower()
-        msg_out(f"orp_observe> calling TELESCOPES['{_tel_name}'].observe()", True, False)
-        _rts2_doc, _rts2_id = TELESCOPES[f'{_tel_name}'].observe(_obsreq=_obsreq, _user=_u)
-        msg_out(f"orp_observe> called TELESCOPES['{_tel_name}'].observe()", True, False)
-
-        if _rts2_doc is not None:
-            if _rts2_id != -1:
-                msg_out(f'Observation request {_dbid} sent to telescope OK', True, False)
-            if _rts2_id > 0:
-                try:
-                    _obsreq.completed = False
-                    _obsreq.queued = True
-                    _obsreq.rts2_doc = _rts2_doc
-                    _obsreq.rts2_id = _rts2_id
-                    db.session.commit()
-                    msg_out(f'Observation request {_dbid} committed to database OK', True, False)
-                except Exception as _e:
-                    db.session.rollback()
-                    msg_out(f'ERROR: Failed to send observation request {_dbid} to telescope, error={_e}', True, True)
-
-    # return for GET
-    return redirect(url_for('orp_user', username=_u.username))
-
-
-# +
 # route(s): /orp/nightlog/, requires login
 # -
 # noinspection PyBroadException
@@ -1421,8 +1359,74 @@ def orp_nightlog():
         else:
             return render_template('401.html')
 
+        # start building page
+        _telescope = TEL__NODES[_tel]
+        return render_template(f'nightlog_{_tel}.html', telescope=_telescope, iso=_iso, user=current_user)
+
     # return
     return render_template('nightlog.html', form=form)
+
+
+# +
+# route(s): /orp/observe/<username>?dbid=<num>, requires login
+# -
+@app.route('/orp/orp/observe/<username>', methods=['GET', 'POST'])
+@app.route('/orp/observe/<username>', methods=['GET', 'POST'])
+@app.route('/observe/<username>', methods=['GET', 'POST'])
+@login_required
+def orp_observe(username=''):
+    msg_out(f'/orp/observe/{username} entry', True, False)
+    get_client_ip(request)
+
+    # look up user (as required)
+    _u = current_user if current_user.is_authenticated else User.query.filter_by(username=username).first_or_404()
+
+    # just delete it without checking!
+    _dbid = request.args.get('dbid', None)
+    if _dbid is None:
+        msg_out(f'ERROR: Failed to get observation id {_dbid}', True, True)
+        return redirect(url_for('orp_view_requests', username=_u.username))
+
+    # get observation
+    _obsreq = None
+    try:
+        _obsreq = ObsReq.query.filter_by(id=_dbid).first_or_404()
+    except Exception as _e:
+        msg_out(f'ERROR: Failed to get observation request {_dbid}, error={_e}', True, True)
+        return redirect(url_for('orp_view_requests', username=_u.username))
+    else:
+        msg_out(f"orp_observe> observation request: _dbid={_dbid}, "
+                f"_object_name={decode_verboten(_obsreq.object_name, ARTN_DECODE_DICT)}, "
+                f"_user={_u.username}", True, False)
+
+    # call telescope-specific routine
+    _rts2_doc = None
+    _rts2_id = -1
+
+    if _obsreq is not None:
+
+        _tel_name = _obsreq.telescope.lower()
+        msg_out(f"orp_observe> calling TELESCOPES['{_tel_name}'].observe()", True, False)
+        _rts2_doc, _rts2_id = TELESCOPES[f'{_tel_name}'].observe(_obsreq=_obsreq, _user=_u)
+        msg_out(f"orp_observe> called TELESCOPES['{_tel_name}'].observe()", True, False)
+
+        if _rts2_doc is not None:
+            if _rts2_id != -1:
+                msg_out(f'Observation request {_dbid} sent to telescope OK', True, False)
+            if _rts2_id > 0:
+                try:
+                    _obsreq.completed = False
+                    _obsreq.queued = True
+                    _obsreq.rts2_doc = _rts2_doc
+                    _obsreq.rts2_id = _rts2_id
+                    db.session.commit()
+                    msg_out(f'Observation request {_dbid} committed to database OK', True, False)
+                except Exception as _e:
+                    db.session.rollback()
+                    msg_out(f'ERROR: Failed to send observation request {_dbid} to telescope, error={_e}', True, True)
+
+    # return for GET
+    return redirect(url_for('orp_user', username=_u.username))
 
 
 # +

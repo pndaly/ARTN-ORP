@@ -65,7 +65,7 @@ RA_MIN = 0.0
 RA_MAX = 24.0
 URGENCY = [('Routine', 'Routine'), ('Urgent', 'Urgent'), ('Critical', 'Critical')]
 
-TELESCOPES = [('Kuiper', 'Kuiper 61-inch'), ('Vatt', 'Vatt 1.8m'), ('Bok', 'Bok 90-inch')]
+TELESCOPES = [('kuiper', 'Kuiper 61-inch'), ('vatt', 'Vatt 1.8m'), ('bok', 'Bok 90-inch')]
 INSTRUMENTS = [('Mont4k', 'Mont4k')]
 
 RA_BIASRATE_DEFAULT = 0.0

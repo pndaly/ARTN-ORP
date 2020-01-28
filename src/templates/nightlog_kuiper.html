@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+<!--suppress ALL -->
+{% block content %}
+<hr class="normal">
+<!-- global container -->
+<div class="container">
+ <!-- header(s) -->
+ <div class="d-flex justify-content-between">
+  <div class="row">
+   <img title="Kuiper" src="{{ url_for('static', filename='img/KuiperTelescope.jpg') }}" height="50" width="50">
+  </div>
+  <center><i><h3>ARTN {{ telescope.aka }} Telescope Observation Log for {{ iso }}</h3></i></center>
+  <div>
+   <img title="Kuiper" src="{{ url_for('static', filename='img/KuiperTelescope.jpg') }}" height="50" width="50">
+  </div>
+ </div>
+ <br>
+ <div class="col-md-12">
+  <center>
+   <h5>
+    <i>Latitude:</i> +{{ telescope.latitude }}&deg; &vert;
+    <i>Longitude:</i> {{ telescope.longitude }}&deg; &vert;
+    <i>Elevation:</i> {{ "%.1f"|format(telescope.altitude) }}<sup>m</sup> ({{ "%.1f"|format(telescope.elevation) }}&prime;)
+    <br>
+    {{ telescope.min_airmass }} &lt; <i>Airmass</i> &lt; {{ telescope.max_airmass }} &vert;
+    {{ telescope.min_moon_exclusion }}&deg; &lt; <i>Moon Exclusion</i> &lt; {{ telescope.max_moon_exclusion }}&deg;  &vert;
+    <i>Focal Length:</i> {{ "%.1f"|format(telescope.focal_length_m) }}<sup>m</sup> ({{ "%.1f"|format(telescope.focal_length_ft) }}&prime;) &vert;
+    <i>Mount:</i> {{ telescope.mount[0].upper() }}{{ telescope.mount[1:] }}
+   </h5>
+  </center>
+ </div>
+ <!-- row(s) -->
+</div>
+<hr class="normal">
+{% endblock %}

@@ -93,6 +93,7 @@ TEL__NODES = {
         'declination_limit': 60.0,
         'elevation': 6795,
         'focal_length_m': 6.08,
+        'focal_length_ft': 6.08 * 3.28084,
         'imager': {
             'name': '90Prime',
             'binning': 'None, 1x1, 2x2, 3x3',
@@ -118,6 +119,7 @@ TEL__NODES = {
         'declination_limit': 58.0,
         'elevation': 8235,
         'focal_length_m': 9.6,
+        'focal_length_ft': 9.6 * 3.28084,
         'imager': {
             'name': 'Mont4k',
             'binning': 'None, 1x1, 2x2, 3x3, 4x4',
@@ -142,7 +144,8 @@ TEL__NODES = {
         'astronomical_twilight': AST__TWILIGHT_18,
         'declination_limit': 60.0,
         'elevation': 10469,
-        'focal_length_m': '16.48',
+        'focal_length_m': 16.48,
+        'focal_length_ft': 16.48 * 3.28084,
         'imager': {
             'name': 'Vatt4k',
             'binning': 'None, 1x1, 2x2, 3x3, 4x4',
