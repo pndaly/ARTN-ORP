@@ -9,27 +9,61 @@
   <div class="row">
    <img title="Kuiper" src="{{ url_for('static', filename='img/KuiperTelescope.jpg') }}" height="50" width="50">
   </div>
-  <center><i><h3>ARTN {{ telescope.aka }} Telescope Observation Log for {{ iso }}</h3></i></center>
+  <span class="nightlog-1"><center>{{ telescope.name }} Telescope Observation Log</center></span>
   <div>
    <img title="Kuiper" src="{{ url_for('static', filename='img/KuiperTelescope.jpg') }}" height="50" width="50">
   </div>
  </div>
+ <div>
+  <span class="nightlog-2"><center>&nbsp;&#9398;&nbsp; {{ iso }} &nbsp;&#9415;&nbsp; ARTN Operator &nbsp;&#9417;&nbsp; RTS2 &nbsp;&#9411;&nbsp;</center></span>
+ </div>
  <br>
  <div class="col-md-12">
   <center>
-   <h5>
+   <span class="nightlog-3">
     <i>Latitude:</i> +{{ telescope.latitude }}&deg; &vert;
     <i>Longitude:</i> {{ telescope.longitude }}&deg; &vert;
-    <i>Elevation:</i> {{ "%.1f"|format(telescope.altitude) }}<sup>m</sup> ({{ "%.1f"|format(telescope.elevation) }}&prime;)
-    <br>
-    {{ telescope.min_airmass }} &lt; <i>Airmass</i> &lt; {{ telescope.max_airmass }} &vert;
-    {{ telescope.min_moon_exclusion }}&deg; &lt; <i>Moon Exclusion</i> &lt; {{ telescope.max_moon_exclusion }}&deg;  &vert;
+    <i>Elevation:</i> {{ "%.1f"|format(telescope.altitude) }}<sup>m</sup> ({{ "%.1f"|format(telescope.elevation) }}&prime;) &vert;
     <i>Focal Length:</i> {{ "%.1f"|format(telescope.focal_length_m) }}<sup>m</sup> ({{ "%.1f"|format(telescope.focal_length_ft) }}&prime;) &vert;
-    <i>Mount:</i> {{ telescope.mount[0].upper() }}{{ telescope.mount[1:] }}
-   </h5>
+    <i>Mount:</i> {{ telescope.mount }} &vert;
+    <i>Primary:</i> {{ "%.1f"|format(telescope.primary_imperial) }}&Prime; ({{ "%.2f"|format(telescope.primary_metric) }}<sup>m</sup>)
+    <br>
+    <i>Astronomical Dusk: {{ telescope.astronomical_dusk }}&deg; &vert;
+    Astronomical Twilight: {{ telescope.astronomical_twilight }}&deg; &vert;
+    {{ telescope.min_airmass }} &lt; <i>Airmass</i> &lt; {{ telescope.max_airmass }} &vert;
+    {{ telescope.min_moon_exclusion }}&deg; &lt; <i>Moon Exclusion</i> &lt; {{ telescope.max_moon_exclusion }}&deg; &vert;
+     <i>Declination Limit:</i> {{ telescope.declination_limit }}&deg;
+   </span>
   </center>
  </div>
- <!-- row(s) -->
+ <br>
+ <!-- table row(s) -->
+ <table id="table table-striped table-sm table-border-red">
+    <thead>
+   <tr>
+    <!--
+            _headers = ['AIRMASS', 'BINNING', 'INSTRUME', 'DATE', 'EXPTIME', 'FILTER', 'FOCUS', 'CAMTEMP',
+                    'DEWTEMP', 'DETSIZE', 'AZIMUTH', 'ELEVAT', 'RA', 'DEC', 'IMAGETYP']
+                    -->
+    <th><span class="nightlog-3">File on scopenet.as.arizona.edu</span></th>
+    <th><span class="nightlog-3">Observation Date</span></th>
+    <th><span class="nightlog-3">Type</span></th>
+    <th><span class="nightlog-3">RA (J2k&deg;)</span></th>
+    <th><span class="nightlog-3">Dec (J2k&deg;)</span></th>
+   </tr>
+    </thead>
+    <tbody>
+      {% for dark in darks %}
+      <tr>
+        <td>{{ dark.file }}</td>
+        <td>{{ dark.DATE }}</td>
+        <td>{{ dark.IMAGETYP }}</td>
+        <td>{{ dark.RA }}</td>
+        <td>{{ dark.DEC }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
 <hr class="normal">
 {% endblock %}

@@ -40,6 +40,9 @@ AST__TWILIGHT_12 = -12.0
 AST__TWILIGHT_18 = -18.0
 AST__ZENITH = 90.0
 
+M_TO_FT = 3.28083
+FT_TO_M = 1.0 / M_TO_FT
+
 ISO__PATTERN = '[0-9]{4}-[0-9]{2}-[0-9]{2}[ T?][0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{6}'
 
 MAX__ALTITUDE = 8000.0
@@ -87,81 +90,107 @@ DEF__TIME = Time.now()
 TEL__NODES = {
     'bok': {
         'aka': 'Bok 90-inch',
-        'altitude': 2071.116,
+        'altitude': 6795.8 * FT_TO_M,
         'astronomical_dusk': AST__TWILIGHT_12,
         'astronomical_twilight': AST__TWILIGHT_18,
         'declination_limit': 60.0,
-        'elevation': 6795,
+        'elevation': 6795.0,
         'focal_length_m': 6.08,
-        'focal_length_ft': 6.08 * 3.28084,
+        'focal_length_ft': 6.08 * M_TO_FT,
         'imager': {
             'name': '90Prime',
             'binning': 'None, 1x1, 2x2, 3x3',
             'dither': 'None, NxM, n-RA, n-Dec',
             'filters': 'U, B, V, R, I, Clear'
         },
-        'imperial': '90 inch',
+        'primary_imperial': 2.29 * M_TO_FT * 12.0,
         'latitude': 31.9629,
         'longitude': -111.6004,
         'max_airmass': 3.5,
         'max_moon_exclusion': 25.0,
-        'metric': '2.3 metre',
+        'primary_metric': 2.29,
         'min_airmass': 1.0,
         'min_moon_exclusion': 2.5,
         'name': 'Bok',
-        'mount': 'equatorial'
+        'mount': 'Equatorial'
     },
     'kuiper': {
         'aka': 'Kuiper 61-inch',
-        'altitude': 2510.028,
+        'altitude': 8235.0 * FT_TO_M,
         'astronomical_dusk': AST__TWILIGHT_12,
         'astronomical_twilight': AST__TWILIGHT_18,
         'declination_limit': 58.0,
-        'elevation': 8235,
+        'elevation': 8235.0,
         'focal_length_m': 9.6,
-        'focal_length_ft': 9.6 * 3.28084,
+        'focal_length_ft': 9.6 * M_TO_FT,
         'imager': {
             'name': 'Mont4k',
             'binning': 'None, 1x1, 2x2, 3x3, 4x4',
             'dither': 'None, NxM, n-RA, n-Dec',
             'filters': 'U, B, V, R, I, Clear'
         },
-        'imperial': '61 inch',
         'latitude': 32.4165,
         'longitude': -110.7345,
-        'max_airmass': 2.5,
+        'max_airmass': 3.5,
         'max_moon_exclusion': 45.0,
-        'metric': '1.54 metre',
+        'primary_imperial': 1.54 * M_TO_FT * 12.0,
+        'primary_metric': 1.54,
         'min_airmass': 1.0,
         'min_moon_exclusion': 3.0,
         'name': 'Kuiper',
-        'mount': 'equatorial'
+        'mount': 'Equatorial'
+    },
+    'mmt': {
+        'aka': 'MMT 6.5m',
+        'altitude': 8585.0 * FT_TO_M,
+        'astronomical_dusk': AST__TWILIGHT_12,
+        'astronomical_twilight': AST__TWILIGHT_18,
+        'declination_limit': 58.0,
+        'elevation': 8585.0,
+        'focal_length_m': 9.6,
+        'focal_length_ft': 9.6 * M_TO_FT,
+        'imager': {
+            'name': 'Mont4k',
+            'binning': 'None, 1x1, 2x2, 3x3, 4x4',
+            'dither': 'None, NxM, n-RA, n-Dec',
+            'filters': 'U, B, V, R, I, Clear'
+        },
+        'latitude': 31.6883,
+        'longitude': -110.8850,
+        'max_airmass': 3.5,
+        'max_moon_exclusion': 45.0,
+        'primary_imperial': 6.5 * M_TO_FT * 12.0,
+        'primary_metric': 6.5,
+        'min_airmass': 1.0,
+        'min_moon_exclusion': 3.0,
+        'name': 'MMT',
+        'mount': 'Alt-Az'
     },
     'vatt': {
         'aka': 'Vatt 1.8-metre',
-        'altitude': 3190.9512,
+        'altitude': 10469.0 * FT_TO_M,
         'astronomical_dusk': AST__TWILIGHT_12,
         'astronomical_twilight': AST__TWILIGHT_18,
         'declination_limit': 60.0,
-        'elevation': 10469,
+        'elevation': 10469.0,
         'focal_length_m': 16.48,
-        'focal_length_ft': 16.48 * 3.28084,
+        'focal_length_ft': 16.48 * M_TO_FT,
         'imager': {
             'name': 'Vatt4k',
             'binning': 'None, 1x1, 2x2, 3x3, 4x4',
             'dither': 'None, NxM, n-RA, n-Dec',
             'filters': 'U, B, V, R, I, Clear'
         },
-        'imperial': '71 inch',
         'latitude': 32.7016,
         'longitude': -109.8719,
         'max_airmass': 3.5,
         'max_moon_exclusion': 25.0,
-        'metric': '1.8 metre',
+        'primary_imperial': 1.8 * M_TO_FT * 12.0,
+        'primary_metric': 1.8,
         'min_airmass': 1.0,
         'min_moon_exclusion': 2.5,
         'name': 'Vatt',
-        'mount': 'alt-az'
+        'mount': 'Alt-Az'
     }
 }
 

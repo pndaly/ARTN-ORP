@@ -63,6 +63,28 @@ span.blue-label {
   color: blue;
 }
 
+span.nightlog-1 {
+  font-family: 'Cinzel';
+  color: #333355;
+  font-size: 2vw;
+}
+
+span.nightlog-2 {
+  font-family: 'Marcellus SC';
+  color: #333355;
+  font-size: 1vw;
+}
+
+span.nightlog-3 {
+  font-family: 'Times New Roman';
+  color: black;
+}
+
+span.nightlog-comment {
+  font-family: 'Euphoria Script';
+  color: #bcd911;
+}
+
 figure {
   display:inline-block;
 }

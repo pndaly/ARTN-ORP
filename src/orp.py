@@ -4,6 +4,7 @@
 # +
 # import(s)
 # -
+from astropy.io import fits
 from flask import Flask, jsonify, copy_current_request_context, request, \
     render_template, redirect, send_from_directory, url_for
 from flask_bootstrap import Bootstrap
@@ -1340,7 +1341,7 @@ def orp_nightlog():
             _objects = get_nightlog(_path=f'{ARTN_DIR_OBJECTS.replace("YYYYMMDD", _iso)}', _type='objects')
             _skyflats = get_nightlog(_path=f'{ARTN_DIR_SKYFLATS.replace("YYYYMMDD", _iso)}', _type='skyflats')
             _all = {**_darks, **_flats, **_focus, **_objects, **_skyflats}
-            msg_out(f'/orp/nightlog/ _all={_all}, len(_all)={len(_all)}', True, True)
+            msg_out(f'/orp/nightlog/ _all={_all}, len(_all)={len(_all)}', True, False)
         elif _obs == 'darks':
             _darks = get_nightlog(_path=f'{ARTN_DIR_DARKS.replace("YYYYMMDD", _iso)}', _type=_obs)
             msg_out(f'/orp/nightlog/ _darks={_darks}, len(_darks)={len(_darks)}', True, True)
@@ -1361,7 +1362,20 @@ def orp_nightlog():
 
         # start building page
         _telescope = TEL__NODES[_tel]
-        return render_template(f'nightlog_{_tel}.html', telescope=_telescope, iso=_iso, user=current_user)
+        _headers = ['AIRMASS', 'BINNING', 'INSTRUME', 'DATE', 'EXPTIME', 'FILTER', 'FOCUS', 'CAMTEMP',
+                    'DEWTEMP', 'DETSIZE', 'AZIMUTH', 'ELEVAT', 'RA', 'DEC', 'IMAGETYP']
+        _l_darks = []
+        if _darks:
+            for _f in _darks:
+                _d_darks = {'file': _f}
+                with fits.open(_f) as _hdul:
+                    for _h in _headers:
+                        _d_darks[_h] = _hdul[0].header[_h]
+                msg_out(f'/orp/nightlog/ _d_darks={_l_darks}, len(_d_darks)={len(_d_darks)}', True, True)
+                _l_darks.append(_d_darks)
+        msg_out(f'/orp/nightlog/ _1_darks={_l_darks}, len(_1_darks)={len(_l_darks)}', True, True)
+        return render_template(f'nightlog_{_tel}.html', telescope=_telescope, iso=_iso, user=current_user,
+                               darks=_l_darks)
 
     # return
     return render_template('nightlog.html', form=form)
