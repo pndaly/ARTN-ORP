@@ -15,55 +15,299 @@
   </div>
  </div>
  <div>
-  <span class="nightlog-2"><center>&nbsp;&#9398;&nbsp; {{ iso }} &nbsp;&#9415;&nbsp; ARTN Operator &nbsp;&#9417;&nbsp; RTS2 &nbsp;&#9411;&nbsp;</center></span>
+  <span class="nightlog-2"><center>&nbsp;&#9398;&nbsp; {{ iso }} &nbsp;&#9415;&nbsp; ARTN Operator &nbsp;&#9417;&nbsp; {{ num_darks+num_flats+num_foci+num_objects+num_skyflats }} Observations &nbsp;&#9411;&nbsp;</center></span>
  </div>
  <br>
  <div class="col-md-12">
   <center>
-   <span class="nightlog-3">
-    <i>Latitude:</i> +{{ telescope.latitude }}&deg; &vert;
-    <i>Longitude:</i> {{ telescope.longitude }}&deg; &vert;
-    <i>Elevation:</i> {{ "%.1f"|format(telescope.altitude) }}<sup>m</sup> ({{ "%.1f"|format(telescope.elevation) }}&prime;) &vert;
-    <i>Focal Length:</i> {{ "%.1f"|format(telescope.focal_length_m) }}<sup>m</sup> ({{ "%.1f"|format(telescope.focal_length_ft) }}&prime;) &vert;
-    <i>Mount:</i> {{ telescope.mount }} &vert;
-    <i>Primary:</i> {{ "%.1f"|format(telescope.primary_imperial) }}&Prime; ({{ "%.2f"|format(telescope.primary_metric) }}<sup>m</sup>)
-    <br>
-    <i>Astronomical Dusk: {{ telescope.astronomical_dusk }}&deg; &vert;
-    Astronomical Twilight: {{ telescope.astronomical_twilight }}&deg; &vert;
-    {{ telescope.min_airmass }} &lt; <i>Airmass</i> &lt; {{ telescope.max_airmass }} &vert;
-    {{ telescope.min_moon_exclusion }}&deg; &lt; <i>Moon Exclusion</i> &lt; {{ telescope.max_moon_exclusion }}&deg; &vert;
-     <i>Declination Limit:</i> {{ telescope.declination_limit }}&deg;
-   </span>
+   <span class="nightlog-3"><i>Latitude:</i> +{{ telescope.latitude }}&deg; &vert;</span>
+   <span class="nightlog-3"><i>Longitude:</i> {{ telescope.longitude }}&deg; &vert;</span>
+   <span class="nightlog-3"><i>Elevation:</i> {{ "%.1f"|format(telescope.altitude) }}<sup>m</sup> ({{ "%.1f"|format(telescope.elevation) }}&prime;) &vert;</span>
+   <span class="nightlog-3"><i>Focal Length:</i> {{ "%.1f"|format(telescope.focal_length_m) }}<sup>m</sup> ({{ "%.1f"|format(telescope.focal_length_ft) }}&prime;) &vert;</span>
+   <span class="nightlog-3"><i>Mount:</i> {{ telescope.mount }} &vert;</span>
+   <span class="nightlog-3"><i>Primary:</i> {{ "%.1f"|format(telescope.primary_imperial) }}&Prime; ({{ "%.2f"|format(telescope.primary_metric) }}<sup>m</sup>)<br></span>
+   <span class="nightlog-3"><i>Astronomical Dusk: {{ telescope.astronomical_dusk }}&deg; &vert; </i></span>
+   <span class="nightlog-3">Astronomical Twilight: {{ telescope.astronomical_twilight }}&deg; &vert;</span>
+   <span class="nightlog-3">{{ telescope.min_airmass }} &lt; <i>Airmass</i> &lt; {{ telescope.max_airmass }} &vert;</span>
+   <span class="nightlog-3">{{ telescope.min_moon_exclusion }}&deg; &lt; <i>Moon Exclusion</i> &lt; {{ telescope.max_moon_exclusion }}&deg; &vert;</span>
+   <span class="nightlog-3"><i>Declination Limit:</i> {{ telescope.declination_limit }}&deg;</span>
   </center>
  </div>
  <br>
  <!-- table row(s) -->
+  <table id="table">
+   <!--
  <table id="table table-striped table-sm table-border-red">
-    <thead>
-   <tr>
-    <!--
-            _headers = ['AIRMASS', 'BINNING', 'INSTRUME', 'DATE', 'EXPTIME', 'FILTER', 'FOCUS', 'CAMTEMP',
-                    'DEWTEMP', 'DETSIZE', 'AZIMUTH', 'ELEVAT', 'RA', 'DEC', 'IMAGETYP']
-                    -->
-    <th><span class="nightlog-3">File on scopenet.as.arizona.edu</span></th>
-    <th><span class="nightlog-3">Observation Date</span></th>
-    <th><span class="nightlog-3">Type</span></th>
-    <th><span class="nightlog-3">RA (J2k&deg;)</span></th>
-    <th><span class="nightlog-3">Dec (J2k&deg;)</span></th>
-   </tr>
-    </thead>
+ <table id="table table-striped table-sm table-border-red">
+
+ <table id="table table-striped table-sm table-border-red">
+ -->
+  <!-- DARKS -->
+  {% if darks %}
+   <thead>
+   <tr><th colspan="19"><span class="nightlog-4"><center>{{ num_darks }} DARKS on server scopenet.as.arizona.edu in directory {{ darks[0].directory }}</center></span></th></tr>
+    <tr>
+     <th><span class="nightlog-3">File</span></th>
+     <th><span class="nightlog-3">Observation Date</span></th>
+     <th><span class="nightlog-3">Object</span></th>
+     <th><span class="nightlog-3">RA (&deg;)</span></th>
+     <th><span class="nightlog-3">Dec (&deg;)</span></th>
+     <th><span class="nightlog-3">Epoch</span></th>
+     <th><span class="nightlog-3">Filter</span></th>
+     <th><span class="nightlog-3">ExpTime (s)</span></th>
+     <th><span class="nightlog-3">Image Type</span></th>
+     <th><span class="nightlog-3">Airmass</span></th>
+     <th><span class="nightlog-3">Azimuth (&deg;)</span></th>
+     <th><span class="nightlog-3">Elevation (&deg;)</span></th>
+     <th><span class="nightlog-3">Rotator Angle (&deg;)</span></th>
+     <th><span class="nightlog-3">Tel Focus</span></th>
+     <th><span class="nightlog-3">Instrument</span></th>
+     <th><span class="nightlog-3">Binning</span></th>
+     <th><span class="nightlog-3">Camera Temp (&deg;C)</span></th>
+     <th><span class="nightlog-3">Dewar Temp (&deg;C)</span></th>
+     <th><span class="nightlog-3">Detector Size</span></th>
+    </tr>
+   </thead>
+   <tbody>
+   {% for dark in darks %}
+    <tr>
+     <td>{{ dark.file }}</td>
+     <td>{{ dark.DATE }}</td>
+     <td>{{ dark.OBJECT }}</td>
+     <td>{{ dark.RA }}</td>
+     <td>{{ dark.DEC }}</td>
+     <td>{{ dark.EPOCH }}</td>
+     <td>{{ dark.FILTER }}</td>
+     <td>{{ dark.EXPTIME }}</td>
+     <td>{{ dark.IMAGETYP }}</td>
+     <td>{{ dark.AIRMASS }}</td>
+     <td>{{ dark.AZIMUTH }}</td>
+     <td>{{ dark.ELEVAT }}</td>
+     <td>{{ dark.ROTANGLE }}</td>
+     <td>{{ dark.FOCUS }}</td>
+     <td>{{ dark.INSTRUME }}</td>
+     <td>{{ dark.BINNING }}</td>
+     <td>{{ dark.CAMTEMP }}</td>
+     <td>{{ dark.DEWTEMP }}</td>
+     <td>{{ dark.DETSIZE[3:7] }}x{{ dark.DETSIZE[10:14] }}</td>
+    </tr>
+   {% endfor %}
+  {% endif %}
+  </tbody>
+
+  <!-- FLATS -->
+  {% if flats %}
+   <thead>
+    <tr><th colspan="19"><span class="nightlog-4"><center>{{ num_flats }} FLATS on server scopenet.as.arizona.edu in directory {{ flats[0].directory }}</center></span></th></tr>
+    <tr>
+     <th><span class="nightlog-3">File</span></th>
+     <th><span class="nightlog-3">Observation Date</span></th>
+     <th><span class="nightlog-3">Object</span></th>
+     <th><span class="nightlog-3">RA (&deg;)</span></th>
+     <th><span class="nightlog-3">Dec (&deg;)</span></th>
+     <th><span class="nightlog-3">Epoch</span></th>
+     <th><span class="nightlog-3">Filter</span></th>
+     <th><span class="nightlog-3">ExpTime (s)</span></th>
+     <th><span class="nightlog-3">Image Type</span></th>
+     <th><span class="nightlog-3">Airmass</span></th>
+     <th><span class="nightlog-3">Azimuth (&deg;)</span></th>
+     <th><span class="nightlog-3">Elevation (&deg;)</span></th>
+     <th><span class="nightlog-3">Rotator Angle (&deg;)</span></th>
+     <th><span class="nightlog-3">Tel Focus</span></th>
+     <th><span class="nightlog-3">Instrument</span></th>
+     <th><span class="nightlog-3">Binning</span></th>
+     <th><span class="nightlog-3">Camera Temp (&deg;C)</span></th>
+     <th><span class="nightlog-3">Dewar Temp (&deg;C)</span></th>
+     <th><span class="nightlog-3">Detector Size</span></th>
+    </tr>
+   </thead>
+   {% for flat in flats %}
     <tbody>
-      {% for dark in darks %}
-      <tr>
-        <td>{{ dark.file }}</td>
-        <td>{{ dark.DATE }}</td>
-        <td>{{ dark.IMAGETYP }}</td>
-        <td>{{ dark.RA }}</td>
-        <td>{{ dark.DEC }}</td>
-      </tr>
-      {% endfor %}
+     <tr>
+      <td>{{ flat.file }}</td>
+      <td>{{ flat.DATE }}</td>
+      <td>{{ flat.OBJECT }}</td>
+      <td>{{ flat.RA }}</td>
+      <td>{{ flat.DEC }}</td>
+      <td>{{ flat.EPOCH }}</td>
+      <td>{{ flat.FILTER }}</td>
+      <td>{{ flat.EXPTIME }}</td>
+      <td>{{ flat.IMAGETYP }}</td>
+      <td>{{ flat.AIRMASS }}</td>
+      <td>{{ flat.AZIMUTH }}</td>
+      <td>{{ flat.ELEVAT }}</td>
+      <td>{{ flat.ROTANGLE }}</td>
+      <td>{{ flat.FOCUS }}</td>
+      <td>{{ flat.INSTRUME }}</td>
+      <td>{{ flat.BINNING }}</td>
+      <td>{{ flat.CAMTEMP }}</td>
+      <td>{{ flat.DEWTEMP }}</td>
+      <td>{{ flat.DETSIZE[3:7] }}x{{ flat.DETSIZE[10:14] }}</td>
+     </tr>
     </tbody>
-  </table>
+   {% endfor %}
+  {% endif %}
+
+  <!-- FOCI -->
+  {% if foci %}
+   <thead>
+    <tr><th colspan="19"><span class="nightlog-4"><center>{{ num_foci }} FOCI on server scopenet.as.arizona.edu in directory {{ foci[0].directory }}</center></span></th></tr>
+    <tr>
+     <th><span class="nightlog-3">File</span></th>
+     <th><span class="nightlog-3">Observation Date</span></th>
+     <th><span class="nightlog-3">Object</span></th>
+     <th><span class="nightlog-3">RA (&deg;)</span></th>
+     <th><span class="nightlog-3">Dec (&deg;)</span></th>
+     <th><span class="nightlog-3">Epoch</span></th>
+     <th><span class="nightlog-3">Filter</span></th>
+     <th><span class="nightlog-3">ExpTime (s)</span></th>
+     <th><span class="nightlog-3">Image Type</span></th>
+     <th><span class="nightlog-3">Airmass</span></th>
+     <th><span class="nightlog-3">Azimuth (&deg;)</span></th>
+     <th><span class="nightlog-3">Elevation (&deg;)</span></th>
+     <th><span class="nightlog-3">Rotator Angle (&deg;)</span></th>
+     <th><span class="nightlog-3">Tel Focus</span></th>
+     <th><span class="nightlog-3">Instrument</span></th>
+     <th><span class="nightlog-3">Binning</span></th>
+     <th><span class="nightlog-3">Camera Temp (&deg;C)</span></th>
+     <th><span class="nightlog-3">Dewar Temp (&deg;C)</span></th>
+     <th><span class="nightlog-3">Detector Size</span></th>
+    </tr>
+   </thead>
+   {% for focus in foci %}
+    <tbody>
+     <tr>
+      <td>{{ focus.file }}</td>
+      <td>{{ focus.DATE }}</td>
+      <td>{{ focus.OBJECT }}</td>
+      <td>{{ focus.RA }}</td>
+      <td>{{ focus.DEC }}</td>
+      <td>{{ focus.EPOCH }}</td>
+      <td>{{ focus.FILTER }}</td>
+      <td>{{ focus.EXPTIME }}</td>
+      <td>{{ focus.IMAGETYP }}</td>
+      <td>{{ focus.AIRMASS }}</td>
+      <td>{{ focus.AZIMUTH }}</td>
+      <td>{{ focus.ELEVAT }}</td>
+      <td>{{ focus.ROTANGLE }}</td>
+      <td>{{ focus.FOCUS }}</td>
+      <td>{{ focus.INSTRUME }}</td>
+      <td>{{ focus.BINNING }}</td>
+      <td>{{ focus.CAMTEMP }}</td>
+      <td>{{ focus.DEWTEMP }}</td>
+      <td>{{ focus.DETSIZE[3:7] }}x{{ focus.DETSIZE[10:14] }}</td>
+     </tr>
+    </tbody>
+   {% endfor %}
+  {% endif %}
+
+  <!-- OBJECTS -->
+  {% if objects %}
+   <thead>
+    <tr><th colspan="19"><span class="nightlog-4"><center>{{ num_objects }} OBJECTS on server scopenet.as.arizona.edu in directory {{ objects[0].directory }}</center></span></th></tr>
+    <tr>
+     <th><span class="nightlog-3">File</span></th>
+     <th><span class="nightlog-3">Observation Date</span></th>
+     <th><span class="nightlog-3">Object</span></th>
+     <th><span class="nightlog-3">RA (&deg;)</span></th>
+     <th><span class="nightlog-3">Dec (&deg;)</span></th>
+     <th><span class="nightlog-3">Epoch</span></th>
+     <th><span class="nightlog-3">Filter</span></th>
+     <th><span class="nightlog-3">ExpTime (s)</span></th>
+     <th><span class="nightlog-3">Image Type</span></th>
+     <th><span class="nightlog-3">Airmass</span></th>
+     <th><span class="nightlog-3">Azimuth (&deg;)</span></th>
+     <th><span class="nightlog-3">Elevation (&deg;)</span></th>
+     <th><span class="nightlog-3">Rotator Angle (&deg;)</span></th>
+     <th><span class="nightlog-3">Tel Focus</span></th>
+     <th><span class="nightlog-3">Instrument</span></th>
+     <th><span class="nightlog-3">Binning</span></th>
+     <th><span class="nightlog-3">Camera Temp (&deg;C)</span></th>
+     <th><span class="nightlog-3">Dewar Temp (&deg;C)</span></th>
+     <th><span class="nightlog-3">Detector Size</span></th>
+    </tr>
+   </thead>
+  {% for object in objects %}
+   <tbody>
+    <tr>
+     <td>{{ object.file }}</td>
+     <td>{{ object.DATE }}</td>
+     <td>{{ object.OBJECT }}</td>
+     <td>{{ object.RA }}</td>
+     <td>{{ object.DEC }}</td>
+     <td>{{ object.EPOCH }}</td>
+     <td>{{ object.FILTER }}</td>
+     <td>{{ object.EXPTIME }}</td>
+     <td>{{ object.IMAGETYP }}</td>
+     <td>{{ object.AIRMASS }}</td>
+     <td>{{ object.AZIMUTH }}</td>
+     <td>{{ object.ELEVAT }}</td>
+     <td>{{ object.ROTANGLE }}</td>
+     <td>{{ object.FOCUS }}</td>
+     <td>{{ object.INSTRUME }}</td>
+     <td>{{ object.BINNING }}</td>
+     <td>{{ object.CAMTEMP }}</td>
+     <td>{{ object.DEWTEMP }}</td>
+     <td>{{ object.DETSIZE[3:7] }}x{{ object.DETSIZE[10:14] }}</td>
+    </tr>
+   </tbody>
+  {% endfor %}
+ {% endif %}
+
+  <!-- SKYFLATS -->
+ {% if skyflats %}
+  <thead>
+   <tr><th colspan="19"><span class="nightlog-4"><center>{{ num_skyflats }} SKYFLATS on server scopenet.as.arizona.edu in directory {{ skyflats[0].directory }}</center></span></th></tr>
+   <tr>
+    <th><span class="nightlog-3">File</span></th>
+    <th><span class="nightlog-3">Observation Date</span></th>
+    <th><span class="nightlog-3">Object</span></th>
+    <th><span class="nightlog-3">RA (&deg;)</span></th>
+    <th><span class="nightlog-3">Dec (&deg;)</span></th>
+    <th><span class="nightlog-3">Epoch</span></th>
+    <th><span class="nightlog-3">Filter</span></th>
+    <th><span class="nightlog-3">ExpTime (s)</span></th>
+    <th><span class="nightlog-3">Image Type</span></th>
+    <th><span class="nightlog-3">Airmass</span></th>
+    <th><span class="nightlog-3">Azimuth (&deg;)</span></th>
+    <th><span class="nightlog-3">Elevation (&deg;)</span></th>
+    <th><span class="nightlog-3">Rotator Angle (&deg;)</span></th>
+    <th><span class="nightlog-3">Tel Focus</span></th>
+    <th><span class="nightlog-3">Instrument</span></th>
+    <th><span class="nightlog-3">Binning</span></th>
+    <th><span class="nightlog-3">Camera Temp (&deg;C)</span></th>
+    <th><span class="nightlog-3">Dewar Temp (&deg;C)</span></th>
+    <th><span class="nightlog-3">Detector Size</span></th>
+   </tr>
+  </thead>
+  {% for skyflat in skyflats %}
+   <tbody>
+    <tr>
+     <td>{{ skyflat.file }}</td>
+     <td>{{ skyflat.DATE }}</td>
+     <td>{{ skyflat.OBJECT }}</td>
+     <td>{{ skyflat.RA }}</td>
+     <td>{{ skyflat.DEC }}</td>
+     <td>{{ skyflat.EPOCH }}</td>
+     <td>{{ skyflat.FILTER }}</td>
+     <td>{{ skyflat.EXPTIME }}</td>
+     <td>{{ skyflat.IMAGETYP }}</td>
+     <td>{{ skyflat.AIRMASS }}</td>
+     <td>{{ skyflat.AZIMUTH }}</td>
+     <td>{{ skyflat.ELEVAT }}</td>
+     <td>{{ skyflat.ROTANGLE }}</td>
+     <td>{{ skyflat.FOCUS }}</td>
+     <td>{{ skyflat.INSTRUME }}</td>
+     <td>{{ skyflat.BINNING }}</td>
+     <td>{{ skyflat.CAMTEMP }}</td>
+     <td>{{ skyflat.DEWTEMP }}</td>
+     <td>{{ skyflat.DETSIZE[3:7] }}x{{ skyflat.DETSIZE[10:14] }}</td>
+    </tr>
+   </tbody>
+  {% endfor %}
+ {% endif %}
+ </table>
+
 </div>
 <hr class="normal">
 {% endblock %}

@@ -135,10 +135,10 @@
     <img src="{{ current_user.get_avatar(24) }}">&nbsp;<i>Logged in as {{ current_user.firstname }} {{ current_user.lastname }}</i>
    </span>
    <span class="right">
-    Clear Sky Map(s):
-    <a href="http://www.cleardarksky.com/c/KittAZcsk.gif?c=1249207"><span class="blue-label">Bok</span></a>
-    <a href="http://www.cleardarksky.com/c/Kpr61AZcsk.gif?c=1206047"><span class="blue-label">Kuiper</span></a>
-    <a href="http://www.cleardarksky.com/c/MtGrahamAZcsk.gif?c=1224045"><span class="blue-label">Vatt</span></a>
+    <!-- Clear Sky Map(s):-->
+    <a href="http://www.cleardarksky.com/c/KittAZcsk.gif?c=1249207" class="btn btn-md btn-outline-warning"><span class="blue-label">Bok Clear Sky Map</span></a>
+    <a href="http://www.cleardarksky.com/c/Kpr61AZcsk.gif?c=1206047" class="btn btn-md btn-outline-warning"><span class="blue-label">Kuiper Clear Sky Map</span></a>
+    <a href="http://www.cleardarksky.com/c/MtGrahamAZcsk.gif?c=1224045" class="btn btn-md btn-outline-warning"><span class="blue-label">Vatt Clear Sky Map</span></a>
    </span>
   </div>
  </div>
@@ -163,6 +163,9 @@
  <div class="row">
   <div class="container">
    <span class="right">
+    {% if current_user.is_admin %}
+     <a href="{{ url_for('orp_nightlog') }}" class="btn btn-sm btn-outline-info">Observation Log</a>
+    {% endif %}
     <a href="{{ url_for('orp_history') }}?username={{ current_user.username }}" class="btn btn-sm btn-outline-info">Observation History</a>
     <a href="{{ url_for('orp_obsreq', username=current_user.username) }}" class="btn btn-sm btn-outline-info">Create Observation Request</a>
     <a href="{{ url_for('orp_upload', username=current_user.username) }}" class="btn btn-sm btn-outline-info">File Upload</a>

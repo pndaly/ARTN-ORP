@@ -367,6 +367,7 @@ class NightLogForm(FlaskForm):
     obs = SelectField('Observation Type', choices=OBSERVATION_TYPES,
                       default=OBSERVATION_TYPES[0][0], validators=[DataRequired()])
     iso = DateTimeField('Date', default=get_date_time(), format='%Y-%m-%d', validators=[DataRequired()])
+    pdf = BooleanField('Generate PDF', false_values=(False, 'false', 0, '0'), default=False)
 
     # submit
     submit = SubmitField('Submit')

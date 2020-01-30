@@ -6,7 +6,7 @@
 # -
 from astropy.io import fits
 from flask import Flask, jsonify, copy_current_request_context, request, \
-    render_template, redirect, send_from_directory, url_for
+    render_template, redirect, send_from_directory, url_for, make_response
 from flask_bootstrap import Bootstrap
 from flask_mail import Mail, Message
 from flask_login import LoginManager, current_user, login_user, login_required, logout_user
@@ -31,6 +31,7 @@ from src import *
 import csv
 import glob
 import json
+import pdfkit
 import random
 import time
 
@@ -607,6 +608,29 @@ def get_nightlog(_path=ARTN_DIR_OBJECTS, _type=''):
             return {}
     else:
         return {}
+
+
+# noinspection PyBroadException
+def get_nightlog_fits(_in=None):
+
+    # check input(s)
+    if _in is None or not isinstance(_in, dict) or _in is {}:
+        return []
+
+    # get fits data
+    _l_out = []
+    for _f in _in:
+        _d_out = {'file': os.path.basename(_f), 'directory': os.path.dirname(_f)}
+        with fits.open(_f) as _hdul:
+            for _h in ARTN_FITS_HEADERS:
+                try:
+                    _d_out[_h] = str(_hdul[0].header[_h]).strip()
+                except Exception:
+                    _d_out[_h] = ''
+        _l_out.append(_d_out)
+
+    # return
+    return _l_out
 
 
 # +
@@ -1330,54 +1354,62 @@ def orp_nightlog():
         _obs = form.obs.data.strip()
         _iso = str(form.iso.data).strip().split()[0].replace('-', '')
         _tel = form.telescope.data.strip()
-        msg_out(f'/orp/nightlog/ _obs={_obs}, _iso={_iso}, _tel={_tel}', True, True)
+        _pdf = form.pdf.data
+        msg_out(f'/orp/nightlog/ _obs={_obs}, _iso={_iso}, _tel={_tel}, _pdf={_pdf}', True, False)
 
         # search for data
-        _all, _darks, _focus, _flats, _objects, _skyflats = {}, {}, {}, {}, {}, {}
+        _all, _darks, _foci, _flats, _objects, _skyflats = {}, {}, {}, {}, {}, {}
         if _obs == 'all':
             _darks = get_nightlog(_path=f'{ARTN_DIR_DARKS.replace("YYYYMMDD", _iso)}', _type='darks')
             _flats = get_nightlog(_path=f'{ARTN_DIR_FLATS.replace("YYYYMMDD", _iso)}', _type='flats')
-            _focus = get_nightlog(_path=f'{ARTN_DIR_FOCUS.replace("YYYYMMDD", _iso)}', _type='focus')
+            _foci = get_nightlog(_path=f'{ARTN_DIR_FOCUS.replace("YYYYMMDD", _iso)}', _type='focus')
             _objects = get_nightlog(_path=f'{ARTN_DIR_OBJECTS.replace("YYYYMMDD", _iso)}', _type='objects')
             _skyflats = get_nightlog(_path=f'{ARTN_DIR_SKYFLATS.replace("YYYYMMDD", _iso)}', _type='skyflats')
-            _all = {**_darks, **_flats, **_focus, **_objects, **_skyflats}
-            msg_out(f'/orp/nightlog/ _all={_all}, len(_all)={len(_all)}', True, False)
+            # _all = {**_darks, **_flats, **_focus, **_objects, **_skyflats}
         elif _obs == 'darks':
             _darks = get_nightlog(_path=f'{ARTN_DIR_DARKS.replace("YYYYMMDD", _iso)}', _type=_obs)
-            msg_out(f'/orp/nightlog/ _darks={_darks}, len(_darks)={len(_darks)}', True, True)
         elif _obs == 'flats':
             _flats = get_nightlog(_path=f'{ARTN_DIR_FLATS.replace("YYYYMMDD", _iso)}', _type=_obs)
-            msg_out(f'/orp/nightlog/ _flats={_flats}, len(flats)={len(_flats)}', True, True)
         elif _obs == 'focus':
-            _focus = get_nightlog(_path=f'{ARTN_DIR_FOCUS.replace("YYYYMMDD", _iso)}', _type=_obs)
-            msg_out(f'/orp/nightlog/ _focus={_focus}, len(_focus)={len(_focus)}', True, True)
+            _foci = get_nightlog(_path=f'{ARTN_DIR_FOCUS.replace("YYYYMMDD", _iso)}', _type=_obs)
         elif _obs == 'objects':
             _objects = get_nightlog(_path=f'{ARTN_DIR_OBJECTS.replace("YYYYMMDD", _iso)}', _type=_obs)
-            msg_out(f'/orp/nightlog/ _objects={_objects}, len(_objects)={len(_objects)}', True, True)
         elif _obs == 'skyflats':
             _skyflats = get_nightlog(_path=f'{ARTN_DIR_SKYFLATS.replace("YYYYMMDD", _iso)}', _type=_obs)
-            msg_out(f'/orp/nightlog/ _skyflats={_skyflats}, len(_skyflats)={len(_skyflats)}', True, True)
         else:
             return render_template('401.html')
 
         # start building page
         _telescope = TEL__NODES[_tel]
-        _headers = ['AIRMASS', 'BINNING', 'INSTRUME', 'DATE', 'EXPTIME', 'FILTER', 'FOCUS', 'CAMTEMP',
-                    'DEWTEMP', 'DETSIZE', 'AZIMUTH', 'ELEVAT', 'RA', 'DEC', 'IMAGETYP']
-        _l_darks = []
-        if _darks:
-            for _f in _darks:
-                _d_darks = {'file': _f}
-                with fits.open(_f) as _hdul:
-                    for _h in _headers:
-                        _d_darks[_h] = _hdul[0].header[_h]
-                msg_out(f'/orp/nightlog/ _d_darks={_l_darks}, len(_d_darks)={len(_d_darks)}', True, True)
-                _l_darks.append(_d_darks)
-        msg_out(f'/orp/nightlog/ _1_darks={_l_darks}, len(_1_darks)={len(_l_darks)}', True, True)
-        return render_template(f'nightlog_{_tel}.html', telescope=_telescope, iso=_iso, user=current_user,
-                               darks=_l_darks)
 
-    # return
+        # get fits data
+        _l_darks = get_nightlog_fits(_darks)
+        _l_flats = get_nightlog_fits(_flats)
+        _l_foci = get_nightlog_fits(_foci)
+        _l_objects = get_nightlog_fits(_objects)
+        _l_skyflats = get_nightlog_fits(_skyflats)
+
+        # render page or create pdf
+        if _pdf:
+            _rendered = render_template(f'nightlog_{_tel}_pdf.html', telescope=_telescope, iso=_iso,
+                                        user=current_user, darks=_l_darks, flats=_l_flats, foci=_l_foci,
+                                        objects=_l_objects, skyflats=_l_skyflats, num_darks=len(_l_darks),
+                                        num_flats=len(_l_flats), num_foci=len(_l_foci), num_objects=len(_l_objects),
+                                        num_skyflats=len(_l_skyflats))
+            _obslog = pdfkit.from_string(_rendered, False, css=f"{ARTN_BASE_DIR}/static/css/main.css")
+            _response = make_response(_obslog)
+            _response.headers['Content-Type'] = 'application/pdf'
+            _response.headers['Content-Disposition'] = f'attachment; filename=obslog_{_iso}.pdf'
+            return _response
+
+        else:
+            return render_template(f'nightlog_{_tel}.html', telescope=_telescope, iso=_iso,
+                                   user=current_user, darks=_l_darks, flats=_l_flats, foci=_l_foci,
+                                   objects=_l_objects, skyflats=_l_skyflats, num_darks=len(_l_darks),
+                                   num_flats=len(_l_flats), num_foci=len(_l_foci), num_objects=len(_l_objects),
+                                   num_skyflats=len(_l_skyflats))
+
+        # return
     return render_template('nightlog.html', form=form)
 
 

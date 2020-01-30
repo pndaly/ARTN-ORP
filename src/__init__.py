@@ -52,6 +52,8 @@ ARTN_DEC_PATTERN = "[+-]?[0-9]{2}:[0-9]{2}:[0-9]{2}"
 ARTN_DECODE_DICT = {'.us.': '_', '.sq.': "'", '.ws.': ' ', '.bs.': '\\', '.at.': '@',
                     '.bg.': '!', '.dq.': '"', '.eq.': '='}
 ARTN_ENCODE_DICT = {v: k for k, v in ARTN_DECODE_DICT.items()}
+ARTN_FITS_HEADERS = ['AIRMASS', 'BINNING', 'INSTRUME', 'DATE', 'EXPTIME', 'FILTER', 'FOCUS', 'CAMTEMP',
+                     'DEWTEMP', 'DETSIZE', 'AZIMUTH', 'ELEVAT', 'RA', 'DEC', 'IMAGETYP', 'EPOCH', 'ROTANGLE', 'OBJECT']
 ARTN_ISO_FORMAT = "{:04d}-{:02d}-{:02d}T{:02d}:{:02d}:{:09.6f}"
 ARTN_ISO_NULL = '0000-00-00T00:00:00.000000'
 ARTN_ISO_PATTERN = '[0-9]{4}-[0-9]{2}-[0-9]{2}[ T?][0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{6}'
