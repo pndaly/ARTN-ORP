@@ -619,18 +619,32 @@ def get_nightlog_fits(_in=None):
 
     # get fits data
     _l_out = []
-    for _f in _in:
-        _d_out = {'file': os.path.basename(_f), 'directory': os.path.dirname(_f)}
-        with fits.open(_f) as _hdul:
+    for _k, _v in _in.items():
+        _d_out = {'file': os.path.basename(_k), 'directory': os.path.dirname(_k), 'size': _v}
+        with fits.open(_k) as _hdul:
             for _h in ARTN_FITS_HEADERS:
                 try:
-                    _d_out[_h] = str(_hdul[0].header[_h]).strip()
+                    _d_out[_h.replace('-', '')] = str(_hdul[0].header[_h]).strip()
                 except Exception:
                     _d_out[_h] = ''
+
+        # who requested it?
+        try:
+            if _d_out['ARTNGID'].strip() != '' and _d_out['ARTNOID'].strip() != '':
+                query = db.session.query(ObsReq)
+                query = obsreq_filters(query, {'group_id': f"{_d_out['ARTNGID']}"})
+                query = obsreq_filters(query, {'observation_id': f"{_d_out['ARTNOID']}"})
+                _d_out['OWNER'] = query.first().username
+            else:
+                _d_out['OWNER'] = 'rts2'
+        except Exception:
+            _d_out['OWNER'] = 'rts2'
+
+        # append new record
         _l_out.append(_d_out)
 
-    # return
-    return _l_out
+    # return list sorted by Julian date key
+    return sorted(_l_out, key=lambda _i: _i['JULIAN'])
 
 
 # +
@@ -1379,10 +1393,8 @@ def orp_nightlog():
         else:
             return render_template('401.html')
 
-        # start building page
-        _telescope = TEL__NODES[_tel]
-
         # get fits data
+        _telescope = TEL__NODES[_tel]
         _l_darks = get_nightlog_fits(_darks)
         _l_flats = get_nightlog_fits(_flats)
         _l_foci = get_nightlog_fits(_foci)

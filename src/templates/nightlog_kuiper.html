@@ -36,22 +36,17 @@
  <br>
  <!-- table row(s) -->
   <table id="table">
-   <!--
- <table id="table table-striped table-sm table-border-red">
- <table id="table table-striped table-sm table-border-red">
 
- <table id="table table-striped table-sm table-border-red">
- -->
   <!-- DARKS -->
   {% if darks %}
    <thead>
-   <tr><th colspan="19"><span class="nightlog-4"><center>{{ num_darks }} DARKS on server scopenet.as.arizona.edu in directory {{ darks[0].directory }}</center></span></th></tr>
+   <tr><th colspan="21"><span class="nightlog-4"><center>{{ num_darks }} DARKS on server scopenet.as.arizona.edu in directory {{ darks[0].directory }}</center></span></th></tr>
     <tr>
      <th><span class="nightlog-3">File</span></th>
-     <th><span class="nightlog-3">Observation Date</span></th>
+     <th><span class="nightlog-3">Observation Date (UT)</span></th>
      <th><span class="nightlog-3">Object</span></th>
-     <th><span class="nightlog-3">RA (&deg;)</span></th>
-     <th><span class="nightlog-3">Dec (&deg;)</span></th>
+     <th><span class="nightlog-3">RA</span></th>
+     <th><span class="nightlog-3">Dec</span></th>
      <th><span class="nightlog-3">Epoch</span></th>
      <th><span class="nightlog-3">Filter</span></th>
      <th><span class="nightlog-3">ExpTime (s)</span></th>
@@ -66,13 +61,15 @@
      <th><span class="nightlog-3">Camera Temp (&deg;C)</span></th>
      <th><span class="nightlog-3">Dewar Temp (&deg;C)</span></th>
      <th><span class="nightlog-3">Detector Size</span></th>
+     <th><span class="nightlog-3">Size (Bytes)</span></th>
+     <th><span class="nightlog-3">Owner</span></th>
     </tr>
    </thead>
    <tbody>
    {% for dark in darks %}
     <tr>
      <td>{{ dark.file }}</td>
-     <td>{{ dark.DATE }}</td>
+     <td>{{ dark.DATEOBS }}T{{ dark.TIMEOBS }}</td>
      <td>{{ dark.OBJECT }}</td>
      <td>{{ dark.RA }}</td>
      <td>{{ dark.DEC }}</td>
@@ -90,6 +87,8 @@
      <td>{{ dark.CAMTEMP }}</td>
      <td>{{ dark.DEWTEMP }}</td>
      <td>{{ dark.DETSIZE[3:7] }}x{{ dark.DETSIZE[10:14] }}</td>
+     <td>{{ dark.size }}</td>
+     <td>{{ dark.OWNER }}</td>
     </tr>
    {% endfor %}
   {% endif %}
@@ -98,13 +97,13 @@
   <!-- FLATS -->
   {% if flats %}
    <thead>
-    <tr><th colspan="19"><span class="nightlog-4"><center>{{ num_flats }} FLATS on server scopenet.as.arizona.edu in directory {{ flats[0].directory }}</center></span></th></tr>
+    <tr><th colspan="21"><span class="nightlog-4"><center>{{ num_flats }} FLATS on server scopenet.as.arizona.edu in directory {{ flats[0].directory }}</center></span></th></tr>
     <tr>
      <th><span class="nightlog-3">File</span></th>
-     <th><span class="nightlog-3">Observation Date</span></th>
+     <th><span class="nightlog-3">Observation Date (UT)</span></th>
      <th><span class="nightlog-3">Object</span></th>
-     <th><span class="nightlog-3">RA (&deg;)</span></th>
-     <th><span class="nightlog-3">Dec (&deg;)</span></th>
+     <th><span class="nightlog-3">RA</span></th>
+     <th><span class="nightlog-3">Dec</span></th>
      <th><span class="nightlog-3">Epoch</span></th>
      <th><span class="nightlog-3">Filter</span></th>
      <th><span class="nightlog-3">ExpTime (s)</span></th>
@@ -119,13 +118,15 @@
      <th><span class="nightlog-3">Camera Temp (&deg;C)</span></th>
      <th><span class="nightlog-3">Dewar Temp (&deg;C)</span></th>
      <th><span class="nightlog-3">Detector Size</span></th>
+     <th><span class="nightlog-3">Size (Bytes)</span></th>
+     <th><span class="nightlog-3">Owner</span></th>
     </tr>
    </thead>
    {% for flat in flats %}
     <tbody>
      <tr>
       <td>{{ flat.file }}</td>
-      <td>{{ flat.DATE }}</td>
+      <td>{{ flat.DATEOBS }}T{{ flat.TIMEOBS }}</td>
       <td>{{ flat.OBJECT }}</td>
       <td>{{ flat.RA }}</td>
       <td>{{ flat.DEC }}</td>
@@ -143,6 +144,8 @@
       <td>{{ flat.CAMTEMP }}</td>
       <td>{{ flat.DEWTEMP }}</td>
       <td>{{ flat.DETSIZE[3:7] }}x{{ flat.DETSIZE[10:14] }}</td>
+      <td>{{ flat.size }}</td>
+      <td>{{ flat.OWNER }}</td>
      </tr>
     </tbody>
    {% endfor %}
@@ -151,13 +154,13 @@
   <!-- FOCI -->
   {% if foci %}
    <thead>
-    <tr><th colspan="19"><span class="nightlog-4"><center>{{ num_foci }} FOCI on server scopenet.as.arizona.edu in directory {{ foci[0].directory }}</center></span></th></tr>
+    <tr><th colspan="21"><span class="nightlog-4"><center>{{ num_foci }} FOCI on server scopenet.as.arizona.edu in directory {{ foci[0].directory }}</center></span></th></tr>
     <tr>
      <th><span class="nightlog-3">File</span></th>
-     <th><span class="nightlog-3">Observation Date</span></th>
+     <th><span class="nightlog-3">Observation Date (UT)</span></th>
      <th><span class="nightlog-3">Object</span></th>
-     <th><span class="nightlog-3">RA (&deg;)</span></th>
-     <th><span class="nightlog-3">Dec (&deg;)</span></th>
+     <th><span class="nightlog-3">RA</span></th>
+     <th><span class="nightlog-3">Dec</span></th>
      <th><span class="nightlog-3">Epoch</span></th>
      <th><span class="nightlog-3">Filter</span></th>
      <th><span class="nightlog-3">ExpTime (s)</span></th>
@@ -172,13 +175,15 @@
      <th><span class="nightlog-3">Camera Temp (&deg;C)</span></th>
      <th><span class="nightlog-3">Dewar Temp (&deg;C)</span></th>
      <th><span class="nightlog-3">Detector Size</span></th>
+     <th><span class="nightlog-3">Size (Bytes)</span></th>
+     <th><span class="nightlog-3">Owner</span></th>
     </tr>
    </thead>
    {% for focus in foci %}
     <tbody>
      <tr>
       <td>{{ focus.file }}</td>
-      <td>{{ focus.DATE }}</td>
+      <td>{{ focus.DATEOBS }}T{{ focus.TIMEOBS }}</td>
       <td>{{ focus.OBJECT }}</td>
       <td>{{ focus.RA }}</td>
       <td>{{ focus.DEC }}</td>
@@ -196,6 +201,8 @@
       <td>{{ focus.CAMTEMP }}</td>
       <td>{{ focus.DEWTEMP }}</td>
       <td>{{ focus.DETSIZE[3:7] }}x{{ focus.DETSIZE[10:14] }}</td>
+      <td>{{ focus.size }}</td>
+      <td>{{ focus.OWNER }}</td>
      </tr>
     </tbody>
    {% endfor %}
@@ -204,13 +211,13 @@
   <!-- OBJECTS -->
   {% if objects %}
    <thead>
-    <tr><th colspan="19"><span class="nightlog-4"><center>{{ num_objects }} OBJECTS on server scopenet.as.arizona.edu in directory {{ objects[0].directory }}</center></span></th></tr>
+    <tr><th colspan="21"><span class="nightlog-4"><center>{{ num_objects }} OBJECTS on server scopenet.as.arizona.edu in directory {{ objects[0].directory }}</center></span></th></tr>
     <tr>
      <th><span class="nightlog-3">File</span></th>
-     <th><span class="nightlog-3">Observation Date</span></th>
+     <th><span class="nightlog-3">Observation Date (UT)</span></th>
      <th><span class="nightlog-3">Object</span></th>
-     <th><span class="nightlog-3">RA (&deg;)</span></th>
-     <th><span class="nightlog-3">Dec (&deg;)</span></th>
+     <th><span class="nightlog-3">RA</span></th>
+     <th><span class="nightlog-3">Dec</span></th>
      <th><span class="nightlog-3">Epoch</span></th>
      <th><span class="nightlog-3">Filter</span></th>
      <th><span class="nightlog-3">ExpTime (s)</span></th>
@@ -225,13 +232,15 @@
      <th><span class="nightlog-3">Camera Temp (&deg;C)</span></th>
      <th><span class="nightlog-3">Dewar Temp (&deg;C)</span></th>
      <th><span class="nightlog-3">Detector Size</span></th>
+     <th><span class="nightlog-3">Size (Bytes)</span></th>
+     <th><span class="nightlog-3">Owner</span></th>
     </tr>
    </thead>
   {% for object in objects %}
    <tbody>
     <tr>
      <td>{{ object.file }}</td>
-     <td>{{ object.DATE }}</td>
+     <td>{{ object.DATEOBS }}T{{ object.TIMEOBS }}</td>
      <td>{{ object.OBJECT }}</td>
      <td>{{ object.RA }}</td>
      <td>{{ object.DEC }}</td>
@@ -249,6 +258,8 @@
      <td>{{ object.CAMTEMP }}</td>
      <td>{{ object.DEWTEMP }}</td>
      <td>{{ object.DETSIZE[3:7] }}x{{ object.DETSIZE[10:14] }}</td>
+     <td>{{ object.size }}</td>
+     <td>{{ object.OWNER }}</td>
     </tr>
    </tbody>
   {% endfor %}
@@ -257,13 +268,13 @@
   <!-- SKYFLATS -->
  {% if skyflats %}
   <thead>
-   <tr><th colspan="19"><span class="nightlog-4"><center>{{ num_skyflats }} SKYFLATS on server scopenet.as.arizona.edu in directory {{ skyflats[0].directory }}</center></span></th></tr>
+   <tr><th colspan="21"><span class="nightlog-4"><center>{{ num_skyflats }} SKYFLATS on server scopenet.as.arizona.edu in directory {{ skyflats[0].directory }}</center></span></th></tr>
    <tr>
     <th><span class="nightlog-3">File</span></th>
-    <th><span class="nightlog-3">Observation Date</span></th>
+    <th><span class="nightlog-3">Observation Date (UT)</span></th>
     <th><span class="nightlog-3">Object</span></th>
-    <th><span class="nightlog-3">RA (&deg;)</span></th>
-    <th><span class="nightlog-3">Dec (&deg;)</span></th>
+    <th><span class="nightlog-3">RA</span></th>
+    <th><span class="nightlog-3">Dec</span></th>
     <th><span class="nightlog-3">Epoch</span></th>
     <th><span class="nightlog-3">Filter</span></th>
     <th><span class="nightlog-3">ExpTime (s)</span></th>
@@ -278,13 +289,15 @@
     <th><span class="nightlog-3">Camera Temp (&deg;C)</span></th>
     <th><span class="nightlog-3">Dewar Temp (&deg;C)</span></th>
     <th><span class="nightlog-3">Detector Size</span></th>
+    <th><span class="nightlog-3">Size (Bytes)</span></th>
+    <th><span class="nightlog-3">Owner</span></th>
    </tr>
   </thead>
   {% for skyflat in skyflats %}
    <tbody>
     <tr>
      <td>{{ skyflat.file }}</td>
-     <td>{{ skyflat.DATE }}</td>
+     <td>{{ skyflat.DATEOBS }}T{{ skyflat.TIMEOBS }}</td>
      <td>{{ skyflat.OBJECT }}</td>
      <td>{{ skyflat.RA }}</td>
      <td>{{ skyflat.DEC }}</td>
@@ -302,6 +315,8 @@
      <td>{{ skyflat.CAMTEMP }}</td>
      <td>{{ skyflat.DEWTEMP }}</td>
      <td>{{ skyflat.DETSIZE[3:7] }}x{{ skyflat.DETSIZE[10:14] }}</td>
+     <td>{{ skyflat.size }}</td>
+     <td>{{ skyflat.OWNER }}</td>
     </tr>
    </tbody>
   {% endfor %}

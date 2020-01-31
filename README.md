@@ -11,6 +11,7 @@ to use the system.
 * Linux (we use Ubuntu 18.04 LTS)
 * Python 3.7 (it will not work with Python < 3.6)
 * PostGreSQL 12.x (but will probably work with earlier versions)
+* wkhtmltopdf (if you want to generate PDF night logs)
 
 ## Get The Software
 
