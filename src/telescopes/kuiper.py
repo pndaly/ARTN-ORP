@@ -94,6 +94,7 @@ def kuiper_observe(_obsreq=None, _user=None, _sim=False):
     tel_log(f'Queueing {_object_name} on the {_tel_name} telescope ({_ra_hms} {_dec_dms} {_exp_time}s {_num_exp}x {_filter_name}-band)', True, False)
 
     # create the target
+    _msg_err = f'ERROR: Failed calling stellar(), _sim={_sim}'
     _msg_in = f'Calling stellar(), _sim={_sim}'
     _msg_out = f'Called stellar(), _sim={_sim}'
     try:
@@ -104,10 +105,12 @@ def kuiper_observe(_obsreq=None, _user=None, _sim=False):
                               artn_obs_id=_observation_id, artn_group_id=_group_id)
         tel_log(_msg_out, True, False)
     except Exception as _e:
+        tel_log(_msg_err, True, True)
         tel_logger.error(f'Failed calling stellar(), _target={_target}, error={_e}')
         return '{}', -1
 
     # create the json script
+    _msg_err = f'ERROR: Failed calling _target.create_target_api(), _sim={_sim}'
     _msg_in = f'calling _target.create_target_api(), _sim={_sim}'
     _msg_out = f'called _target.create_target_api(), _sim={_sim}'
     try:
@@ -116,10 +119,12 @@ def kuiper_observe(_obsreq=None, _user=None, _sim=False):
             _id = _target.create_target_api()
         tel_log(_msg_out, True, False)
     except Exception as _e:
-        tel_logger.error(f'Failed calling _target.create_target_api(), _id={_id}')
+        tel_log(_msg_err, True, True)
+        tel_logger.error(f'Failed calling _target.create_target_api(), _id={_id}, error={_e}')
         return '{}', -1
 
     # dictify the target
+    _msg_err = f'ERROR: Failed calling _target.dictify(), _sim={_sim}'
     _msg_in = f'calling _target.dictify(), _sim={_sim}'
     _msg_out = f'called _target.dictify(), _sim={_sim}'
     try:
@@ -128,10 +133,12 @@ def kuiper_observe(_obsreq=None, _user=None, _sim=False):
             _json = _target.dictify()
         tel_log(_msg_out, True, False)
     except Exception as _e:
-        tel_logger.error(f'Failed calling _target.dictify(), _json={_json}')
+        tel_log(_msg_err, True, True)
+        tel_logger.error(f'Failed calling _target.dictify(), _json={_json}, error={_e}')
         return '{}', -1
 
     # create queue
+    _msg_err = f'ERROR: Failed calling Queue(), _sim={_sim}'
     _msg_in = f'calling Queue(), _sim={_sim}'
     _msg_out = f'called Queue(), _sim={_sim}'
     try:
@@ -140,10 +147,12 @@ def kuiper_observe(_obsreq=None, _user=None, _sim=False):
             _queue = Queue(f'plan')
         tel_log(_msg_out, True, False)
     except Exception as _e:
-        tel_logger.error(f'Failed calling Queue() OK, _queue={_queue}')
+        tel_log(_msg_err, True, True)
+        tel_logger.error(f'Failed calling Queue() OK, _queue={_queue}, error={_e}')
         return '{}', -1
 
     # add target to queue
+    _msg_err = f'ERROR: Failed calling _queue.add_target(), _sim={_sim}'
     _msg_in = f'calling _queue.add_target(), _sim={_sim}'
     _msg_out = f'called _queue.add_target(), _sim={_sim}'
     try:
@@ -152,10 +161,12 @@ def kuiper_observe(_obsreq=None, _user=None, _sim=False):
             _queue.add_target(_id)
         tel_log(_msg_out, True, False)
     except Exception as _e:
-        tel_logger.error(f'Failed calling _queue.add_target()')
+        tel_log(_msg_err, True, True)
+        tel_logger.error(f'Failed calling _queue.add_target(), error={_e}')
         return '{}', -1
 
     # load the queue
+    _msg_err = f'ERROR: Failed calling _queue.load(), _sim={_sim}'
     _msg_in = f'calling _queue.load(), _sim={_sim}'
     _msg_out = f'called _queue.load(), _sim={_sim}'
     try:
@@ -164,10 +175,12 @@ def kuiper_observe(_obsreq=None, _user=None, _sim=False):
             _queue.load()
         tel_log(_msg_out, True, False)
     except Exception as _e:
-        tel_logger.error(f'Failed calling _queue.load()')
+        tel_log(_msg_err, True, True)
+        tel_logger.error(f'Failed calling _queue.load(), error={_e}')
         return '{}', -1
 
     # save the queue (in effect, send to rts2)
+    _msg_err = f'ERROR: Failed calling _queue.save(), _sim={_sim}'
     _msg_in = f'calling _queue.save(), _sim={_sim}'
     _msg_in = f'called _queue.save(), _sim={_sim}'
     try:
@@ -176,7 +189,8 @@ def kuiper_observe(_obsreq=None, _user=None, _sim=False):
             _queue.save()
         tel_log(_msg_out, True, False)
     except Exception as _e:
-        tel_logger.error(f'Failed calling _queue.save()')
+        tel_log(_msg_err, True, True)
+        tel_logger.error(f'Failed calling _queue.save(), error={_e}')
         return '{}', -1
 
     # return

@@ -6,6 +6,7 @@
 # -
 export ARTN_HOME=${1:-${PWD}}
 export ARTN_BIN=${ARTN_HOME}/bin
+export ARTN_CRON=${ARTN_HOME}/cron
 export ARTN_ETC=${ARTN_HOME}/etc
 export ARTN_LOGS=${ARTN_HOME}/logs
 export ARTN_SRC=${ARTN_HOME}/src

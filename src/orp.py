@@ -90,12 +90,6 @@ app.config['SCRIPTS_PYTHON'] = f'{os.getenv("ORP_UTILS")}'
 
 
 # +
-# initialize iers
-# -
-get_iers()
-
-
-# +
 # initialize bootstrap
 # -
 bootstrap = Bootstrap(app)

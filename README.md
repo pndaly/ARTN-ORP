@@ -165,6 +165,12 @@ If you carried out the above, and assuming the codebase is in /home/artn/ARTN-OR
         `% sed 's/__myhost__/127\.0\.0\.1/g' >> /etc/apache2/sites-available/orp.conf` (or whatever IP address you have)
     * Enable the site via *Apache2* in the usual way
 
+## IERS Updates
+
+Sometime during 2019 astropy/astroplan broke due to the IERS ephemeris server at USNO going offline. To fix this,
+we provide a cron job that updates the ephemeris from another source. The file `${ARTN_CRON}/iers.update.sh` contains
+the crontab entry to show how to do this or the file can be run directly. We find that once per week is sufficient.
+
 ## RTS2 Users Only
 
 You should *copy* `${ORP_SRC}/telescopes/rts2_config.template.json` and edit the copy to suit your site:
@@ -183,4 +189,4 @@ for which we have to create an SSH tunnel. To do this, execute (*eg* on the Kuip
 
 ------------------------------------------------------------
 
-Last Updated: 20200106
+Last Updated: 2020207

@@ -562,23 +562,24 @@ def get_iers(_url=ASTROPLAN_IERS_URL):
     # get logger
     _iers_log = UtilsLogger('IERS-Logger').logger
 
+    # update ephemeris
     try:
         # try astroplan download
-        _iers_log.info("1: from astroplan import download_IERS_A")
+        _iers_log.info("from astroplan import download_IERS_A")
         from astroplan import download_IERS_A
-        _iers_log.info("1: download_IERS_A()")
+        _iers_log.info("download_IERS_A()")
         download_IERS_A()
     except Exception:
         # try alternate download
-        _iers_log.info("2: from astroplan import download_IERS_A")
+        _iers_log.debug("from astroplan import download_IERS_A")
         from astroplan import download_IERS_A
-        _iers_log.info("2: from astropy.utils import iers")
+        _iers_log.debug("from astropy.utils import iers")
         from astropy.utils import iers
-        _iers_log.info("2: from astropy.utils.data import clear_download_cache")
+        _iers_log.debug("from astropy.utils.data import clear_download_cache")
         from astropy.utils.data import clear_download_cache
-        _iers_log.info("2: clear_download_cache()")
+        _iers_log.debug("clear_download_cache()")
         clear_download_cache()
-        _iers_log.info(f"2: iers.IERS_A_URL = {_url}")
+        _iers_log.debug(f"iers.IERS_A_URL = {_url}")
         iers.IERS_A_URL = f'{_url}'
-        _iers_log.info("2: download_IERS_A()")
+        _iers_log.debug("download_IERS_A()")
         download_IERS_A()
