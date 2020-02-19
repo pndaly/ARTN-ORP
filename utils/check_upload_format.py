@@ -14,9 +14,7 @@ import csv
 # __doc__ string
 # -
 __doc__ = """
-
-  % python3 check_upload_format.py --help
-
+  % python3.7 check_upload_format.py --help
 """
 
 
@@ -33,17 +31,11 @@ FALSE_VALUES = ['false', 'f', '0']
 def check_upload_format(_infil='', _verbose=False, _json=True):
 
     # check input(s)
-    if _infil == '':
-        raise Exception(f'Invalid argument, _infil={_infil}')
-    if _verbose:
-        print(f"Executing> upload_from_file(_infil={_infil}, _verbose={_verbose})")
-
-    # does infil file exist?
     _file = os.path.abspath(os.path.expanduser(_infil))
     if not os.path.isfile(_file):
-        raise Exception(f'File not found, _file={_file}')
+        raise Exception(f'Invalid argument, _file={_file}')
     if _verbose:
-        print(f"Found _file={_file}")
+        print(f"Executing> upload_from_file(_file={_file}, _verbose={_verbose})")
 
     # get number of lines in file
     _num = 0

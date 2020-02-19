@@ -329,7 +329,7 @@ def upload_file(_columns=None, _num=0, _user=None):
         _d = dec_to_deg(_dec_dms)
         if _d > TEL__DEC_LIMIT[f'{_telescope.lower()}']:
             msg_out(f"upload_file> requested declination {_d:.3f} > {TEL__DEC_LIMIT[_telescope.lower()]} limit "
-                    f"for {_telescope} telescope", True, True)
+                    f"for {_telescope} telescope", True, False)
             continue
 
         # set default(s)
@@ -402,7 +402,7 @@ def upload_file(_columns=None, _num=0, _user=None):
             except Exception as _e:
                 db.session.rollback()
                 msg_out(f"ERROR: Failed to create observation request {_columns['object_name'][_i]} for "
-                        f"{_columns['username'][_i]}, error={_e}", True, False)
+                        f"{_columns['username'][_i]}, error={_e}", True, True)
                 return redirect(url_for('orp_user', username=_user.username))
 
 

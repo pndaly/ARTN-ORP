@@ -132,30 +132,30 @@ if [[ ${dry_run} -eq 1 ]]; then
   for _f in `ls ${orp_source}/instance/files/*.csv`; do
     if [[ ${stand_alone} -eq 1 ]]; then
       if [[ ${verbose} -eq 1 ]]; then
-        write_yellow "Dry-Run> python3 ${orp_source}/utils/check_upload_format_standalone.py --file=${_f} --json --verbose"
+        write_yellow "Dry-Run> python3.7 ${orp_source}/utils/check_upload_format_standalone.py --file=${_f} --json --verbose"
       else
-        write_yellow "Dry-Run> python3 ${orp_source}/utils/check_upload_format_standalone.py --file=${_f} --json"
+        write_yellow "Dry-Run> python3.7 ${orp_source}/utils/check_upload_format_standalone.py --file=${_f} --json"
       fi
     else
       if [[ ${verbose} -eq 1 ]]; then
-        write_yellow "Dry-Run> python3 ${orp_source}/utils/check_upload_format.py --file=${_f} --json --verbose"
+        write_yellow "Dry-Run> python3.7 ${orp_source}/utils/check_upload_format.py --file=${_f} --json --verbose"
       else
-        write_yellow "Dry-Run> python3 ${orp_source}/utils/check_upload_format.py --file=${_f} --json"
+        write_yellow "Dry-Run> python3.7 ${orp_source}/utils/check_upload_format.py --file=${_f} --json"
       fi
     fi
   done
   for _f in `ls ${orp_source}/instance/files/*.tsv`; do
     if [[ ${stand_alone} -eq 1 ]]; then
       if [[ ${verbose} -eq 1 ]]; then
-        write_yellow "Dry-Run> python3 ${orp_source}/utils/check_upload_format_standalone.py --file=${_f} --json --verbose"
+        write_yellow "Dry-Run> python3.7 ${orp_source}/utils/check_upload_format_standalone.py --file=${_f} --json --verbose"
       else
-        write_yellow "Dry-Run> python3 ${orp_source}/utils/check_upload_format_standalone.py --file=${_f} --json"
+        write_yellow "Dry-Run> python3.7 ${orp_source}/utils/check_upload_format_standalone.py --file=${_f} --json"
       fi
     else
       if [[ ${verbose} -eq 1 ]]; then
-        write_yellow "Dry-Run> python3 ${orp_source}/utils/check_upload_format.py --file=${_f} --json --verbose"
+        write_yellow "Dry-Run> python3.7 ${orp_source}/utils/check_upload_format.py --file=${_f} --json --verbose"
       else
-        write_yellow "Dry-Run> python3 ${orp_source}/utils/check_upload_format.py --file=${_f} --json"
+        write_yellow "Dry-Run> python3.7 ${orp_source}/utils/check_upload_format.py --file=${_f} --json"
       fi
     fi
   done
@@ -164,18 +164,18 @@ else
   for _f in `ls ${orp_source}/instance/files/*.csv`; do
     if [[ ${stand_alone} -eq 1 ]]; then
       if [[ ${verbose} -eq 1 ]]; then
-        write_green "Executing> python3 ${orp_source}/utils/check_upload_format_standalone.py --file=${_f} --json --verbose"
+        write_green "Executing> python3.7 ${orp_source}/utils/check_upload_format_standalone.py --file=${_f} --json --verbose"
         python3 ${orp_source}/utils/check_upload_format_standalone.py --file=${_f} --json --verbose
       else
-        write_green "Executing> python3 ${orp_source}/utils/check_upload_format_standalone.py --file=${_f} --json"
+        write_green "Executing> python3.7 ${orp_source}/utils/check_upload_format_standalone.py --file=${_f} --json"
         python3 ${orp_source}/utils/check_upload_format_standalone.py --file=${_f} --json
       fi
     else
       if [[ ${verbose} -eq 1 ]]; then
-        write_green "Executing> python3 ${orp_source}/utils/check_upload_format.py --file=${_f} --json --verbose"
+        write_green "Executing> python3.7 ${orp_source}/utils/check_upload_format.py --file=${_f} --json --verbose"
         python3 ${orp_source}/utils/check_upload_format.py --file=${_f} --json --verbose
       else
-        write_green "Executing> python3 ${orp_source}/utils/check_upload_format.py --file=${_f} --json"
+        write_green "Executing> python3.7 ${orp_source}/utils/check_upload_format.py --file=${_f} --json"
         python3 ${orp_source}/utils/check_upload_format.py --file=${_f} --json
       fi
     fi
@@ -183,18 +183,18 @@ else
   for _f in `ls ${orp_source}/instance/files/*.tsv`; do
     if [[ ${stand_alone} -eq 1 ]]; then
       if [[ ${verbose} -eq 1 ]]; then
-        write_green "Executing> python3 ${orp_source}/utils/check_upload_format_standalone.py --file=${_f} --json --verbose"
+        write_green "Executing> python3.7 ${orp_source}/utils/check_upload_format_standalone.py --file=${_f} --json --verbose"
         python3 ${orp_source}/utils/check_upload_format_standalone.py --file=${_f} --json --verbose
       else
-        write_green "Executing> python3 ${orp_source}/utils/check_upload_format_standalone.py --file=${_f} --json"
+        write_green "Executing> python3.7 ${orp_source}/utils/check_upload_format_standalone.py --file=${_f} --json"
         python3 ${orp_source}/utils/check_upload_format_standalone.py --file=${_f} --json
       fi
     else
       if [[ ${verbose} -eq 1 ]]; then
-        write_green "Executing> python3 ${orp_source}/utils/check_upload_format.py --file=${_f} --json --verbose"
+        write_green "Executing> python3.7 ${orp_source}/utils/check_upload_format.py --file=${_f} --json --verbose"
         python3 ${orp_source}/utils/check_upload_format.py --file=${_f} --json --verbose
       else
-        write_green "Executing> python3 ${orp_source}/utils/check_upload_format.py --file=${_f} --json"
+        write_green "Executing> python3.7 ${orp_source}/utils/check_upload_format.py --file=${_f} --json"
         python3 ${orp_source}/utils/check_upload_format.py --file=${_f} --json
       fi
     fi
