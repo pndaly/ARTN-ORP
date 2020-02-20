@@ -1,0 +1,444 @@
+#username	telescope	instrument	object_name	ra	dec	filter	exp_time	num_exp	airmass	lunarphase	priority	photometric	guiding	non_sidereal	begin	end	binning	dither	cadence	non_sidereal_json
+# +
+# 005441.0 +004100.0  2000.0 30 5 BVRI :  SA92
+# -
+rts2	Kuiper	Mont4k	SA92_NoBin_U	00:54:41.0	+00:41:00.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA92_NoBin_B	00:54:41.0	+00:41:00.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA92_NoBin_V	00:54:41.0	+00:41:00.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA92_NoBin_R	00:54:41.0	+00:41:00.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA92_NoBin_I	00:54:41.0	+00:41:00.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	SA92_2x2_U	00:54:41.0	+00:41:00.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA92_2x2_B	00:54:41.0	+00:41:00.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA92_2x2_V	00:54:41.0	+00:41:00.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA92_2x2_R	00:54:41.0	+00:41:00.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA92_2x2_I	00:54:41.0	+00:41:00.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	SA92_3x3_U	00:54:41.0	+00:41:00.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA92_3x3_B	00:54:41.0	+00:41:00.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA92_3x3_V	00:54:41.0	+00:41:00.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA92_3x3_R	00:54:41.0	+00:41:00.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA92_3x3_I	00:54:41.0	+00:41:00.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	SA92_4x4_U	00:54:41.0	+00:41:00.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA92_4x4_B	00:54:41.0	+00:41:00.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA92_4x4_V	00:54:41.0	+00:41:00.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA92_4x4_R	00:54:41.0	+00:41:00.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA92_4x4_I	00:54:41.0	+00:41:00.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+# +
+# 035438.0 +002800.0  2000.0 30 5 BVRI :  SA95
+# -
+rts2	Kuiper	Mont4k	SA95_NoBin_U	03:54:38.0	+00:28:00.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA95_NoBin_B	03:54:38.0	+00:28:00.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA95_NoBin_V	03:54:38.0	+00:28:00.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA95_NoBin_R	03:54:38.0	+00:28:00.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA95_NoBin_I	03:54:38.0	+00:28:00.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	SA95_2x2_U	03:54:38.0	+00:28:00.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA95_2x2_B	03:54:38.0	+00:28:00.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA95_2x2_V	03:54:38.0	+00:28:00.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA95_2x2_R	03:54:38.0	+00:28:00.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA95_2x2_I	03:54:38.0	+00:28:00.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	SA95_3x3_U	03:54:38.0	+00:28:00.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA95_3x3_B	03:54:38.0	+00:28:00.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA95_3x3_V	03:54:38.0	+00:28:00.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA95_3x3_R	03:54:38.0	+00:28:00.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA95_3x3_I	03:54:38.0	+00:28:00.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	SA95_4x4_U	03:54:38.0	+00:28:00.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA95_4x4_B	03:54:38.0	+00:28:00.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA95_4x4_V	03:54:38.0	+00:28:00.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA95_4x4_R	03:54:38.0	+00:28:00.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA95_4x4_I	03:54:38.0	+00:28:00.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+# +
+# 065212.0 -001800.0  2000.0 30 5 BVRI :  SA98
+# -
+rts2	Kuiper	Mont4k	SA98_NoBin_U	06:52:12.0	-00:18:00.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA98_NoBin_B	06:52:12.0	-00:18:00.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA98_NoBin_V	06:52:12.0	-00:18:00.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA98_NoBin_R	06:52:12.0	-00:18:00.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA98_NoBin_I	06:52:12.0	-00:18:00.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	SA98_2x2_U	06:52:12.0	-00:18:00.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA98_2x2_B	06:52:12.0	-00:18:00.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA98_2x2_V	06:52:12.0	-00:18:00.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA98_2x2_R	06:52:12.0	-00:18:00.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA98_2x2_I	06:52:12.0	-00:18:00.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	SA98_3x3_U	06:52:12.0	-00:18:00.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA98_3x3_B	06:52:12.0	-00:18:00.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA98_3x3_V	06:52:12.0	-00:18:00.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA98_3x3_R	06:52:12.0	-00:18:00.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA98_3x3_I	06:52:12.0	-00:18:00.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	SA98_4x4_U	06:52:12.0	-00:18:00.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA98_4x4_B	06:52:12.0	-00:18:00.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA98_4x4_V	06:52:12.0	-00:18:00.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA98_4x4_R	06:52:12.0	-00:18:00.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA98_4x4_I	06:52:12.0	-00:18:00.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+# +
+# 072415.0 -003221.0  2000.0 30 5 BVRI :  RU149
+# -
+rts2	Kuiper	Mont4k	RU149_NoBin_U	07:24:15.0	-00:32:21.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	RU149_NoBin_B	07:24:15.0	-00:32:21.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	RU149_NoBin_V	07:24:15.0	-00:32:21.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	RU149_NoBin_R	07:24:15.0	-00:32:21.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	RU149_NoBin_I	07:24:15.0	-00:32:21.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	RU149_2x2_U	07:24:15.0	-00:32:21.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	RU149_2x2_B	07:24:15.0	-00:32:21.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	RU149_2x2_V	07:24:15.0	-00:32:21.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	RU149_2x2_R	07:24:15.0	-00:32:21.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	RU149_2x2_I	07:24:15.0	-00:32:21.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	RU149_3x3_U	07:24:15.0	-00:32:21.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	RU149_3x3_B	07:24:15.0	-00:32:21.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	RU149_3x3_V	07:24:15.0	-00:32:21.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	RU149_3x3_R	07:24:15.0	-00:32:21.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	RU149_3x3_I	07:24:15.0	-00:32:21.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	RU149_4x4_U	07:24:15.0	-00:32:21.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	RU149_4x4_B	07:24:15.0	-00:32:21.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	RU149_4x4_V	07:24:15.0	-00:32:21.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	RU149_4x4_R	07:24:15.0	-00:32:21.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	RU149_4x4_I	07:24:15.0	-00:32:21.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+# +
+# 072958.0 -020545.0  2000.0 30 5 BVRI :  RU152
+# -
+rts2	Kuiper	Mont4k	RU152_NoBin_U	07:29:58.0	-02:05:45.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	RU152_NoBin_B	07:29:58.0	-02:05:45.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	RU152_NoBin_V	07:29:58.0	-02:05:45.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	RU152_NoBin_R	07:29:58.0	-02:05:45.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	RU152_NoBin_I	07:29:58.0	-02:05:45.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	RU152_2x2_U	07:29:58.0	-02:05:45.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	RU152_2x2_B	07:29:58.0	-02:05:45.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	RU152_2x2_V	07:29:58.0	-02:05:45.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	RU152_2x2_R	07:29:58.0	-02:05:45.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	RU152_2x2_I	07:29:58.0	-02:05:45.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	RU152_3x3_U	07:29:58.0	-02:05:45.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	RU152_3x3_B	07:29:58.0	-02:05:45.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	RU152_3x3_V	07:29:58.0	-02:05:45.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	RU152_3x3_R	07:29:58.0	-02:05:45.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	RU152_3x3_I	07:29:58.0	-02:05:45.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	RU152_4x4_U	07:29:58.0	-02:05:45.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	RU152_4x4_B	07:29:58.0	-02:05:45.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	RU152_4x4_V	07:29:58.0	-02:05:45.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	RU152_4x4_R	07:29:58.0	-02:05:45.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	RU152_4x4_I	07:29:58.0	-02:05:45.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+# +
+# 090638.0 -052622.0  2000.0 30 5 BVRI :  SA101
+# -
+rts2	Kuiper	Mont4k	SA101_NoBin_U	09:06:38.0	-05:26:22.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA101_NoBin_B	09:06:38.0	-05:26:22.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA101_NoBin_V	09:06:38.0	-05:26:22.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA101_NoBin_R	09:06:38.0	-05:26:22.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA101_NoBin_I	09:06:38.0	-05:26:22.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	SA101_2x2_U	09:06:38.0	-05:26:22.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA101_2x2_B	09:06:38.0	-05:26:22.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA101_2x2_V	09:06:38.0	-05:26:22.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA101_2x2_R	09:06:38.0	-05:26:22.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA101_2x2_I	09:06:38.0	-05:26:22.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	SA101_3x3_U	09:06:38.0	-05:26:22.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA101_3x3_B	09:06:38.0	-05:26:22.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA101_3x3_V	09:06:38.0	-05:26:22.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA101_3x3_R	09:06:38.0	-05:26:22.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA101_3x3_I	09:06:38.0	-05:26:22.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	SA101_4x4_U	09:06:38.0	-05:26:22.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA101_4x4_B	09:06:38.0	-05:26:22.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA101_4x4_V	09:06:38.0	-05:26:22.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA101_4x4_R	09:06:38.0	-05:26:22.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA101_4x4_I	09:06:38.0	-05:26:22.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+# +
+# 092132.0 +024700.0  2000.0 30 5 BVRI :  PG0918+029
+# -
+rts2	Kuiper	Mont4k	PG0918+029_NoBin_U	09:21:32.0	+02:47:00.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG0918+029_NoBin_B	09:21:32.0	+02:47:00.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG0918+029_NoBin_V	09:21:32.0	+02:47:00.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG0918+029_NoBin_R	09:21:32.0	+02:47:00.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG0918+029_NoBin_I	09:21:32.0	+02:47:00.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	PG0918+029_2x2_U	09:21:32.0	+02:47:00.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG0918+029_2x2_B	09:21:32.0	+02:47:00.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG0918+029_2x2_V	09:21:32.0	+02:47:00.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG0918+029_2x2_R	09:21:32.0	+02:47:00.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG0918+029_2x2_I	09:21:32.0	+02:47:00.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	PG0918+029_3x3_U	09:21:32.0	+02:47:00.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG0918+029_3x3_B	09:21:32.0	+02:47:00.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG0918+029_3x3_V	09:21:32.0	+02:47:00.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG0918+029_3x3_R	09:21:32.0	+02:47:00.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG0918+029_3x3_I	09:21:32.0	+02:47:00.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	PG0918+029_4x4_U	09:21:32.0	+02:47:00.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG0918+029_4x4_B	09:21:32.0	+02:47:00.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG0918+029_4x4_V	09:21:32.0	+02:47:00.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG0918+029_4x4_R	09:21:32.0	+02:47:00.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG0918+029_4x4_I	09:21:32.0	+02:47:00.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+# +
+# 105003.0 -000030.0  2000.0 30 5 BVRI :  PG1047+003
+# -
+rts2	Kuiper	Mont4k	PG1047+003_NoBin_U	10:50:03.0	-00:00:30.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1047+003_NoBin_B	10:50:03.0	-00:00:30.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1047+003_NoBin_V	10:50:03.0	-00:00:30.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1047+003_NoBin_R	10:50:03.0	-00:00:30.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1047+003_NoBin_I	10:50:03.0	-00:00:30.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	PG1047+003_2x2_U	10:50:03.0	-00:00:30.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1047+003_2x2_B	10:50:03.0	-00:00:30.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1047+003_2x2_V	10:50:03.0	-00:00:30.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1047+003_2x2_R	10:50:03.0	-00:00:30.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1047+003_2x2_I	10:50:03.0	-00:00:30.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	PG1047+003_3x3_U	10:50:03.0	-00:00:30.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1047+003_3x3_B	10:50:03.0	-00:00:30.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1047+003_3x3_V	10:50:03.0	-00:00:30.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1047+003_3x3_R	10:50:03.0	-00:00:30.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1047+003_3x3_I	10:50:03.0	-00:00:30.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	PG1047+003_4x4_U	10:50:03.0	-00:00:30.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1047+003_4x4_B	10:50:03.0	-00:00:30.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1047+003_4x4_V	10:50:03.0	-00:00:30.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1047+003_4x4_R	10:50:03.0	-00:00:30.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1047+003_4x4_I	10:50:03.0	-00:00:30.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+# +
+# 105204.0 -003905.0  2000.0 30 5 BVRI :  SA102
+# -
+rts2	Kuiper	Mont4k	SA102_NoBin_U	10:52:04.0	-00:39:05.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA102_NoBin_B	10:52:04.0	-00:39:05.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA102_NoBin_V	10:52:04.0	-00:39:05.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA102_NoBin_R	10:52:04.0	-00:39:05.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA102_NoBin_I	10:52:04.0	-00:39:05.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	SA102_2x2_U	10:52:04.0	-00:39:05.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA102_2x2_B	10:52:04.0	-00:39:05.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA102_2x2_V	10:52:04.0	-00:39:05.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA102_2x2_R	10:52:04.0	-00:39:05.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA102_2x2_I	10:52:04.0	-00:39:05.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	SA102_3x3_U	10:52:04.0	-00:39:05.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA102_3x3_B	10:52:04.0	-00:39:05.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA102_3x3_V	10:52:04.0	-00:39:05.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA102_3x3_R	10:52:04.0	-00:39:05.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA102_3x3_I	10:52:04.0	-00:39:05.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	SA102_4x4_U	10:52:04.0	-00:39:05.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA102_4x4_B	10:52:04.0	-00:39:05.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA102_4x4_V	10:52:04.0	-00:39:05.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA102_4x4_R	10:52:04.0	-00:39:05.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA102_4x4_I	10:52:04.0	-00:39:05.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+# +
+# 124221.0 -003312.0  2000.0 30 5 BVRI :  SA104
+# -
+rts2	Kuiper	Mont4k	SA104_NoBin_U	12:42:21.0	-00:33:12.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA104_NoBin_B	12:42:21.0	-00:33:12.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA104_NoBin_V	12:42:21.0	-00:33:12.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA104_NoBin_R	12:42:21.0	-00:33:12.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA104_NoBin_I	12:42:21.0	-00:33:12.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	SA104_2x2_U	12:42:21.0	-00:33:12.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA104_2x2_B	12:42:21.0	-00:33:12.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA104_2x2_V	12:42:21.0	-00:33:12.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA104_2x2_R	12:42:21.0	-00:33:12.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA104_2x2_I	12:42:21.0	-00:33:12.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	SA104_3x3_U	12:42:21.0	-00:33:12.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA104_3x3_B	12:42:21.0	-00:33:12.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA104_3x3_V	12:42:21.0	-00:33:12.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA104_3x3_R	12:42:21.0	-00:33:12.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA104_3x3_I	12:42:21.0	-00:33:12.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	SA104_4x4_U	12:42:21.0	-00:33:12.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA104_4x4_B	12:42:21.0	-00:33:12.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA104_4x4_V	12:42:21.0	-00:33:12.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA104_4x4_R	12:42:21.0	-00:33:12.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA104_4x4_I	12:42:21.0	-00:33:12.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+# +
+# 132552.0 -085000.0  2000.0 30 5 BVRI :  PG1323-086
+# -
+rts2	Kuiper	Mont4k	PG1323-086_NoBin_U	13:25:52.0	-08:50:00.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1323-086_NoBin_B	13:25:52.0	-08:50:00.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1323-086_NoBin_V	13:25:52.0	-08:50:00.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1323-086_NoBin_R	13:25:52.0	-08:50:00.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1323-086_NoBin_I	13:25:52.0	-08:50:00.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	PG1323-086_2x2_U	13:25:52.0	-08:50:00.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1323-086_2x2_B	13:25:52.0	-08:50:00.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1323-086_2x2_V	13:25:52.0	-08:50:00.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1323-086_2x2_R	13:25:52.0	-08:50:00.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1323-086_2x2_I	13:25:52.0	-08:50:00.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	PG1323-086_3x3_U	13:25:52.0	-08:50:00.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1323-086_3x3_B	13:25:52.0	-08:50:00.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1323-086_3x3_V	13:25:52.0	-08:50:00.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1323-086_3x3_R	13:25:52.0	-08:50:00.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1323-086_3x3_I	13:25:52.0	-08:50:00.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	PG1323-086_4x4_U	13:25:52.0	-08:50:00.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1323-086_4x4_B	13:25:52.0	-08:50:00.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1323-086_4x4_V	13:25:52.0	-08:50:00.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1323-086_4x4_R	13:25:52.0	-08:50:00.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1323-086_4x4_I	13:25:52.0	-08:50:00.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+# +
+# 153914.0 -001400.0  2000.0 30 5 BVRI :  SA107
+# -
+rts2	Kuiper	Mont4k	SA107_NoBin_U	15:39:14.0	-00:14:00.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA107_NoBin_B	15:39:14.0	-00:14:00.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA107_NoBin_V	15:39:14.0	-00:14:00.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA107_NoBin_R	15:39:14.0	-00:14:00.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA107_NoBin_I	15:39:14.0	-00:14:00.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	SA107_2x2_U	15:39:14.0	-00:14:00.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA107_2x2_B	15:39:14.0	-00:14:00.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA107_2x2_V	15:39:14.0	-00:14:00.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA107_2x2_R	15:39:14.0	-00:14:00.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA107_2x2_I	15:39:14.0	-00:14:00.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	SA107_3x3_U	15:39:14.0	-00:14:00.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA107_3x3_B	15:39:14.0	-00:14:00.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA107_3x3_V	15:39:14.0	-00:14:00.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA107_3x3_R	15:39:14.0	-00:14:00.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA107_3x3_I	15:39:14.0	-00:14:00.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	SA107_4x4_U	15:39:14.0	-00:14:00.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA107_4x4_B	15:39:14.0	-00:14:00.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA107_4x4_V	15:39:14.0	-00:14:00.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA107_4x4_R	15:39:14.0	-00:14:00.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA107_4x4_I	15:39:14.0	-00:14:00.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+# +
+# 163536.0 +094633.0  2000.0 30 5 BVRI :  PG1633+099
+# -
+rts2	Kuiper	Mont4k	PG1633+099_NoBin_U	16:35:36.0	+09:46:33.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1633+099_NoBin_B	16:35:36.0	+09:46:33.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1633+099_NoBin_V	16:35:36.0	+09:46:33.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1633+099_NoBin_R	16:35:36.0	+09:46:33.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1633+099_NoBin_I	16:35:36.0	+09:46:33.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	PG1633+099_2x2_U	16:35:36.0	+09:46:33.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1633+099_2x2_B	16:35:36.0	+09:46:33.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1633+099_2x2_V	16:35:36.0	+09:46:33.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1633+099_2x2_R	16:35:36.0	+09:46:33.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1633+099_2x2_I	16:35:36.0	+09:46:33.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	PG1633+099_3x3_U	16:35:36.0	+09:46:33.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1633+099_3x3_B	16:35:36.0	+09:46:33.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1633+099_3x3_V	16:35:36.0	+09:46:33.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1633+099_3x3_R	16:35:36.0	+09:46:33.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1633+099_3x3_I	16:35:36.0	+09:46:33.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	PG1633+099_4x4_U	16:35:36.0	+09:46:33.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1633+099_4x4_B	16:35:36.0	+09:46:33.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1633+099_4x4_V	16:35:36.0	+09:46:33.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1633+099_4x4_R	16:35:36.0	+09:46:33.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1633+099_4x4_I	16:35:36.0	+09:46:33.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+# +
+# 165932.0 +074252.0  2000.0 30 5 BVRI :  PG1657+000
+# -
+# +
+rts2	Kuiper	Mont4k	PG1657+000_NoBin_U	16:59:32.0	+07:42:52.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1657+000_NoBin_B	16:59:32.0	+07:42:52.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1657+000_NoBin_V	16:59:32.0	+07:42:52.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1657+000_NoBin_R	16:59:32.0	+07:42:52.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1657+000_NoBin_I	16:59:32.0	+07:42:52.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	PG1657+000_2x2_U	16:59:32.0	+07:42:52.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1657+000_2x2_B	16:59:32.0	+07:42:52.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1657+000_2x2_V	16:59:32.0	+07:42:52.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1657+000_2x2_R	16:59:32.0	+07:42:52.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1657+000_2x2_I	16:59:32.0	+07:42:52.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	PG1657+000_3x3_U	16:59:32.0	+07:42:52.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1657+000_3x3_B	16:59:32.0	+07:42:52.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1657+000_3x3_V	16:59:32.0	+07:42:52.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1657+000_3x3_R	16:59:32.0	+07:42:52.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1657+000_3x3_I	16:59:32.0	+07:42:52.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	PG1657+000_4x4_U	16:59:32.0	+07:42:52.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1657+000_4x4_B	16:59:32.0	+07:42:52.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1657+000_4x4_V	16:59:32.0	+07:42:52.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1657+000_4x4_R	16:59:32.0	+07:42:52.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	PG1657+000_4x4_I	16:59:32.0	+07:42:52.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+# +
+# 184249.0 +000700.0  2000.0 30 5 BVRI :  SA110
+# -
+rts2	Kuiper	Mont4k	SA110_NoBin_U	18:42:49.0	+00:07:00.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA110_NoBin_B	18:42:49.0	+00:07:00.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA110_NoBin_V	18:42:49.0	+00:07:00.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA110_NoBin_R	18:42:49.0	+00:07:00.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA110_NoBin_I	18:42:49.0	+00:07:00.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	SA110_2x2_U	18:42:49.0	+00:07:00.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA110_2x2_B	18:42:49.0	+00:07:00.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA110_2x2_V	18:42:49.0	+00:07:00.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA110_2x2_R	18:42:49.0	+00:07:00.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA110_2x2_I	18:42:49.0	+00:07:00.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	SA110_3x3_U	18:42:49.0	+00:07:00.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA110_3x3_B	18:42:49.0	+00:07:00.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA110_3x3_V	18:42:49.0	+00:07:00.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA110_3x3_R	18:42:49.0	+00:07:00.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA110_3x3_I	18:42:49.0	+00:07:00.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	SA110_4x4_U	18:42:49.0	+00:07:00.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA110_4x4_B	18:42:49.0	+00:07:00.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA110_4x4_V	18:42:49.0	+00:07:00.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA110_4x4_R	18:42:49.0	+00:07:00.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA110_4x4_I	18:42:49.0	+00:07:00.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+# +
+# 193737.0 +002600.0  2000.0 30 5 BVRI :  SA111
+# -
+rts2	Kuiper	Mont4k	SA111_NoBin_U	19:37:37.0	+00:26:00.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA111_NoBin_B	19:37:37.0	+00:26:00.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA111_NoBin_V	19:37:37.0	+00:26:00.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA111_NoBin_R	19:37:37.0	+00:26:00.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA111_NoBin_I	19:37:37.0	+00:26:00.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	SA111_2x2_U	19:37:37.0	+00:26:00.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA111_2x2_B	19:37:37.0	+00:26:00.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA111_2x2_V	19:37:37.0	+00:26:00.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA111_2x2_R	19:37:37.0	+00:26:00.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA111_2x2_I	19:37:37.0	+00:26:00.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	SA111_3x3_U	19:37:37.0	+00:26:00.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA111_3x3_B	19:37:37.0	+00:26:00.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA111_3x3_V	19:37:37.0	+00:26:00.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA111_3x3_R	19:37:37.0	+00:26:00.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA111_3x3_I	19:37:37.0	+00:26:00.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	SA111_4x4_U	19:37:37.0	+00:26:00.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA111_4x4_B	19:37:37.0	+00:26:00.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA111_4x4_V	19:37:37.0	+00:26:00.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA111_4x4_R	19:37:37.0	+00:26:00.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	SA111_4x4_I	19:37:37.0	+00:26:00.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+# +
+# 204400.0 -104700.0  2000.0 30 5 BVRI :  MARKA
+# -
+rts2	Kuiper	Mont4k	MARKA_NoBin_U	20:44:00.0	-10:47:00.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	MARKA_NoBin_B	20:44:00.0	-10:47:00.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	MARKA_NoBin_V	20:44:00.0	-10:47:00.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	MARKA_NoBin_R	20:44:00.0	-10:47:00.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+rts2	Kuiper	Mont4k	MARKA_NoBin_I	20:44:00.0	-10:47:00.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	None	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	MARKA_2x2_U	20:44:00.0	-10:47:00.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	MARKA_2x2_B	20:44:00.0	-10:47:00.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	MARKA_2x2_V	20:44:00.0	-10:47:00.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	MARKA_2x2_R	20:44:00.0	-10:47:00.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+rts2	Kuiper	Mont4k	MARKA_2x2_I	20:44:00.0	-10:47:00.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	2x2	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	MARKA_3x3_U	20:44:00.0	-10:47:00.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	MARKA_3x3_B	20:44:00.0	-10:47:00.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	MARKA_3x3_V	20:44:00.0	-10:47:00.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	MARKA_3x3_R	20:44:00.0	-10:47:00.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+rts2	Kuiper	Mont4k	MARKA_3x3_I	20:44:00.0	-10:47:00.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	3x3	None	Once	'{}'
+# +
+rts2	Kuiper	Mont4k	MARKA_4x4_U	20:44:00.0	-10:47:00.0	U	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	MARKA_4x4_B	20:44:00.0	-10:47:00.0	B	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	MARKA_4x4_V	20:44:00.0	-10:47:00.0	V	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	MARKA_4x4_R	20:44:00.0	-10:47:00.0	R	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'
+rts2	Kuiper	Mont4k	MARKA_4x4_I	20:44:00.0	-10:47:00.0	I	30.0	5	3.0	Any	Routine	False	False	False	2020-01-01 00:00:00.000	2025-12-31 23:59:00.000	4x4	None	Once	'{}'

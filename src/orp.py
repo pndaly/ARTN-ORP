@@ -630,9 +630,9 @@ def get_nightlog_fits(_in=None):
                 query = obsreq_filters(query, {'observation_id': f"{_d_out['ARTNOID']}"})
                 _d_out['OWNER'] = query.first().username
             else:
-                _d_out['OWNER'] = 'rts2'
+                _d_out['OWNER'] = ''
         except Exception:
-            _d_out['OWNER'] = 'rts2'
+            _d_out['OWNER'] = ''
 
         # append new record
         _l_out.append(_d_out)
