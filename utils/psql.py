@@ -33,7 +33,8 @@ KEYS = ('authorization', 'command', 'database', 'method', 'nelms', 'port', 'serv
 RESULTS_PER_PAGE = 50
 
 ARTN_DB_AUTHORIZATION = f"artn:********"
-ARTN_DB_HOST = "scopenet.as.arizona.edu"
+# ARTN_DB_HOST = "scopenet.as.arizona.edu"
+ARTN_DB_HOST = "scopenet"
 ARTN_DB_NAME = "artn"
 ARTN_DB_PORT = 5432
 ARTN_CONNECT_MSG = f'{ARTN_DB_HOST}:{ARTN_DB_PORT}/{ARTN_DB_NAME} using {ARTN_DB_AUTHORIZATION}'
