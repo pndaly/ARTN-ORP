@@ -96,6 +96,8 @@ to use them!
     % bash ${ORP_BIN}/psql.restore.sh --help
     ```
 
+* Docker
+
     We dockerize the database, so a utility is also provided for that:
     
     ```bash
@@ -106,8 +108,13 @@ to use them!
     course, replace `<path_to_shell_script>` with your installation path in the following):
     
     ```
-    @reboot bash <path_to_shell_script>/artn.docker.sh --command=start
+    @reboot bash <path_to_shell_script>/artn.docker.sh --command=start --name=artn
     ```
+
+    NB: We use a standard PostGres docker container with no extensions. In another project, we utilize the PostGIS
+    and Q3C spatial indexing extensions. The file `Dockerfile.artn` shows how to build a new image with these 
+    extensions. If such a new image is created, the `${ORP_BIN}/artn.docker.sh` script would have to be edited to
+    reflect the correct image.
 
 ## Configure For Local Site
 

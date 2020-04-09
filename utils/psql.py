@@ -25,7 +25,6 @@ __doc__ = """
 # +
 # constant(s)
 # -
-# DEFAULT_COMMAND = f'SELECT * FROM obsreqs WHERE q3c_radial_query(ra, dec, 23.5,  29.2, 5.0);'
 DEFAULT_COMMAND = f'SELECT * FROM obsreqs;'
 FETCH_METHOD = ['fetchall', 'fetchone', 'fetchmany']
 FETCH_MANY = 50
