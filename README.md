@@ -101,8 +101,11 @@ to use them!
     We dockerize the database, so a utility is also provided for that:
     
     ```bash
-    % bash ${ORP_BIN}/artn.docker.sh --help
+    % bash ${ARTN_DOCKER}/artn.docker.sh --help
     ```
+
+    This script is based upon `${ARTN_DOCKER}/artn.docker.template.sh` which contains dummy credentials. Edit as
+    you see fit.
 
     If you decide to use Docker, remember to restart the container after a reboot via root's `crontab` (and, of 
     course, replace `<path_to_shell_script>` with your installation path in the following):
@@ -112,9 +115,9 @@ to use them!
     ```
 
     NB: We use a standard PostGres docker container with no extensions. In another project, we utilize the PostGIS
-    and Q3C spatial indexing extensions. The file `Dockerfile.artn` shows how to build a new image with these 
-    extensions. If such a new image is created, the `${ORP_BIN}/artn.docker.sh` script would have to be edited to
-    reflect the correct image.
+    and Q3C spatial indexing extensions. The file `${ARTN_DOCKER}/Dockerfile.artn` shows how to build a new image 
+    with these extensions. If such a new image is created, the `${ARTN_DOCKER}/artn.docker.sh` script would have to 
+    be edited to reflect the correct image.
 
 ## Configure For Local Site
 
