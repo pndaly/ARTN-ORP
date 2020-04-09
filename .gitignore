@@ -44,6 +44,7 @@ Thumbs.db
 # secret stuff
 # -
 bin/ORP.sh
+bin/artn.docker.sh
 etc/ARTN.sh
 etc/ORP.sh
 src/telescopes/rts2_config.json

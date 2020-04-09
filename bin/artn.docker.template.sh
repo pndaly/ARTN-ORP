@@ -162,10 +162,10 @@ _artn () {
     write_magenta "_artn(${1}, ${2})"
   fi
   if [[ ${1} -eq 1 ]]; then
-    write_yellow "Dry-Run>> docker run -d --network host --name=artn -p ${2}:5432 -e POSTGRES_USER=artn -e POSTGRES_PASSWORD=ArTn_520 -e PGDATA=/pgdata -v /data2/pgdata/artn:/pgdata -v /data2/pgdata/backups:/backups postgres:latest"
+    write_yellow "Dry-Run>> docker run -d --network host --name=artn -p ${2}:5432 -e POSTGRES_USER=artn -e POSTGRES_PASSWORD=secretsanta -e PGDATA=/pgdata -v /data2/pgdata/artn:/pgdata -v /data2/pgdata/backups:/backups postgres:latest"
   else
-    write_green "Executing>> docker run -d --network host --name=artn -p ${2}:5432 -e POSTGRES_USER=artn -e POSTGRES_PASSWORD=ArTn_520 -e PGDATA=/pgdata -v /data2/pgdata/artn:/pgdata -v /data2/pgdata/backups:/backups postgres:latest"
-    docker run -d --network host --name=artn -p ${2}:5432 -e POSTGRES_USER=artn -e POSTGRES_PASSWORD=ArTn_520 -e PGDATA=/pgdata -v /data2/pgdata/artn:/pgdata -v /data2/pgdata/backups:/backups postgres:latest
+    write_green "Executing>> docker run -d --network host --name=artn -p ${2}:5432 -e POSTGRES_USER=artn -e POSTGRES_PASSWORD=secretsanta -e PGDATA=/pgdata -v /data2/pgdata/artn:/pgdata -v /data2/pgdata/backups:/backups postgres:latest"
+    docker run -d --network host --name=artn -p ${2}:5432 -e POSTGRES_USER=artn -e POSTGRES_PASSWORD=secretsanta -e PGDATA=/pgdata -v /data2/pgdata/artn:/pgdata -v /data2/pgdata/backups:/backups postgres:latest
   fi
 }
 
