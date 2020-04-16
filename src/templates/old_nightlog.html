@@ -3,7 +3,7 @@
  <hr class="normal">
  <form action="" method="post">
   {{ form.hidden_tag() }}
-  <h4>Observation History Request</h4>
+  <h4>Night Log Generator</h4>
   <br>
   <div class="row">
    <div class="col-md-3">
@@ -15,31 +15,31 @@
     <span class="purple-label"><small></small></span><br>
    </div>
    <div class="col-md-3">
-    {{ form.instrument.label }}<br>
-    {{ form.instrument }}<br>
-    {% for error in form.instrument.errors %}
+    {{ form.iso.label }}<br>
+    {{ form.iso }}<br>
+    {% for error in form.iso.errors %}
+     <span class="error-label"><small>[{{ error }}]</small></span>
+    {% endfor %}
+    <span class="purple-label"><small>yyyy-mm-dd</small></span><br>
+   </div>
+   <div class="col-md-3">
+    {{ form.obs.label }}<br>
+    {{ form.obs }}<br>
+    {% for error in form.obs.errors %}
      <span class="error-label"><small>[{{ error }}]</small></span>
     {% endfor %}
     <span class="purple-label"><small></small></span><br>
    </div>
    <div class="col-md-3">
-    {{ form.username.label }}<br>
-    {{ form.username }}<br>
-    {% for error in form.username.errors %}
-     <span class="error-label"><small>[{{ error }}]</small></span>
-    {% endfor %}
-    <span class="purple-label"><small></small></span><br>
-   </div>
-   <div class="col-md-3">
-    {{ form.lookback.label }}<br>
-    {{ form.lookback }}<br>
-    {% for error in form.lookback.errors %}
+    {{ form.pdf.label }}<br>
+    {{ form.pdf(size=1) }}<br>
+    {% for error in form.pdf.errors %}
      <span class="error-label"><small>[{{ error }}]</small></span>
     {% endfor %}
     <span class="purple-label"><small></small></span><br>
    </div>
   </div>
-  <br>
+ <br>
   <div class="d-flex justify-content-between">
    <div class="row">
     {{ form.submit(class_="btn btn-md btn-primary") }}

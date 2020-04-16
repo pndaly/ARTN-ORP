@@ -103,6 +103,11 @@ TEL__NODES = {
             'dither': 'None, NxM, n-RA, n-Dec',
             'filters': 'U, B, V, R, I, Clear'
         },
+        'spectrograph': {
+            'name': 'BCSpec',
+            'binning': 'None, 1x1, 2x2, 3x3',
+            'filters': 'U, B, V, R, I, Clear'
+        },
         'primary_imperial': 2.29 * M_TO_FT * 12.0,
         'latitude': 31.9629,
         'longitude': -111.6004,
@@ -149,10 +154,9 @@ TEL__NODES = {
         'elevation': 8585.0,
         'focal_length_m': 9.6,
         'focal_length_ft': 9.6 * M_TO_FT,
-        'imager': {
-            'name': 'Mont4k',
+        'spectrograph': {
+            'name': 'BinoSpec',
             'binning': 'None, 1x1, 2x2, 3x3, 4x4',
-            'dither': 'None, NxM, n-RA, n-Dec',
             'filters': 'U, B, V, R, I, Clear'
         },
         'latitude': 31.6883,

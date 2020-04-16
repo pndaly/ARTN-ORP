@@ -87,6 +87,12 @@ span.nightlog-4 {
   font-size: 1vw;
 }
 
+span.nightlog-5 {
+  font-family: 'Helvetica';
+  color: blue;
+  font-size: 1vw;
+}
+
 span.nightlog-comment {
   font-family: 'Euphoria Script';
   color: #333355;

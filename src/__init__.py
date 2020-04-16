@@ -42,6 +42,7 @@ ARTN_CHAR_128 = 128
 ARTN_CHAR_256 = 256
 ARTN_COMMENT_CHARS = r' #%!<>+-\/'
 ARTN_DATA_DIRECTORY = '/data1/artn/rts2images/queue'
+ARTN_DATA_ROOT = '/rts2data'
 ARTN_DIR_DARKS = '/data1/artn/rts2images/YYYYMMDD/darks'
 ARTN_DIR_FLATS = '/data1/artn/rts2images/queue/YYYYMMDD/C0'
 ARTN_DIR_FOCUS = '/data1/artn/rts2images/queue/YYYYMMDD/C0/focus'

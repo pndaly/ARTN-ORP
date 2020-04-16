@@ -1,0 +1,513 @@
+{% extends 'base.html' %}
+<!--suppress ALL -->
+{% block content %}
+<hr class="normal">
+<!-- global container -->
+<div class="container">
+ <!-- header(s) -->
+ <div class="d-flex justify-content-between">
+  <div class="row">
+   {% if tel == 'Bok' %}
+     <img title="Bok" src="{{ url_for('static', filename='img/BokTelescope.jpg') }}" height="50" width="50">
+   {% elif tel == 'Kuiper' %}
+     <img title="Kuiper" src="{{ url_for('static', filename='img/KuiperTelescope.jpg') }}" height="50" width="50">
+   {% elif tel == 'MMT' %}
+     <img title="MMT" src="{{ url_for('static', filename='img/MMTTelescope.png') }}" height="50" width="50">
+   {% elif tel == 'Vatt' %}
+     <img title="Vatt" src="{{ url_for('static', filename='img/VattTelescope.jpg') }}" height="50" width="50">
+   {% endif %}
+  </div>
+  <span class="nightlog-1"><center>{{ tel }} Telescope Observation Log</center></span>
+  <div>
+   {% if tel == 'Bok' %}
+     <img title="Bok" src="{{ url_for('static', filename='img/BokTelescope.jpg') }}" height="50" width="50">
+   {% elif tel == 'Kuiper' %}
+     <img title="Kuiper" src="{{ url_for('static', filename='img/KuiperTelescope.jpg') }}" height="50" width="50">
+   {% elif tel == 'MMT' %}
+     <img title="MMT" src="{{ url_for('static', filename='img/MMTTelescope.png') }}" height="50" width="50">
+   {% elif tel == 'Vatt' %}
+     <img title="Vatt" src="{{ url_for('static', filename='img/VattTelescope.jpg') }}" height="50" width="50">
+   {% endif %}
+  </div>
+ </div>
+ <div>
+  <span class="nightlog-2"><center>&nbsp;&#9398;&nbsp; {{ iso }} &nbsp;&#9415;&nbsp; ARTN Operator &nbsp;&#9417;&nbsp; {{ n_all }} Observations &nbsp;&#9411;&nbsp;</center></span>
+ </div>
+ <br>
+ <div class="col-md-12">
+  <center>
+   <span class="nightlog-3"><i>Latitude:</i> +{{ nod.latitude }}&deg; &vert;</span>
+   <span class="nightlog-3"><i>Longitude:</i> {{ nod.longitude }}&deg; &vert;</span>
+   <span class="nightlog-3"><i>Elevation:</i> {{ "%.1f"|format(nod.altitude) }}<sup>m</sup> ({{ "%.1f"|format(nod.elevation) }}&prime;) &vert;</span>
+   <span class="nightlog-3"><i>Focal Length:</i> {{ "%.1f"|format(nod.focal_length_m) }}<sup>m</sup> ({{ "%.1f"|format(nod.focal_length_ft) }}&prime;) &vert;</span>
+   <span class="nightlog-3"><i>Mount:</i> {{ nod.mount }} &vert;</span>
+   <span class="nightlog-3"><i>Primary:</i> {{ "%.1f"|format(nod.primary_imperial) }}&Prime; ({{ "%.2f"|format(nod.primary_metric) }}<sup>m</sup>)<br></span>
+   <span class="nightlog-3"><i>Astronomical Dusk: {{ nod.astronomical_dusk }}&deg; &vert; </i></span>
+   <span class="nightlog-3">Astronomical Twilight: {{ nod.astronomical_twilight }}&deg; &vert;</span>
+   <span class="nightlog-3">{{ nod.min_airmass }} &lt; <i>Airmass</i> &lt; {{ nod.max_airmass }} &vert;</span>
+   <span class="nightlog-3">{{ nod.min_moon_exclusion }}&deg; &lt; <i>Moon Exclusion</i> &lt; {{ nod.max_moon_exclusion }}&deg; &vert;</span>
+   <span class="nightlog-3"><i>Declination Limit:</i> {{ nod.declination_limit }}&deg;</span>
+  </center>
+ </div>
+ <br>
+ <!-- table row(s) -->
+ <table id="table">
+  <!-- HEADER -->
+  <thead>
+   <tr><th colspan="21"><span class="nightlog-5"><center>{{ s_all }}</center></span></th></tr>
+  </thead>
+  <tbody>
+  </tbody>
+  <!-- BIAS -->
+  {% if h_bias %}
+   <thead>
+    <tr><th colspan="21"><span class="nightlog-4"><center>{{ s_bias }}</center></span></th></tr>
+    <tr>
+     <th><span class="nightlog-3">File</span></th>
+     <th><span class="nightlog-3">Observation Date (UT)</span></th>
+     <th><span class="nightlog-3">Object</span></th>
+     <th><span class="nightlog-3">RA</span></th>
+     <th><span class="nightlog-3">Dec</span></th>
+     <th><span class="nightlog-3">Epoch</span></th>
+     <th><span class="nightlog-3">Filter</span></th>
+     <th><span class="nightlog-3">ExpTime (s)</span></th>
+     <th><span class="nightlog-3">Image Type</span></th>
+     <th><span class="nightlog-3">Airmass</span></th>
+     <th><span class="nightlog-3">Azimuth (&deg;)</span></th>
+     <th><span class="nightlog-3">Elevation (&deg;)</span></th>
+     <th><span class="nightlog-3">Rotator Angle (&deg;)</span></th>
+     <th><span class="nightlog-3">Tel Focus</span></th>
+     <th><span class="nightlog-3">Instrument</span></th>
+     <th><span class="nightlog-3">Binning</span></th>
+     <th><span class="nightlog-3">Camera Temp (&deg;C)</span></th>
+     <th><span class="nightlog-3">Dewar Temp (&deg;C)</span></th>
+     <th><span class="nightlog-3">Detector Size</span></th>
+     <th><span class="nightlog-3">Size (Bytes)</span></th>
+     <th><span class="nightlog-3">Owner</span></th>
+    </tr>
+   </thead>
+   <tbody>
+    {% for _e in h_bias %}
+     <tr>
+      <td>{{ _e.file }}</td>
+      <td>{{ _e.DATEOBS }}T{{ _e.TIMEOBS }}</td>
+      <td>{{ _e.OBJECT }}</td>
+      <td>{{ _e.RA }}</td>
+      <td>{{ _e.DEC }}</td>
+      <td>{{ _e.EPOCH }}</td>
+      <td>{{ _e.FILTER }}</td>
+      <td>{{ _e.EXPTIME }}</td>
+      <td>{{ _e.IMAGETYP }}</td>
+      <td>{{ _e.AIRMASS }}</td>
+      <td>{{ _e.AZIMUTH }}</td>
+      <td>{{ _e.ELEVAT }}</td>
+      <td>{{ _e.ROTANGLE }}</td>
+      <td>{{ _e.FOCUS }}</td>
+      <td>{{ _e.INSTRUME }}</td>
+      <td>{{ _e.BINNING }}</td>
+      <td>{{ _e.CAMTEMP }}</td>
+      <td>{{ _e.DEWTEMP }}</td>
+      <td>{{ _e.DETSIZE[3:7] }}x{{ _e.DETSIZE[10:14] }}</td>
+      <td>{{ _e.size }}</td>
+      <td>{{ _e.OWNER }}</td>
+     </tr>
+    {% endfor %}
+   </tbody>
+  {% endif %}
+  <!-- CALIBRATION -->
+  {% if h_calbration %}
+   <thead>
+    <tr><th colspan="21"><span class="nightlog-4"><center>{{ s_calbration }}</center></span></th></tr>
+    <tr>
+     <th><span class="nightlog-3">File</span></th>
+     <th><span class="nightlog-3">Observation Date (UT)</span></th>
+     <th><span class="nightlog-3">Object</span></th>
+     <th><span class="nightlog-3">RA</span></th>
+     <th><span class="nightlog-3">Dec</span></th>
+     <th><span class="nightlog-3">Epoch</span></th>
+     <th><span class="nightlog-3">Filter</span></th>
+     <th><span class="nightlog-3">ExpTime (s)</span></th>
+     <th><span class="nightlog-3">Image Type</span></th>
+     <th><span class="nightlog-3">Airmass</span></th>
+     <th><span class="nightlog-3">Azimuth (&deg;)</span></th>
+     <th><span class="nightlog-3">Elevation (&deg;)</span></th>
+     <th><span class="nightlog-3">Rotator Angle (&deg;)</span></th>
+     <th><span class="nightlog-3">Tel Focus</span></th>
+     <th><span class="nightlog-3">Instrument</span></th>
+     <th><span class="nightlog-3">Binning</span></th>
+     <th><span class="nightlog-3">Camera Temp (&deg;C)</span></th>
+     <th><span class="nightlog-3">Dewar Temp (&deg;C)</span></th>
+     <th><span class="nightlog-3">Detector Size</span></th>
+     <th><span class="nightlog-3">Size (Bytes)</span></th>
+     <th><span class="nightlog-3">Owner</span></th>
+    </tr>
+   </thead>
+   <tbody>
+    {% for _e in h_calibration %}
+     <tr>
+      <td>{{ _e.file }}</td>
+      <td>{{ _e.DATEOBS }}T{{ _e.TIMEOBS }}</td>
+      <td>{{ _e.OBJECT }}</td>
+      <td>{{ _e.RA }}</td>
+      <td>{{ _e.DEC }}</td>
+      <td>{{ _e.EPOCH }}</td>
+      <td>{{ _e.FILTER }}</td>
+      <td>{{ _e.EXPTIME }}</td>
+      <td>{{ _e.IMAGETYP }}</td>
+      <td>{{ _e.AIRMASS }}</td>
+      <td>{{ _e.AZIMUTH }}</td>
+      <td>{{ _e.ELEVAT }}</td>
+      <td>{{ _e.ROTANGLE }}</td>
+      <td>{{ _e.FOCUS }}</td>
+      <td>{{ _e.INSTRUME }}</td>
+      <td>{{ _e.BINNING }}</td>
+      <td>{{ _e.CAMTEMP }}</td>
+      <td>{{ _e.DEWTEMP }}</td>
+      <td>{{ _e.DETSIZE[3:7] }}x{{ _e.DETSIZE[10:14] }}</td>
+      <td>{{ _e.size }}</td>
+      <td>{{ _e.OWNER }}</td>
+     </tr>
+    {% endfor %}
+   </tbody>
+  {% endif %}
+  <!-- DARK -->
+  {% if h_dark %}
+   <thead>
+    <tr><th colspan="21"><span class="nightlog-4"><center>{{ s_dark }}</center></span></th></tr>
+    <tr>
+     <th><span class="nightlog-3">File</span></th>
+     <th><span class="nightlog-3">Observation Date (UT)</span></th>
+     <th><span class="nightlog-3">Object</span></th>
+     <th><span class="nightlog-3">RA</span></th>
+     <th><span class="nightlog-3">Dec</span></th>
+     <th><span class="nightlog-3">Epoch</span></th>
+     <th><span class="nightlog-3">Filter</span></th>
+     <th><span class="nightlog-3">ExpTime (s)</span></th>
+     <th><span class="nightlog-3">Image Type</span></th>
+     <th><span class="nightlog-3">Airmass</span></th>
+     <th><span class="nightlog-3">Azimuth (&deg;)</span></th>
+     <th><span class="nightlog-3">Elevation (&deg;)</span></th>
+     <th><span class="nightlog-3">Rotator Angle (&deg;)</span></th>
+     <th><span class="nightlog-3">Tel Focus</span></th>
+     <th><span class="nightlog-3">Instrument</span></th>
+     <th><span class="nightlog-3">Binning</span></th>
+     <th><span class="nightlog-3">Camera Temp (&deg;C)</span></th>
+     <th><span class="nightlog-3">Dewar Temp (&deg;C)</span></th>
+     <th><span class="nightlog-3">Detector Size</span></th>
+     <th><span class="nightlog-3">Size (Bytes)</span></th>
+     <th><span class="nightlog-3">Owner</span></th>
+    </tr>
+   </thead>
+   <tbody>
+    {% for _e in h_dark %}
+     <tr>
+      <td>{{ _e.file }}</td>
+      <td>{{ _e.DATEOBS }}T{{ _e.TIMEOBS }}</td>
+      <td>{{ _e.OBJECT }}</td>
+      <td>{{ _e.RA }}</td>
+      <td>{{ _e.DEC }}</td>
+      <td>{{ _e.EPOCH }}</td>
+      <td>{{ _e.FILTER }}</td>
+      <td>{{ _e.EXPTIME }}</td>
+      <td>{{ _e.IMAGETYP }}</td>
+      <td>{{ _e.AIRMASS }}</td>
+      <td>{{ _e.AZIMUTH }}</td>
+      <td>{{ _e.ELEVAT }}</td>
+      <td>{{ _e.ROTANGLE }}</td>
+      <td>{{ _e.FOCUS }}</td>
+      <td>{{ _e.INSTRUME }}</td>
+      <td>{{ _e.BINNING }}</td>
+      <td>{{ _e.CAMTEMP }}</td>
+      <td>{{ _e.DEWTEMP }}</td>
+      <td>{{ _e.DETSIZE[3:7] }}x{{ _e.DETSIZE[10:14] }}</td>
+      <td>{{ _e.size }}</td>
+      <td>{{ _e.OWNER }}</td>
+     </tr>
+    {% endfor %}
+   </tbody>
+  {% endif %}
+  <!-- FLAT -->
+  {% if h_flat %}
+   <thead>
+    <tr><th colspan="21"><span class="nightlog-4"><center>{{ s_flat }}</center></span></th></tr>
+    <tr>
+     <th><span class="nightlog-3">File</span></th>
+     <th><span class="nightlog-3">Observation Date (UT)</span></th>
+     <th><span class="nightlog-3">Object</span></th>
+     <th><span class="nightlog-3">RA</span></th>
+     <th><span class="nightlog-3">Dec</span></th>
+     <th><span class="nightlog-3">Epoch</span></th>
+     <th><span class="nightlog-3">Filter</span></th>
+     <th><span class="nightlog-3">ExpTime (s)</span></th>
+     <th><span class="nightlog-3">Image Type</span></th>
+     <th><span class="nightlog-3">Airmass</span></th>
+     <th><span class="nightlog-3">Azimuth (&deg;)</span></th>
+     <th><span class="nightlog-3">Elevation (&deg;)</span></th>
+     <th><span class="nightlog-3">Rotator Angle (&deg;)</span></th>
+     <th><span class="nightlog-3">Tel Focus</span></th>
+     <th><span class="nightlog-3">Instrument</span></th>
+     <th><span class="nightlog-3">Binning</span></th>
+     <th><span class="nightlog-3">Camera Temp (&deg;C)</span></th>
+     <th><span class="nightlog-3">Dewar Temp (&deg;C)</span></th>
+     <th><span class="nightlog-3">Detector Size</span></th>
+     <th><span class="nightlog-3">Size (Bytes)</span></th>
+     <th><span class="nightlog-3">Owner</span></th>
+    </tr>
+   </thead>
+   <tbody>
+    {% for _e in h_flat %}
+     <tr>
+      <td>{{ _e.file }}</td>
+      <td>{{ _e.DATEOBS }}T{{ _e.TIMEOBS }}</td>
+      <td>{{ _e.OBJECT }}</td>
+      <td>{{ _e.RA }}</td>
+      <td>{{ _e.DEC }}</td>
+      <td>{{ _e.EPOCH }}</td>
+      <td>{{ _e.FILTER }}</td>
+      <td>{{ _e.EXPTIME }}</td>
+      <td>{{ _e.IMAGETYP }}</td>
+      <td>{{ _e.AIRMASS }}</td>
+      <td>{{ _e.AZIMUTH }}</td>
+      <td>{{ _e.ELEVAT }}</td>
+      <td>{{ _e.ROTANGLE }}</td>
+      <td>{{ _e.FOCUS }}</td>
+      <td>{{ _e.INSTRUME }}</td>
+      <td>{{ _e.BINNING }}</td>
+      <td>{{ _e.CAMTEMP }}</td>
+      <td>{{ _e.DEWTEMP }}</td>
+      <td>{{ _e.DETSIZE[3:7] }}x{{ _e.DETSIZE[10:14] }}</td>
+      <td>{{ _e.size }}</td>
+      <td>{{ _e.OWNER }}</td>
+     </tr>
+    {% endfor %}
+   </tbody>
+  {% endif %}
+  <!-- FOCUS -->
+  {% if h_focus %}
+   <thead>
+    <tr><th colspan="21"><span class="nightlog-4"><center>{{ s_focus }}</center></span></th></tr>
+    <tr>
+     <th><span class="nightlog-3">File</span></th>
+     <th><span class="nightlog-3">Observation Date (UT)</span></th>
+     <th><span class="nightlog-3">Object</span></th>
+     <th><span class="nightlog-3">RA</span></th>
+     <th><span class="nightlog-3">Dec</span></th>
+     <th><span class="nightlog-3">Epoch</span></th>
+     <th><span class="nightlog-3">Filter</span></th>
+     <th><span class="nightlog-3">ExpTime (s)</span></th>
+     <th><span class="nightlog-3">Image Type</span></th>
+     <th><span class="nightlog-3">Airmass</span></th>
+     <th><span class="nightlog-3">Azimuth (&deg;)</span></th>
+     <th><span class="nightlog-3">Elevation (&deg;)</span></th>
+     <th><span class="nightlog-3">Rotator Angle (&deg;)</span></th>
+     <th><span class="nightlog-3">Tel Focus</span></th>
+     <th><span class="nightlog-3">Instrument</span></th>
+     <th><span class="nightlog-3">Binning</span></th>
+     <th><span class="nightlog-3">Camera Temp (&deg;C)</span></th>
+     <th><span class="nightlog-3">Dewar Temp (&deg;C)</span></th>
+     <th><span class="nightlog-3">Detector Size</span></th>
+     <th><span class="nightlog-3">Size (Bytes)</span></th>
+     <th><span class="nightlog-3">Owner</span></th>
+    </tr>
+   </thead>
+   <tbody>
+    {% for _e in h_focus %}
+     <tr>
+      <td>{{ _e.file }}</td>
+      <td>{{ _e.DATEOBS }}T{{ _e.TIMEOBS }}</td>
+      <td>{{ _e.OBJECT }}</td>
+      <td>{{ _e.RA }}</td>
+      <td>{{ _e.DEC }}</td>
+      <td>{{ _e.EPOCH }}</td>
+      <td>{{ _e.FILTER }}</td>
+      <td>{{ _e.EXPTIME }}</td>
+      <td>{{ _e.IMAGETYP }}</td>
+      <td>{{ _e.AIRMASS }}</td>
+      <td>{{ _e.AZIMUTH }}</td>
+      <td>{{ _e.ELEVAT }}</td>
+      <td>{{ _e.ROTANGLE }}</td>
+      <td>{{ _e.FOCUS }}</td>
+      <td>{{ _e.INSTRUME }}</td>
+      <td>{{ _e.BINNING }}</td>
+      <td>{{ _e.CAMTEMP }}</td>
+      <td>{{ _e.DEWTEMP }}</td>
+      <td>{{ _e.DETSIZE[3:7] }}x{{ _e.DETSIZE[10:14] }}</td>
+      <td>{{ _e.size }}</td>
+      <td>{{ _e.OWNER }}</td>
+     </tr>
+    {% endfor %}
+   </tbody>
+  {% endif %}
+  <!-- OBJECT -->
+  {% if h_object %}
+   <thead>
+    <tr><th colspan="21"><span class="nightlog-4"><center>{{ s_object }}</center></span></th></tr>
+    <tr>
+     <th><span class="nightlog-3">File</span></th>
+     <th><span class="nightlog-3">Observation Date (UT)</span></th>
+     <th><span class="nightlog-3">Object</span></th>
+     <th><span class="nightlog-3">RA</span></th>
+     <th><span class="nightlog-3">Dec</span></th>
+     <th><span class="nightlog-3">Epoch</span></th>
+     <th><span class="nightlog-3">Filter</span></th>
+     <th><span class="nightlog-3">ExpTime (s)</span></th>
+     <th><span class="nightlog-3">Image Type</span></th>
+     <th><span class="nightlog-3">Airmass</span></th>
+     <th><span class="nightlog-3">Azimuth (&deg;)</span></th>
+     <th><span class="nightlog-3">Elevation (&deg;)</span></th>
+     <th><span class="nightlog-3">Rotator Angle (&deg;)</span></th>
+     <th><span class="nightlog-3">Tel Focus</span></th>
+     <th><span class="nightlog-3">Instrument</span></th>
+     <th><span class="nightlog-3">Binning</span></th>
+     <th><span class="nightlog-3">Camera Temp (&deg;C)</span></th>
+     <th><span class="nightlog-3">Dewar Temp (&deg;C)</span></th>
+     <th><span class="nightlog-3">Detector Size</span></th>
+     <th><span class="nightlog-3">Size (Bytes)</span></th>
+     <th><span class="nightlog-3">Owner</span></th>
+    </tr>
+   </thead>
+   <tbody>
+    {% for _e in h_object %}
+     <tr>
+      <td>{{ _e.file }}</td>
+      <td>{{ _e.DATEOBS }}T{{ _e.TIMEOBS }}</td>
+      <td>{{ _e.OBJECT }}</td>
+      <td>{{ _e.RA }}</td>
+      <td>{{ _e.DEC }}</td>
+      <td>{{ _e.EPOCH }}</td>
+      <td>{{ _e.FILTER }}</td>
+      <td>{{ _e.EXPTIME }}</td>
+      <td>{{ _e.IMAGETYP }}</td>
+      <td>{{ _e.AIRMASS }}</td>
+      <td>{{ _e.AZIMUTH }}</td>
+      <td>{{ _e.ELEVAT }}</td>
+      <td>{{ _e.ROTANGLE }}</td>
+      <td>{{ _e.FOCUS }}</td>
+      <td>{{ _e.INSTRUME }}</td>
+      <td>{{ _e.BINNING }}</td>
+      <td>{{ _e.CAMTEMP }}</td>
+      <td>{{ _e.DEWTEMP }}</td>
+      <td>{{ _e.DETSIZE[3:7] }}x{{ _e.DETSIZE[10:14] }}</td>
+      <td>{{ _e.size }}</td>
+      <td>{{ _e.OWNER }}</td>
+     </tr>
+    {% endfor %}
+   </tbody>
+  {% endif %}
+  <!-- SKYFLAT -->
+  {% if h_skyflat %}
+   <thead>
+    <tr><th colspan="21"><span class="nightlog-4"><center>{{ s_skyflat }}</center></span></th></tr>
+    <tr>
+     <th><span class="nightlog-3">File</span></th>
+     <th><span class="nightlog-3">Observation Date (UT)</span></th>
+     <th><span class="nightlog-3">Object</span></th>
+     <th><span class="nightlog-3">RA</span></th>
+     <th><span class="nightlog-3">Dec</span></th>
+     <th><span class="nightlog-3">Epoch</span></th>
+     <th><span class="nightlog-3">Filter</span></th>
+     <th><span class="nightlog-3">ExpTime (s)</span></th>
+     <th><span class="nightlog-3">Image Type</span></th>
+     <th><span class="nightlog-3">Airmass</span></th>
+     <th><span class="nightlog-3">Azimuth (&deg;)</span></th>
+     <th><span class="nightlog-3">Elevation (&deg;)</span></th>
+     <th><span class="nightlog-3">Rotator Angle (&deg;)</span></th>
+     <th><span class="nightlog-3">Tel Focus</span></th>
+     <th><span class="nightlog-3">Instrument</span></th>
+     <th><span class="nightlog-3">Binning</span></th>
+     <th><span class="nightlog-3">Camera Temp (&deg;C)</span></th>
+     <th><span class="nightlog-3">Dewar Temp (&deg;C)</span></th>
+     <th><span class="nightlog-3">Detector Size</span></th>
+     <th><span class="nightlog-3">Size (Bytes)</span></th>
+     <th><span class="nightlog-3">Owner</span></th>
+    </tr>
+   </thead>
+   <tbody>
+    {% for _e in h_skyflat %}
+     <tr>
+      <td>{{ _e.file }}</td>
+      <td>{{ _e.DATEOBS }}T{{ _e.TIMEOBS }}</td>
+      <td>{{ _e.OBJECT }}</td>
+      <td>{{ _e.RA }}</td>
+      <td>{{ _e.DEC }}</td>
+      <td>{{ _e.EPOCH }}</td>
+      <td>{{ _e.FILTER }}</td>
+      <td>{{ _e.EXPTIME }}</td>
+      <td>{{ _e.IMAGETYP }}</td>
+      <td>{{ _e.AIRMASS }}</td>
+      <td>{{ _e.AZIMUTH }}</td>
+      <td>{{ _e.ELEVAT }}</td>
+      <td>{{ _e.ROTANGLE }}</td>
+      <td>{{ _e.FOCUS }}</td>
+      <td>{{ _e.INSTRUME }}</td>
+      <td>{{ _e.BINNING }}</td>
+      <td>{{ _e.CAMTEMP }}</td>
+      <td>{{ _e.DEWTEMP }}</td>
+      <td>{{ _e.DETSIZE[3:7] }}x{{ _e.DETSIZE[10:14] }}</td>
+      <td>{{ _e.size }}</td>
+      <td>{{ _e.OWNER }}</td>
+     </tr>
+    {% endfor %}
+   </tbody>
+  {% endif %}
+  <!-- STANDARD -->
+  {% if h_standard %}
+   <thead>
+    <tr><th colspan="21"><span class="nightlog-4"><center>{{ s_standard }}</center></span></th></tr>
+    <tr>
+     <th><span class="nightlog-3">File</span></th>
+     <th><span class="nightlog-3">Observation Date (UT)</span></th>
+     <th><span class="nightlog-3">Object</span></th>
+     <th><span class="nightlog-3">RA</span></th>
+     <th><span class="nightlog-3">Dec</span></th>
+     <th><span class="nightlog-3">Epoch</span></th>
+     <th><span class="nightlog-3">Filter</span></th>
+     <th><span class="nightlog-3">ExpTime (s)</span></th>
+     <th><span class="nightlog-3">Image Type</span></th>
+     <th><span class="nightlog-3">Airmass</span></th>
+     <th><span class="nightlog-3">Azimuth (&deg;)</span></th>
+     <th><span class="nightlog-3">Elevation (&deg;)</span></th>
+     <th><span class="nightlog-3">Rotator Angle (&deg;)</span></th>
+     <th><span class="nightlog-3">Tel Focus</span></th>
+     <th><span class="nightlog-3">Instrument</span></th>
+     <th><span class="nightlog-3">Binning</span></th>
+     <th><span class="nightlog-3">Camera Temp (&deg;C)</span></th>
+     <th><span class="nightlog-3">Dewar Temp (&deg;C)</span></th>
+     <th><span class="nightlog-3">Detector Size</span></th>
+     <th><span class="nightlog-3">Size (Bytes)</span></th>
+     <th><span class="nightlog-3">Owner</span></th>
+    </tr>
+   </thead>
+   <tbody>
+    {% for _e in h_standard %}
+     <tr>
+      <td>{{ _e.file }}</td>
+      <td>{{ _e.DATEOBS }}T{{ _e.TIMEOBS }}</td>
+      <td>{{ _e.OBJECT }}</td>
+      <td>{{ _e.RA }}</td>
+      <td>{{ _e.DEC }}</td>
+      <td>{{ _e.EPOCH }}</td>
+      <td>{{ _e.FILTER }}</td>
+      <td>{{ _e.EXPTIME }}</td>
+      <td>{{ _e.IMAGETYP }}</td>
+      <td>{{ _e.AIRMASS }}</td>
+      <td>{{ _e.AZIMUTH }}</td>
+      <td>{{ _e.ELEVAT }}</td>
+      <td>{{ _e.ROTANGLE }}</td>
+      <td>{{ _e.FOCUS }}</td>
+      <td>{{ _e.INSTRUME }}</td>
+      <td>{{ _e.BINNING }}</td>
+      <td>{{ _e.CAMTEMP }}</td>
+      <td>{{ _e.DEWTEMP }}</td>
+      <td>{{ _e.DETSIZE[3:7] }}x{{ _e.DETSIZE[10:14] }}</td>
+      <td>{{ _e.size }}</td>
+      <td>{{ _e.OWNER }}</td>
+     </tr>
+    {% endfor %}
+   </tbody>
+  {% endif %}
+ </table>
+
+</div>
+<hr class="normal">
+{% endblock %}

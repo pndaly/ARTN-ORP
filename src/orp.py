@@ -18,7 +18,7 @@ from urllib.parse import urlencode
 from werkzeug.urls import url_parse
 from werkzeug.utils import secure_filename
 from src.forms.Forms import ConfirmDeleteForm, ConfirmRegistrationForm, FeedbackForm, \
-    LoginForm, NightLogForm, ObsReqForm, ProfileForm, RegistrationForm, ResetPasswordForm, \
+    LoginForm, NightLogForm, OldNightLogForm, ObsReqForm, ProfileForm, RegistrationForm, ResetPasswordForm, \
     ResetPasswordRequestForm, UpdateObsReqForm, UploadForm, UserHistoryForm, OBSERVATION_TYPES
 from src.models.Models import db, obsreq_filters, ObsReq, User, user_filters
 from src.telescopes.factory import *
@@ -30,6 +30,7 @@ from src import *
 
 import csv
 import glob
+import itertools
 import json
 import pdfkit
 import random
@@ -59,11 +60,20 @@ logger.info(f'ORP_HOME = {ORP_HOME}')
 
 
 # +
+# supported system(s)
+# -
+ARTN_SUPPORTED_NODES = {'Bok': ['BCSpec', '90Prime'], 'Kuiper': ['Mont4k'], 'MMT': ['BinoSpec'], 'Vatt': ['Vatt4k']}
+ARTN_SUPPORTED_TELESCOPES = [_k for _k in ARTN_SUPPORTED_NODES]
+ARTN_SUPPORTED_INSTRUMENTS = list(itertools.chain.from_iterable([_v for _k, _v in ARTN_SUPPORTED_NODES.items()]))
+
+
+# +
 # telescope(s)
 # 
 TELESCOPES = {
     'bok': Telescope(name='bok'),
     'kuiper': Telescope(name='kuiper'),
+    'mmt': Telescope(name='mmt'),
     'vatt': Telescope(name='vatt')
 }
 TELESCOPES['bok'].observe = bok_observe
@@ -406,8 +416,9 @@ def upload_file(_columns=None, _num=0, _user=None):
                 return redirect(url_for('orp_user', username=_user.username))
 
 
+#def history_seek(_path=ARTN_DATA_DIRECTORY, _type='.json', _jd=0.0):
 # noinspection PyBroadException
-def history_seek(_path=ARTN_DATA_DIRECTORY, _type='.json', _jd=0.0):
+def history_seek(_path=ARTN_DATA_ROOT, _type='.json', _jd=0.0):
     """ returns list of files: size of given type in directory tree or {} """
 
     # check input(s)
@@ -496,8 +507,9 @@ def history_search(_flist=None, _lookback=0.0, _name=''):
     return sorted(_udata, reverse=True)
 
 
+#def get_history(_path=ARTN_DATA_DIRECTORY, _type='.dna.json', _lookback=ARTN_LOOKBACK_PERIOD, _user=''):
 # noinspection PyBroadException
-def get_history(_path=ARTN_DATA_DIRECTORY, _type='.dna.json', _lookback=ARTN_LOOKBACK_PERIOD, _user=''):
+def get_history(_path=ARTN_DATA_ROOT, _type='.dna.json', _lookback=ARTN_LOOKBACK_PERIOD, _user=''):
 
     # check input(s)
     if not isinstance(_path, str) or _path.strip() == '':
@@ -539,7 +551,31 @@ def get_history_page(_results=None, _offset=0, _per_page=ARTN_RESULTS_PER_PAGE):
 
 
 # noinspection PyBroadException
-def get_nightlog(_path=ARTN_DIR_OBJECTS, _type=''):
+def nlog_seek_files(_path=os.getcwd()):
+
+    # get input(s)
+    _path = os.path.abspath(os.path.expanduser(f'{_path}'))
+    if not os.path.isdir(_path):
+        return {}
+
+    # generator code
+    _fw = (
+        os.path.join(_root, _file)
+        for _root, _dirs, _files in os.walk(_path)
+        for _file in _files
+    )
+
+    # get file(s)
+    try:
+        return {f'{_k}': int(os.stat(f'{_k}').st_size)
+                for _k in _fw if (not os.path.islink(f'{_k}') and os.path.exists(f'{_k}') and
+                                  _k.endswith('.fits') and int(os.stat(f'{_k}').st_size) > 2)}
+    except Exception:
+        return {}
+
+
+# noinspection PyBroadException
+def get_old_nightlog(_path=ARTN_DIR_OBJECTS, _type=''):
     """ returns list of files: size of given type in directory tree or {} """
 
     # check input(s)
@@ -605,7 +641,44 @@ def get_nightlog(_path=ARTN_DIR_OBJECTS, _type=''):
 
 
 # noinspection PyBroadException
-def get_nightlog_fits(_in=None):
+def nlog_get_fits_headers(_in=None):
+
+    # check input(s)
+    if _in is None or not isinstance(_in, dict) or _in is {}:
+        return []
+
+    # get fits data
+    _l_out = []
+    for _k, _v in _in.items():
+        _d_out = {'file': os.path.basename(_k), 'directory': os.path.dirname(_k), 'size': _v}
+        with fits.open(_k) as _hdul:
+            for _h in ARTN_FITS_HEADERS:
+                try:
+                    _d_out[_h.replace('-', '')] = str(_hdul[0].header[_h]).strip()
+                except Exception:
+                    _d_out[_h] = ''
+
+        # who requested it?
+        try:
+            if _d_out['ARTNGID'].strip() != '' and _d_out['ARTNOID'].strip() != '':
+                query = db.session.query(ObsReq)
+                query = obsreq_filters(query, {'group_id': f"{_d_out['ARTNGID']}"})
+                query = obsreq_filters(query, {'observation_id': f"{_d_out['ARTNOID']}"})
+                _d_out['OWNER'] = query.first().username
+            else:
+                _d_out['OWNER'] = ''
+        except Exception:
+            _d_out['OWNER'] = ''
+
+        # append new record
+        _l_out.append(_d_out)
+
+    # return list sorted by Julian date key
+    return sorted(_l_out, key=lambda _i: _i['JULIAN'])
+
+
+# noinspection PyBroadException
+def get_old_nightlog_fits(_in=None):
 
     # check input(s)
     if _in is None or not isinstance(_in, dict) or _in is {}:
@@ -1117,7 +1190,7 @@ def orp_history():
     _u = current_user if current_user.is_authenticated else User.query.filter_by(username=_user).first_or_404()
 
     # build form
-    form = UserHistoryForm()
+    form = UserHistoryForm(telescope='Kuiper', instrument='Mont4k')
 
     # GET method
     if request.method == 'GET':
@@ -1132,19 +1205,26 @@ def orp_history():
         # get data
         _username = User.query.filter_by(username=form.username.data.strip()).first_or_404()
         _lookback = int(form.lookback.data.strip())
+        _ins = form.instrument.data.strip()
+        _tel = form.telescope.data.strip()
+
         if isinstance(_username, User):
             msg_out(f'/orp/history/ _username={repr(_username)}, _lookback={_lookback}', True, False)
         else:
             msg_out(f'/orp/history/ _username={str(_username)}, _lookback={_lookback}', True, False)
 
+        if f'{_ins}' not in ARTN_SUPPORTED_NODES[f'{_tel}']:
+            return render_template('409.html', reason=f'Invalid telescope ({_tel}) and instrument ({_ins}) combination!', caller='orp_history')
+
         # get history
         _history = []
+        _d_path = f"{ARTN_DATA_ROOT}/{_tel}/{_ins}"
         if _u.is_admin:
-            _history = get_history(_path=ARTN_DATA_DIRECTORY, _type='.dna.json',
+            _history = get_history(_path=_d_path, _type='.dna.json',
                                    _lookback=_lookback, _user=_username.username)
         else:
             if _username.username.strip().lower() == _u.username.strip().lower():
-                _history = get_history(_path=ARTN_DATA_DIRECTORY, _type='.dna.json',
+                _history = get_history(_path=_d_path, _type='.dna.json',
                                        _lookback=_lookback, _user=_username.username)
             else:
                 msg_out(f'ERROR: User {_username.username} does not have permission to view record(s) for {_user}',
@@ -1160,7 +1240,7 @@ def orp_history():
         pagination_history = get_history_page(_history, offset, per_page)
         pagination = Pagination(page=page, per_page=per_page, offset=offset, total=_total, css_framework='bootstrap4')
         return render_template('history.html', history=pagination_history, total=_total, lookback=_lookback,
-                               page=page, per_page=per_page, pagination=pagination, user=_username)
+                               page=page, per_page=per_page, pagination=pagination, user=_username, telescope=_tel, instrument=_ins)
 
     # return
     return render_template('user_history.html', form=form)
@@ -1349,7 +1429,147 @@ def orp_nightlog():
         return render_template('403.html')
 
     # build form
-    form = NightLogForm()
+    form = NightLogForm(telescope='Kuiper', instrument='Mont4k')
+
+    # GET method
+    if request.method == 'GET':
+        form.iso.data = get_date_time(0)
+
+    # validate form (POST request)
+    if form.validate_on_submit():
+
+        # get form value(s)
+        _ins = form.instrument.data.strip()
+        _iso = str(form.iso.data).strip().split()[0].replace('-', '')
+        _obs = form.obs.data.lower().strip()
+        _pdf = form.pdf.data
+        _tel = form.telescope.data.strip()
+        msg_out(f'/orp/nightlog/ _ins={_ins}, _iso={_iso}, _obs={_obs}, _pdf={_pdf}, _tel={_tel}', True, False)
+
+        if f'{_ins}' not in ARTN_SUPPORTED_NODES[f'{_tel}']:
+            return render_template('409.html', reason=f'Invalid telescope ({_tel}) and instrument ({_ins}) combination!', caller='orp_nightlog')
+
+        # set default(s)
+        _d_bias, _d_calibration, _d_dark, _d_flat, _d_focus, _d_object, _d_skyflat, _d_standard = '', '', '', '', '', '', '', ''
+        _f_bias, _f_calibration, _f_dark, _f_flat, _f_focus, _f_object, _f_skyflat, _f_standard = {}, {}, {}, {}, {}, {}, {}, {}
+        _h_bias, _h_calibration, _h_dark, _h_flat, _h_focus, _h_object, _h_skyflat, _h_standard = [], [], [], [], [], [], [], []
+        _n_bias, _n_calibration, _n_dark, _n_flat, _n_focus, _n_object, _n_skyflat, _n_standard = 0, 0, 0, 0, 0, 0, 0, 0
+        _s_bias, _s_calibration, _s_dark, _s_flat, _s_focus, _s_object, _s_skyflat, _s_standard = '', '', '', '', '', '', '', ''
+        _f_all, _n_all, _s_all = {}, 0, ''
+
+        # seek files and headers
+        if _obs == 'all' or _obs ==  'bias':
+            _d_bias = f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/bias"
+            _f_bias = nlog_seek_files(_d_bias)
+            _h_bias = nlog_get_fits_headers(_f_bias)
+            _n_bias = len(_f_bias)
+            _s_bias = f"{_n_bias} BIAS observations on server scopenet.as.arizona.edu in directory {_d_bias}"
+            msg_out(f'/orp/nightlog/ searching {_d_bias}', True, False)
+        if _obs == 'all' or _obs ==  'calibration':
+            _d_calibration = f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/calibration"
+            _f_calibration = nlog_seek_files(_d_calibration)
+            _h_calibration = nlog_get_fits_headers(_f_calibration)
+            _n_calibration = len(_f_calibration)
+            _s_calibration = f"{_n_calibration} CALIBRATION observations on server scopenet.as.arizona.edu in directory {_d_calibration}"
+            msg_out(f'/orp/nightlog/ searching {_d_calibration}', True, False)
+        if _obs == 'all' or _obs ==  'dark':
+            _d_dark = f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/dark"
+            _f_dark = nlog_seek_files(_d_dark)
+            _h_dark = nlog_get_fits_headers(_f_dark)
+            _n_dark = len(_f_dark)
+            _s_dark = f"{_n_dark} DARK observations on server scopenet.as.arizona.edu in directory {_d_dark}"
+            msg_out(f'/orp/nightlog/ searching {_d_dark}', True, False)
+        if _obs == 'all' or _obs ==  'flat':
+            _d_flat = f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/flat"
+            _f_flat = nlog_seek_files(_d_flat)
+            _h_flat = nlog_get_fits_headers(_f_flat)
+            _n_flat = len(_f_flat)
+            _s_flat = f"{_n_flat} FLAT observations on server scopenet.as.arizona.edu in directory {_d_flat}"
+            msg_out(f'/orp/nightlog/ searching {_d_flat}', True, False)
+        if _obs == 'all' or _obs ==  'focus':
+            _d_focus = f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/focus"
+            _f_focus = nlog_seek_files(_d_focus)
+            _h_focus = nlog_get_fits_headers(_f_focus)
+            _n_focus = len(_f_focus)
+            _s_focus = f"{_n_focus} FOCUS observations on server scopenet.as.arizona.edu in directory {_d_focus}"
+            msg_out(f'/orp/nightlog/ searching {_d_focus}', True, False)
+        if _obs == 'all' or _obs ==  'object':
+            _d_object = f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/object"
+            _f_object = nlog_seek_files(_d_object)
+            _h_object = nlog_get_fits_headers(_f_object)
+            _n_object = len(_f_object)
+            _s_object = f"{_n_object} OBJECT observations on server scopenet.as.arizona.edu in directory {_d_object}"
+            msg_out(f'/orp/nightlog/ searching {_d_object}', True, False)
+        if _obs == 'all' or _obs ==  'skyflat':
+            _d_skyflat = f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/skyflat"
+            _f_skyflat = nlog_seek_files(_d_skyflat)
+            _h_skyflat = nlog_get_fits_headers(_f_skyflat)
+            _n_skyflat = len(_f_skyflat)
+            _s_skyflat = f"{_n_skyflat} SKYFLAT observations on server scopenet.as.arizona.edu in directory {_d_skyflat}"
+            msg_out(f'/orp/nightlog/ searching {_d_skyflat}', True, False)
+        if _obs == 'all' or _obs ==  'standard':
+            _d_standard = f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/standard"
+            _f_standard = nlog_seek_files(_d_standard)
+            _h_standard = nlog_get_fits_headers(_f_standard)
+            _n_standard = len(_f_standard)
+            _s_standard = f"{_n_standard} STANDARD observations on server scopenet.as.arizona.edu in directory {_d_standard}"
+            msg_out(f'/orp/nightlog/ searching {_d_standard}', True, False)
+
+        # amalgamate
+        _d_all = f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}"
+        _f_all = {**_f_bias, **_f_calibration, **_f_dark, **_f_flat, **_f_focus, **_f_object, **_f_skyflat, **_f_standard}
+        _n_all = len(_f_all)
+        _s_all = f"{_n_all} observations on server scopenet.as.arizona.edu in directory {_d_all}"
+        msg_out(f'/orp/nightlog/ _s_all={_s_all}', True, False)
+
+        # render page or create pdf
+        _nod = TEL__NODES[_tel.lower()]
+        msg_out(f'/orp/nightlog/ _nod={_nod}', True, False)
+        _html = f'nightlog_results_pdf.html' if _pdf else f'nightlog_results.html'
+        msg_out(f'/orp/nightlog/ using template {_html}', True, False)
+        _rendered = render_template(_html, pdf=_pdf, user=current_user, tel=_tel, nod=_nod, iso=_iso, 
+                                    h_bias=_h_bias, n_bias=_n_bias, s_bias=_s_bias, 
+                                    h_calibration=_h_calibration, n_calibration=_n_calibration, s_calibration=_s_calibration, 
+                                    h_dark=_h_dark, n_dark=_n_dark, s_dark=_s_dark, 
+                                    h_flat=_h_flat, n_flat=_n_flat, s_flat=_s_flat, 
+                                    h_focus=_h_focus, n_focus=_n_focus, s_focus=_s_focus, 
+                                    h_object=_h_object, n_object=_n_object, s_object=_s_object, 
+                                    h_skyflat=_h_skyflat, n_skyflat=_n_skyflat, s_skyflat=_s_skyflat, 
+                                    h_standard=_h_standard, n_standard=_n_standard, s_standard=_s_standard, 
+                                    n_all=_n_all, s_all=_s_all)
+        msg_out(f'/orp/nightlog/ _rendered={_rendered}', True, False)
+        if _pdf:
+            _obslog = pdfkit.from_string(_rendered, False, css=f"{ARTN_BASE_DIR}/static/css/main.css")
+            _response = make_response(_obslog)
+            _response.headers['Content-Type'] = 'application/pdf'
+            _response.headers['Content-Disposition'] = f'attachment; filename={_tel}.{_ins}.{_iso}.{_obs}.pdf'
+            return _response
+
+        else:
+            return _rendered
+
+        # return
+    return render_template('nightlog.html', form=form)
+
+
+# +
+# route(s): /orp/old_nightlog/, requires login
+# -
+# noinspection PyBroadException
+@app.route('/orp/orp/old_nightlog/', methods=['GET', 'POST'])
+@app.route('/orp/old_nightlog/', methods=['GET', 'POST'])
+@app.route('/old_nightlog/', methods=['GET', 'POST'])
+@login_required
+def orp_old_nightlog():
+    msg_out(f'/orp/old_nightlog/ entry', True, False)
+    get_client_ip(request)
+
+    # only admin can do this
+    if not current_user.is_admin:
+        return render_template('403.html')
+
+    # build form
+    form = OldNightLogForm()
 
     # GET method
     if request.method == 'GET':
@@ -1363,41 +1583,41 @@ def orp_nightlog():
         _iso = str(form.iso.data).strip().split()[0].replace('-', '')
         _tel = form.telescope.data.strip()
         _pdf = form.pdf.data
-        msg_out(f'/orp/nightlog/ _obs={_obs}, _iso={_iso}, _tel={_tel}, _pdf={_pdf}', True, False)
+        msg_out(f'/orp/old_nightlog/ _obs={_obs}, _iso={_iso}, _tel={_tel}, _pdf={_pdf}', True, False)
 
         # search for data
         _all, _darks, _foci, _flats, _objects, _skyflats = {}, {}, {}, {}, {}, {}
         if _obs == 'all':
-            _darks = get_nightlog(_path=f'{ARTN_DIR_DARKS.replace("YYYYMMDD", _iso)}', _type='darks')
-            _flats = get_nightlog(_path=f'{ARTN_DIR_FLATS.replace("YYYYMMDD", _iso)}', _type='flats')
-            _foci = get_nightlog(_path=f'{ARTN_DIR_FOCUS.replace("YYYYMMDD", _iso)}', _type='focus')
-            _objects = get_nightlog(_path=f'{ARTN_DIR_OBJECTS.replace("YYYYMMDD", _iso)}', _type='objects')
-            _skyflats = get_nightlog(_path=f'{ARTN_DIR_SKYFLATS.replace("YYYYMMDD", _iso)}', _type='skyflats')
+            _darks = get_old_nightlog(_path=f'{ARTN_DIR_DARKS.replace("YYYYMMDD", _iso)}', _type='darks')
+            _flats = get_old_nightlog(_path=f'{ARTN_DIR_FLATS.replace("YYYYMMDD", _iso)}', _type='flats')
+            _foci = get_old_nightlog(_path=f'{ARTN_DIR_FOCUS.replace("YYYYMMDD", _iso)}', _type='focus')
+            _objects = get_old_nightlog(_path=f'{ARTN_DIR_OBJECTS.replace("YYYYMMDD", _iso)}', _type='objects')
+            _skyflats = get_old_nightlog(_path=f'{ARTN_DIR_SKYFLATS.replace("YYYYMMDD", _iso)}', _type='skyflats')
             # _all = {**_darks, **_flats, **_focus, **_objects, **_skyflats}
         elif _obs == 'darks':
-            _darks = get_nightlog(_path=f'{ARTN_DIR_DARKS.replace("YYYYMMDD", _iso)}', _type=_obs)
+            _darks = get_old_nightlog(_path=f'{ARTN_DIR_DARKS.replace("YYYYMMDD", _iso)}', _type=_obs)
         elif _obs == 'flats':
-            _flats = get_nightlog(_path=f'{ARTN_DIR_FLATS.replace("YYYYMMDD", _iso)}', _type=_obs)
+            _flats = get_old_nightlog(_path=f'{ARTN_DIR_FLATS.replace("YYYYMMDD", _iso)}', _type=_obs)
         elif _obs == 'focus':
-            _foci = get_nightlog(_path=f'{ARTN_DIR_FOCUS.replace("YYYYMMDD", _iso)}', _type=_obs)
+            _foci = get_old_nightlog(_path=f'{ARTN_DIR_FOCUS.replace("YYYYMMDD", _iso)}', _type=_obs)
         elif _obs == 'objects':
-            _objects = get_nightlog(_path=f'{ARTN_DIR_OBJECTS.replace("YYYYMMDD", _iso)}', _type=_obs)
+            _objects = get_old_nightlog(_path=f'{ARTN_DIR_OBJECTS.replace("YYYYMMDD", _iso)}', _type=_obs)
         elif _obs == 'skyflats':
-            _skyflats = get_nightlog(_path=f'{ARTN_DIR_SKYFLATS.replace("YYYYMMDD", _iso)}', _type=_obs)
+            _skyflats = get_old_nightlog(_path=f'{ARTN_DIR_SKYFLATS.replace("YYYYMMDD", _iso)}', _type=_obs)
         else:
             return render_template('401.html')
 
         # get fits data
-        _telescope = TEL__NODES[_tel]
-        _l_darks = get_nightlog_fits(_darks)
-        _l_flats = get_nightlog_fits(_flats)
-        _l_foci = get_nightlog_fits(_foci)
-        _l_objects = get_nightlog_fits(_objects)
-        _l_skyflats = get_nightlog_fits(_skyflats)
+        _telescope = TEL__NODES[_tel.lower()]
+        _l_darks = get_old_nightlog_fits(_darks)
+        _l_flats = get_old_nightlog_fits(_flats)
+        _l_foci = get_old_nightlog_fits(_foci)
+        _l_objects = get_old_nightlog_fits(_objects)
+        _l_skyflats = get_old_nightlog_fits(_skyflats)
 
         # render page or create pdf
         if _pdf:
-            _rendered = render_template(f'nightlog_{_tel}_pdf.html', telescope=_telescope, iso=_iso,
+            _rendered = render_template(f'old_nightlog_{_tel.lower()}_pdf.html', telescope=_telescope, iso=_iso,
                                         user=current_user, darks=_l_darks, flats=_l_flats, foci=_l_foci,
                                         objects=_l_objects, skyflats=_l_skyflats, num_darks=len(_l_darks),
                                         num_flats=len(_l_flats), num_foci=len(_l_foci), num_objects=len(_l_objects),
@@ -1409,14 +1629,14 @@ def orp_nightlog():
             return _response
 
         else:
-            return render_template(f'nightlog_{_tel}.html', telescope=_telescope, iso=_iso,
+            return render_template(f'old_nightlog_{_tel.lower()}.html', telescope=_telescope, iso=_iso,
                                    user=current_user, darks=_l_darks, flats=_l_flats, foci=_l_foci,
                                    objects=_l_objects, skyflats=_l_skyflats, num_darks=len(_l_darks),
                                    num_flats=len(_l_flats), num_foci=len(_l_foci), num_objects=len(_l_objects),
                                    num_skyflats=len(_l_skyflats))
 
         # return
-    return render_template('nightlog.html', form=form)
+    return render_template('old_nightlog.html', form=form)
 
 
 # +

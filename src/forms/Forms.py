@@ -48,7 +48,10 @@ FILTER_NAMES = [('U', 'U'), ('B', 'B'), ('V', 'V'), ('R', 'R'), ('I', 'I'), ('Cl
 LOOKBACK_PERIOD = [('30', '30 Days'), ('60', '60 Days'),
                    ('90', '90 Days'), ('180', '180 Days'), ('365', '365 Days')]
 LUNARPHASE = [('Dark', 'Dark'), ('Grey', 'Grey'), ('Bright', 'Bright'), ('mBright', 'mBright'), ('Any', 'Any')]
-OBSERVATION_TYPES = [('all', 'All'), ('darks', 'Darks'), ('flats', 'Flats'), ('focus', 'Focus'),
+OBSERVATION_TYPES = [('all', 'All'), ('bias', 'Bias'), ('calibration', 'Calibration'), ('dark', 'Dark'), 
+                     ('flat', 'Flat'), ('focus', 'Focus'), ('object', 'Object'), ('skyflat', 'SkyFlat'), 
+                     ('standard', 'Standard')]
+OLD_OBSERVATION_TYPES = [('all', 'All'), ('darks', 'Darks'), ('flats', 'Flats'), ('focus', 'Focus'),
                      ('objects', 'Objects'), ('skyflats', 'SkyFlats')]
 PRIORITY = [('Routine', 'Routine'), ('Urgent', 'Urgent')]
 QUALITY = [('None', 'None'), ('S/N>10', 'S/N>10')]
@@ -65,8 +68,8 @@ RA_MIN = 0.0
 RA_MAX = 24.0
 URGENCY = [('Routine', 'Routine'), ('Urgent', 'Urgent'), ('Critical', 'Critical')]
 
-TELESCOPES = [('kuiper', 'Kuiper 61-inch'), ('vatt', 'Vatt 1.8m'), ('bok', 'Bok 90-inch')]
-INSTRUMENTS = [('Mont4k', 'Mont4k')]
+FORM_TELESCOPES = [('Bok', 'Bok 90-inch'), ('Kuiper', 'Kuiper 61-inch'), ('MMT', 'MMT 6.5m'), ('Vatt', 'Vatt 1.8m')]
+FORM_INSTRUMENTS = [('90Prime', '90Prime'), ('BCSpec', 'BCSpec'), ('Mont4k', 'Mont4k'), ('BinoSpec', 'BinoSpec'), ('Vatt4k', 'Vatt4k')]
 
 RA_BIASRATE_DEFAULT = 0.0
 RA_BIASRATE_MIN = -50.0
@@ -186,8 +189,8 @@ class ObsReqForm(FlaskForm):
     binning = SelectField('Binning', choices=BINNING, default=BINNING[0][0], validators=[DataRequired()])
     dither = SelectField('Dither', choices=DITHER, default=DITHER[0][0], validators=[DataRequired()])
     cadence = SelectField('Cadence', choices=CADENCE, default=CADENCE[0][0], validators=[DataRequired()])
-    telescope = SelectField('Telescope', choices=TELESCOPES, default=TELESCOPES[0][0], validators=[DataRequired()])
-    instrument = SelectField('Instrument', choices=INSTRUMENTS, default=INSTRUMENTS[0][0], validators=[DataRequired()])
+    telescope = SelectField('Telescope', choices=FORM_TELESCOPES, default=FORM_TELESCOPES[1][1], validators=[DataRequired()])
+    instrument = SelectField('Instrument', choices=FORM_INSTRUMENTS, default=FORM_INSTRUMENTS[2][1], validators=[DataRequired()])
 
     # non-sidereal widgets
     ns_params = StringField('Non-Sidereal Parameter(s)', default=NS_DEFAULT, validators=[DataRequired()])
@@ -321,8 +324,8 @@ class UpdateObsReqForm(FlaskForm):
     binning = SelectField('Binning', choices=BINNING, default=BINNING[0][0], validators=[DataRequired()])
     dither = SelectField('Dither', choices=DITHER, default=DITHER[0][0], validators=[DataRequired()])
     cadence = SelectField('Cadence', choices=CADENCE, default=CADENCE[0][0], validators=[DataRequired()])
-    telescope = SelectField('Telescope', choices=TELESCOPES, default=TELESCOPES[0][0], validators=[DataRequired()])
-    instrument = SelectField('Instrument', choices=INSTRUMENTS, default=INSTRUMENTS[0][0], validators=[DataRequired()])
+    telescope = SelectField('Telescope', choices=FORM_TELESCOPES, default=FORM_TELESCOPES[1][1], validators=[DataRequired()])
+    instrument = SelectField('Instrument', choices=FORM_INSTRUMENTS, default=FORM_INSTRUMENTS[2][1], validators=[DataRequired()])
 
     # non-sidereal widgets
     ns_params = StringField('Non-Sidereal Parameter(s)', default=NS_DEFAULT, validators=[DataRequired()])
@@ -349,12 +352,43 @@ class UploadForm(FlaskForm):
 class UserHistoryForm(FlaskForm):
 
     # fields
-    username = StringField('Username', default='')
+    instrument = SelectField('Instrument', choices=FORM_INSTRUMENTS, default=FORM_INSTRUMENTS[2][1], validators=[DataRequired()])
     lookback = SelectField('Lookback Period', choices=LOOKBACK_PERIOD,
                            default=LOOKBACK_PERIOD[0][0], validators=[DataRequired()])
+    telescope = SelectField('Telescope', choices=FORM_TELESCOPES, default=FORM_TELESCOPES[1][1], validators=[DataRequired()])
+    username = StringField('Username', default='')
 
     # submit
     submit = SubmitField('Submit')
+
+
+# +
+# class: OldNightLogForm(), inherits from FlaskForm
+# -
+class OldNightLogForm(FlaskForm):
+
+    # fields
+    telescope = SelectField('Telescope', choices=FORM_TELESCOPES, default=FORM_TELESCOPES[1][1], validators=[DataRequired()])
+    obs = SelectField('Observation Type', choices=OLD_OBSERVATION_TYPES,
+                      default=OLD_OBSERVATION_TYPES[0][0], validators=[DataRequired()])
+    iso = DateTimeField('Date', default=get_date_time(), format='%Y-%m-%d', validators=[DataRequired()])
+    pdf = BooleanField('Generate PDF', false_values=(False, 'false', 0, '0'), default=False)
+
+    # submit
+    submit = SubmitField('Submit')
+
+    # validator for iso field
+    # noinspection PyUnusedLocal
+    @staticmethod
+    def validate_iso(form, field):
+
+        _today = get_date_time(0)
+        if iso_to_jd(field.data) > iso_to_jd(_today):
+            raise ValidationError("Observation date must not be in the future!")
+
+        _year_ago = get_date_time(-ARTN_LOOKBACK_PERIOD)
+        if iso_to_jd(field.data) < iso_to_jd(_year_ago):
+            raise ValidationError("Observation date must be in the last year!")
 
 
 # +
@@ -363,11 +397,12 @@ class UserHistoryForm(FlaskForm):
 class NightLogForm(FlaskForm):
 
     # fields
-    telescope = SelectField('Telescope', choices=TELESCOPES, default=TELESCOPES[0][0], validators=[DataRequired()])
+    instrument = SelectField('Instrument', choices=FORM_INSTRUMENTS, default=FORM_INSTRUMENTS[2][1], validators=[DataRequired()])
+    iso = DateTimeField('Date', default=get_date_time(), format='%Y-%m-%d', validators=[DataRequired()])
     obs = SelectField('Observation Type', choices=OBSERVATION_TYPES,
                       default=OBSERVATION_TYPES[0][0], validators=[DataRequired()])
-    iso = DateTimeField('Date', default=get_date_time(), format='%Y-%m-%d', validators=[DataRequired()])
     pdf = BooleanField('Generate PDF', false_values=(False, 'false', 0, '0'), default=False)
+    telescope = SelectField('Telescope', choices=FORM_TELESCOPES, default=FORM_TELESCOPES[1][1], validators=[DataRequired()])
 
     # submit
     submit = SubmitField('Submit')

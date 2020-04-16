@@ -5,7 +5,8 @@
 <!-- global container -->
 <div class="container">
  <div class="col-md-12">
-	 <h4>Observation History for {{ user.firstname }} {{ user.lastname }} ({{ total }} records over {{ lookback }} days)</h4>
+  <h3>Observation History for {{ user.firstname }} {{ user.lastname }} using {{ instrument }} on the {{ telescope }} telescope</h3>
+  <h4>{{ total }} records over last {{ lookback }} days</h4>
   {{ pagination.links }}
   <div class="table-responsive">
    <table class="table table-striped table-sm">

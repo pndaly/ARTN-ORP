@@ -6,7 +6,7 @@
   <h4>Night Log Generator</h4>
   <br>
   <div class="row">
-   <div class="col-md-3">
+   <div class="col-md-2">
     {{ form.telescope.label }}<br>
     {{ form.telescope }}<br>
     {% for error in form.telescope.errors %}
@@ -14,7 +14,15 @@
     {% endfor %}
     <span class="purple-label"><small></small></span><br>
    </div>
-   <div class="col-md-3">
+   <div class="col-md-2">
+    {{ form.instrument.label }}<br>
+    {{ form.instrument }}<br>
+    {% for error in form.instrument.errors %}
+     <span class="error-label"><small>[{{ error }}]</small></span>
+    {% endfor %}
+    <span class="purple-label"><small></small></span><br>
+   </div>
+   <div class="col-md-2">
     {{ form.iso.label }}<br>
     {{ form.iso }}<br>
     {% for error in form.iso.errors %}
@@ -22,7 +30,7 @@
     {% endfor %}
     <span class="purple-label"><small>yyyy-mm-dd</small></span><br>
    </div>
-   <div class="col-md-3">
+   <div class="col-md-2">
     {{ form.obs.label }}<br>
     {{ form.obs }}<br>
     {% for error in form.obs.errors %}
@@ -30,7 +38,7 @@
     {% endfor %}
     <span class="purple-label"><small></small></span><br>
    </div>
-   <div class="col-md-3">
+   <div class="col-md-2">
     {{ form.pdf.label }}<br>
     {{ form.pdf(size=1) }}<br>
     {% for error in form.pdf.errors %}
