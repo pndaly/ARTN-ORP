@@ -416,7 +416,6 @@ def upload_file(_columns=None, _num=0, _user=None):
                 return redirect(url_for('orp_user', username=_user.username))
 
 
-#def history_seek(_path=ARTN_DATA_DIRECTORY, _type='.json', _jd=0.0):
 # noinspection PyBroadException
 def history_seek(_path=ARTN_DATA_ROOT, _type='.json', _jd=0.0):
     """ returns list of files: size of given type in directory tree or {} """
@@ -507,7 +506,6 @@ def history_search(_flist=None, _lookback=0.0, _name=''):
     return sorted(_udata, reverse=True)
 
 
-#def get_history(_path=ARTN_DATA_DIRECTORY, _type='.dna.json', _lookback=ARTN_LOOKBACK_PERIOD, _user=''):
 # noinspection PyBroadException
 def get_history(_path=ARTN_DATA_ROOT, _type='.dna.json', _lookback=ARTN_LOOKBACK_PERIOD, _user=''):
 
