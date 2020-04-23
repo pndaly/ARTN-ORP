@@ -347,9 +347,9 @@ class UploadForm(FlaskForm):
 
 
 # +
-# class: UserHistoryForm(), inherits from FlaskForm
+# class: OldUserHistoryForm(), inherits from FlaskForm
 # -
-class UserHistoryForm(FlaskForm):
+class OldUserHistoryForm(FlaskForm):
 
     # fields
     instrument = SelectField('Instrument', choices=FORM_INSTRUMENTS, default=FORM_INSTRUMENTS[2][1], validators=[DataRequired()])
@@ -401,7 +401,7 @@ class NightLogForm(FlaskForm):
     iso = DateTimeField('Date', default=get_date_time(), format='%Y-%m-%d', validators=[DataRequired()])
     obs = SelectField('Observation Type', choices=OBSERVATION_TYPES,
                       default=OBSERVATION_TYPES[0][0], validators=[DataRequired()])
-    pdf = BooleanField('Generate PDF', false_values=(False, 'false', 0, '0'), default=False)
+    pdf = BooleanField('Create PDF?', false_values=(False, 'false', 0, '0'), default=False)
     telescope = SelectField('Telescope', choices=FORM_TELESCOPES, default=FORM_TELESCOPES[1][1], validators=[DataRequired()])
 
     # submit
@@ -419,3 +419,40 @@ class NightLogForm(FlaskForm):
         _year_ago = get_date_time(-ARTN_LOOKBACK_PERIOD)
         if iso_to_jd(field.data) < iso_to_jd(_year_ago):
             raise ValidationError("Observation date must be in the last year!")
+
+
+# +
+# class: UserHistoryForm(), inherits from FlaskForm
+# -
+class UserHistoryForm(FlaskForm):
+
+    # fields
+    after = DateTimeField('After', default=get_date_time(), format='%Y-%m-%d', validators=[DataRequired()])
+    before = DateTimeField('Before', default=get_date_time(-30), format='%Y-%m-%d', validators=[DataRequired()])
+    instrument = SelectField('Instrument', choices=FORM_INSTRUMENTS, default=FORM_INSTRUMENTS[2][1], validators=[DataRequired()])
+    observation = SelectField('Observation', choices=OBSERVATION_TYPES,
+                      default=OBSERVATION_TYPES[0][0], validators=[DataRequired()])
+    pdf = BooleanField('Create PDF?', false_values=(False, 'false', 0, '0'), default=False)
+    telescope = SelectField('Telescope', choices=FORM_TELESCOPES, default=FORM_TELESCOPES[1][1], validators=[DataRequired()])
+    user = StringField('Username', default='')
+
+    # submit
+    submit = SubmitField('Submit')
+
+    # validator for after field
+    # noinspection PyUnusedLocal
+    @staticmethod
+    def validate_after(form, field):
+
+        _today = get_date_time(0)
+        if not (0.0 < iso_to_jd(field.data) < iso_to_jd(_today)):
+            raise ValidationError("After date out of range!")
+
+    # validator for before field
+    # noinspection PyUnusedLocal
+    @staticmethod
+    def validate_before(form, field):
+
+        _today = get_date_time(0)
+        if not (0.0 < iso_to_jd(field.data) < iso_to_jd(_today)):
+            raise ValidationError("Before date out of range!")

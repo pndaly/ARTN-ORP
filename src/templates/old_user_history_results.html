@@ -3,10 +3,10 @@
  <hr class="normal">
  <form action="" method="post">
   {{ form.hidden_tag() }}
-  <h4>New User History</h4>
+  <h4>Observation History Request</h4>
   <br>
   <div class="row">
-   <div class="col-md-2">
+   <div class="col-md-3">
     {{ form.telescope.label }}<br>
     {{ form.telescope }}<br>
     {% for error in form.telescope.errors %}
@@ -14,7 +14,7 @@
     {% endfor %}
     <span class="purple-label"><small></small></span><br>
    </div>
-   <div class="col-md-2">
+   <div class="col-md-3">
     {{ form.instrument.label }}<br>
     {{ form.instrument }}<br>
     {% for error in form.instrument.errors %}
@@ -22,48 +22,24 @@
     {% endfor %}
     <span class="purple-label"><small></small></span><br>
    </div>
-   <div class="col-md-2">
-    {{ form.before.label }}<br>
-    {{ form.before(size=12) }}<br>
-    {% for error in form.before.errors %}
-     <span class="error-label"><small>[{{ error }}]</small></span>
-    {% endfor %}
-    <span class="purple-label"><small>yyyy-mm-dd</small></span><br>
-   </div>
-   <div class="col-md-2">
-    {{ form.after.label }}<br>
-    {{ form.after(size=12) }}<br>
-    {% for error in form.after.errors %}
-     <span class="error-label"><small>[{{ error }}]</small></span>
-    {% endfor %}
-    <span class="purple-label"><small>yyyy-mm-dd</small></span><br>
-   </div>
-   <div class="col-md-1">
-    {{ form.observation.label }}<br>
-    {{ form.observation }}<br>
-    {% for error in form.observation.errors %}
+   <div class="col-md-3">
+    {{ form.username.label }}<br>
+    {{ form.username }}<br>
+    {% for error in form.username.errors %}
      <span class="error-label"><small>[{{ error }}]</small></span>
     {% endfor %}
     <span class="purple-label"><small></small></span><br>
    </div>
-   <div class="col-md-1">
-    {{ form.user.label }}<br>
-    {{ form.user(size=8) }}<br>
-    {% for error in form.user.errors %}
-     <span class="error-label"><small>[{{ error }}]</small></span>
-    {% endfor %}
-    <span class="purple-label"><small></small></span><br>
-   </div>
-   <div class="col-md-2">
-    {{ form.pdf.label }}<br>
-    {{ form.pdf(size=1) }}<br>
-    {% for error in form.pdf.errors %}
+   <div class="col-md-3">
+    {{ form.lookback.label }}<br>
+    {{ form.lookback }}<br>
+    {% for error in form.lookback.errors %}
      <span class="error-label"><small>[{{ error }}]</small></span>
     {% endfor %}
     <span class="purple-label"><small></small></span><br>
    </div>
   </div>
- <br>
+  <br>
   <div class="d-flex justify-content-between">
    <div class="row">
     {{ form.submit(class_="btn btn-md btn-primary") }}

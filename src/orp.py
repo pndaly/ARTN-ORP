@@ -18,7 +18,7 @@ from urllib.parse import urlencode
 from werkzeug.urls import url_parse
 from werkzeug.utils import secure_filename
 from src.forms.Forms import ConfirmDeleteForm, ConfirmRegistrationForm, FeedbackForm, \
-    LoginForm, NightLogForm, OldNightLogForm, ObsReqForm, ProfileForm, RegistrationForm, ResetPasswordForm, \
+    LoginForm, OldUserHistoryForm, NightLogForm, OldNightLogForm, ObsReqForm, ProfileForm, RegistrationForm, ResetPasswordForm, \
     ResetPasswordRequestForm, UpdateObsReqForm, UploadForm, UserHistoryForm, OBSERVATION_TYPES
 from src.models.Models import db, obsreq_filters, ObsReq, User, user_filters
 from src.telescopes.factory import *
@@ -417,7 +417,43 @@ def upload_file(_columns=None, _num=0, _user=None):
 
 
 # noinspection PyBroadException
-def history_seek(_path=ARTN_DATA_ROOT, _type='.json', _jd=0.0):
+def history_seek_json(_path=os.getcwd(), _ajd=0.0, _bjd=0.0):
+
+    # check input(s)
+    try:
+        _path = os.path.abspath(os.path.expanduser(f'{_path}'))
+        if not isinstance(_path, str) or _path.strip() == '' or not os.path.isdir(_path):
+            return {}
+    except Exception:
+            return {}
+
+    if not isinstance(_ajd, float) or not (0.0 < _ajd < get_jd()):
+        return {}
+
+    if not isinstance(_bjd, float) or not (_ajd < _bjd < get_jd()):
+        return {}
+
+    logger.debug(f'history_seek_json> searching {_path} over {_bjd-_ajd} days')
+
+    # generator code
+    _fw = (
+        os.path.join(_root, _file)
+        for _root, _dirs, _files in os.walk(_path)
+        for _file in _files
+    )
+
+    # return all files within jd period - this only works if the file modification time has not been altered!
+    try:
+        return {f'{_k}': iso_to_jd(time.strftime('%Y-%m-%dT%H:%M:%S', time.localtime(os.stat(f'{_k}').st_mtime)))
+                for _k in _fw if (not os.path.islink(f'{_k}') and os.path.exists(f'{_k}') and
+                                  _k.endswith('.json') and int(os.stat(f'{_k}').st_size) > 2
+                                  and (_ajd < iso_to_jd(time.strftime('%Y-%m-%dT%H:%M:%S', time.localtime(os.stat(f'{_k}').st_mtime))) < _bjd))}
+    except Exception:
+        return {}
+
+
+# noinspection PyBroadException
+def old_history_seek(_path=ARTN_DATA_ROOT, _type='.json', _jd=0.0):
     """ returns list of files: size of given type in directory tree or {} """
 
     # check input(s)
@@ -452,7 +488,39 @@ def history_seek(_path=ARTN_DATA_ROOT, _type='.json', _jd=0.0):
 
 
 # noinspection PyBroadException
-def history_loader(_fdict=None):
+def history_load_user(_fdict=None, _observation='', _user=''):
+
+    # check input(s)
+    if not isinstance(_fdict, dict) or _fdict is None or _fdict is {}:
+        return []
+    if not isinstance(_observation, str) or _observation.strip() == '':
+        return []
+    if not isinstance(_user, str) or _user.strip() == '':
+        return []
+
+    logger.debug(f'history_load_user> _fdict={_fdict}, _observation={_observation}, _user={_user}')
+
+    # load json data
+    _j_list = []
+    for _k in _fdict:
+        try:
+            _this_json = None
+            with open(f'{_k}', 'r') as _fr:
+                _this_json = list(json.load(_fr))
+            for _e in _this_json:
+                if _observation.lower() == 'all' or f'/{_observation.lower()}/' in _e['file']:
+                    if _user.strip().lower() in _e['user'].strip().lower():
+                        logger.debug(f'history_load_user> _e={_e}')
+                        _j_list.append(_e)
+        except Exception:
+            continue
+
+    # return
+    return _j_list
+
+
+# noinspection PyBroadException
+def old_history_loader(_fdict=None):
     """ returns list of file entries or [] """
 
     # check input(s)
@@ -475,7 +543,32 @@ def history_loader(_fdict=None):
     return _json
 
 
-def history_search(_flist=None, _lookback=0.0, _name=''):
+# noinspection PyBroadException
+def history_get_fits_headers(_in=None):
+
+    # check input(s)
+    if _in is None or not isinstance(_in, list) or _in is []:
+        return []
+
+    # get fits data
+    _l_out = []
+    for _e in _in:
+        _d_out = {'FILE': os.path.basename(_e['file']), 'DIRECTORY': os.path.dirname(_e['file']), 'SIZE': _e['size'], 'OWNER': _e['user']}
+        with fits.open(_e['file']) as _hdul:
+            for _h in ARTN_FITS_HEADERS:
+                try:
+                    _d_out[_h.replace('-', '')] = str(_hdul[0].header[_h]).strip()
+                except Exception:
+                    _d_out[_h] = ''
+
+        # append new record
+        _l_out.append(_d_out)
+
+    # return list sorted by Julian date key
+    return sorted(_l_out, key=lambda _i: _i['JULIAN'])
+
+
+def old_history_search(_flist=None, _lookback=0.0, _name=''):
     """ returns list of file entries or [] """
 
     # check input(s)
@@ -494,6 +587,7 @@ def history_search(_flist=None, _lookback=0.0, _name=''):
             _o = ObsReq.query.filter_by(group_id=_e['gid']).first() 
             if _o:
                 _object = encode_verboten(_o.object_name.strip(), ARTN_ENCODE_DICT)
+
         if 'timestamp' in _e:
             _jd = iso_to_jd(_e['timestamp'])
         else:
@@ -506,8 +600,42 @@ def history_search(_flist=None, _lookback=0.0, _name=''):
     return sorted(_udata, reverse=True)
 
 
+def get_user_history(_after=0.0, _before=get_jd(), _instrument='Mont4k', _observation='all', _telescope='Kuiper', _user=''):
+
+    # check input(s)
+    if not isinstance(_after, float) or not (0.0 < _after < get_jd()):
+        logger.error(f'Invalid input, _after={_after}')
+        return []
+    if not isinstance(_before, float) or not (_after < _before < get_jd()):
+        logger.error(f'Invalid input, _before={_before}')
+        return []
+    if not isinstance(_instrument, str) or _instrument.strip() == '' or _instrument not in ARTN_SUPPORTED_INSTRUMENTS:
+        logger.error(f'Invalid input, _instrument={_instrument}')
+        return []
+    if not isinstance(_observation, str) or _observation.strip() == '':
+        logger.error(f'Invalid input, _observation={_observation}')
+        return []
+    if not isinstance(_telescope, str) or _telescope.strip() == '' or _telescope not in ARTN_SUPPORTED_TELESCOPES:
+        logger.error(f'Invalid input, _telescope={_telescope}')
+        return []
+    if _instrument not in ARTN_SUPPORTED_NODES[_telescope]:
+        logger.error(f'Invalid telescope ({_tel}) and instrument ({_ins}) combination')
+        return []
+
+    logger.info(f"get_user_history> _after={_after}, _before={_before}, _instrument={_instrument}, _observation={_observation}, _telescope={_telescope}, _user={_user}")
+
+    # find .json files
+    _json = history_seek_json(f'{ARTN_DATA_ROOT}/{_telescope}/{_instrument}', _after, _before)
+
+    # search .json files for observation type and user
+    _load = history_load_user(_json, _observation, _user)
+
+    # return fits headers for all files found
+    return history_get_fits_headers(_load)
+
+
 # noinspection PyBroadException
-def get_history(_path=ARTN_DATA_ROOT, _type='.dna.json', _lookback=ARTN_LOOKBACK_PERIOD, _user=''):
+def get_old_history(_path=ARTN_DATA_ROOT, _type='.dna.json', _lookback=ARTN_LOOKBACK_PERIOD, _user=''):
 
     # check input(s)
     if not isinstance(_path, str) or _path.strip() == '':
@@ -523,13 +651,13 @@ def get_history(_path=ARTN_DATA_ROOT, _type='.dna.json', _lookback=ARTN_LOOKBACK
         return []
     _now = iso_to_jd(get_date_time())
     _lb = iso_to_jd(get_date_time(-_lookback))
-    msg_out(f"get_history> _path={_path}, _type={_type}, _lookback={_lookback}, _user={_user}, "
+    msg_out(f"get_old_history> _path={_path}, _type={_type}, _lookback={_lookback}, _user={_user}, "
             f"_lb={_lb}, _now={_now}", True, False)
 
     # get and munge data
-    _files = history_seek(_path, _type, _lb)
-    _jlist = history_loader(_files)
-    _data = history_search(_jlist, _lb, _user)
+    _files = old_history_seek(_path, _type, _lb)
+    _jlist = old_history_loader(_files)
+    _data = old_history_search(_jlist, _lb, _user)
 
     # create output 
     _op = []
@@ -544,7 +672,46 @@ def get_history(_path=ARTN_DATA_ROOT, _type='.dna.json', _lookback=ARTN_LOOKBACK
     return _op
 
 
-def get_history_page(_results=None, _offset=0, _per_page=ARTN_RESULTS_PER_PAGE):
+# noinspection PyBroadException
+# def get_history_fits_headers(_in=None):
+# 
+#     # check input(s)
+#     if _in is None or not isinstance(_in, list) or _in is []:
+#        return []
+# 
+#     # get fits data
+#     _l_out = []
+#     for _e in _in:
+# 
+#         # expect {'jd': _r[0], 'ts': _r[1], 'file': _r[2], 'email': _r[3],
+#         _d_out = {'file': os.path.basename(_e['file']), 'directory': os.path.dirname(_e['file']), 'size': int(os.stat(_r['file']).st_size)}
+#         with fits.open(_e['file']) as _hdul:
+#             for _h in ARTN_FITS_HEADERS:
+#                try:
+#                     _d_out[_h.replace('-', '')] = str(_hdul[0].header[_h]).strip()
+#                 except Exception:
+#                     _d_out[_h] = ''
+# 
+#         # who requested it?
+#         try:
+#             if _d_out['ARTNGID'].strip() != '' and _d_out['ARTNOID'].strip() != '':
+#                 query = db.session.query(ObsReq)
+#                 query = obsreq_filters(query, {'group_id': f"{_d_out['ARTNGID']}"})
+#                 query = obsreq_filters(query, {'observation_id': f"{_d_out['ARTNOID']}"})
+#                 _d_out['OWNER'] = query.first().username
+#             else:
+#                 _d_out['OWNER'] = ''
+#         except Exception:
+#             _d_out['OWNER'] = ''
+# 
+#         # append new record
+#         _l_out.append(_d_out)
+# 
+#     # return list sorted by Julian date key
+#     return sorted(_l_out, key=lambda _i: _i['JULIAN'])
+
+
+def get_old_history_page(_results=None, _offset=0, _per_page=ARTN_RESULTS_PER_PAGE):
     return _results[_offset: _offset + _per_page]
 
 
@@ -1172,15 +1339,15 @@ def orp_help():
 
 
 # +
-# route(s): /orp/history/, requires login
+# route(s): /orp/old_history/, requires login
 # -
 # noinspection PyBroadException
-@app.route('/orp/orp/history/', methods=['GET', 'POST'])
-@app.route('/orp/history/', methods=['GET', 'POST'])
-@app.route('/history/', methods=['GET', 'POST'])
+@app.route('/orp/orp/old_history/', methods=['GET', 'POST'])
+@app.route('/orp/old_history/', methods=['GET', 'POST'])
+@app.route('/old_history/', methods=['GET', 'POST'])
 @login_required
-def orp_history():
-    msg_out(f'/orp/history/ entry', True, False)
+def orp_old_history():
+    msg_out(f'/orp/old_history/ entry', True, False)
     get_client_ip(request)
 
     # look up user (as required)
@@ -1188,7 +1355,7 @@ def orp_history():
     _u = current_user if current_user.is_authenticated else User.query.filter_by(username=_user).first_or_404()
 
     # build form
-    form = UserHistoryForm(telescope='Kuiper', instrument='Mont4k')
+    form = OldUserHistoryForm(telescope='Kuiper', instrument='Mont4k')
 
     # GET method
     if request.method == 'GET':
@@ -1207,9 +1374,9 @@ def orp_history():
         _tel = form.telescope.data.strip()
 
         if isinstance(_username, User):
-            msg_out(f'/orp/history/ _username={repr(_username)}, _lookback={_lookback}', True, False)
+            msg_out(f'/orp/old_history/ _username={repr(_username)}, _lookback={_lookback}', True, False)
         else:
-            msg_out(f'/orp/history/ _username={str(_username)}, _lookback={_lookback}', True, False)
+            msg_out(f'/orp/old_history/ _username={str(_username)}, _lookback={_lookback}', True, False)
 
         if f'{_ins}' not in ARTN_SUPPORTED_NODES[f'{_tel}']:
             return render_template('409.html', reason=f'Invalid telescope ({_tel}) and instrument ({_ins}) combination!', caller='orp_history')
@@ -1218,70 +1385,104 @@ def orp_history():
         _history = []
         _d_path = f"{ARTN_DATA_ROOT}/{_tel}/{_ins}"
         if _u.is_admin:
-            _history = get_history(_path=_d_path, _type='.dna.json',
+            _history = get_old_history(_path=_d_path, _type='.dna.json',
                                    _lookback=_lookback, _user=_username.username)
         else:
             if _username.username.strip().lower() == _u.username.strip().lower():
-                _history = get_history(_path=_d_path, _type='.dna.json',
+                _history = get_old_history(_path=_d_path, _type='.dna.json',
                                        _lookback=_lookback, _user=_username.username)
             else:
                 msg_out(f'ERROR: User {_username.username} does not have permission to view record(s) for {_user}',
                         True, True)
                 return render_template('401.html')
         _total = len(_history)
-        msg_out(f'/orp/history/ _history={_history}, _total={_total}', True, False)
+        msg_out(f'/orp/old_history/ _history={_history}, _total={_total}', True, False)
 
         # output
         page, per_page, offset = get_page_args(page_parameter='page', per_page_parameter='per_page')
         per_page = ARTN_RESULTS_PER_PAGE
         offset = (page - 1) * ARTN_RESULTS_PER_PAGE
-        pagination_history = get_history_page(_history, offset, per_page)
+        pagination_history = get_old_history_page(_history, offset, per_page)
         pagination = Pagination(page=page, per_page=per_page, offset=offset, total=_total, css_framework='bootstrap4')
-        return render_template('history.html', history=pagination_history, total=_total, lookback=_lookback,
+        return render_template('old_user_history_results.html', history=pagination_history, total=_total, lookback=_lookback,
                                page=page, per_page=per_page, pagination=pagination, user=_username, telescope=_tel, instrument=_ins)
 
     # return
-    return render_template('user_history.html', form=form)
+    return render_template('old_user_history.html', form=form)
 
 
 # +
-# route(s): /orp/oldhistory/, requires login
+# route(s): /orp/history/, requires login
 # -
-@app.route('/orp/orp/oldhistory/', methods=['GET', 'POST'])
-@app.route('/orp/oldhistory/', methods=['GET', 'POST'])
-@app.route('/oldhistory/', methods=['GET', 'POST'])
+# noinspection PyBroadException
+@app.route('/orp/orp/history/', methods=['GET', 'POST'])
+@app.route('/orp/history/', methods=['GET', 'POST'])
+@app.route('/history/', methods=['GET', 'POST'])
 @login_required
-def orp_oldhistory():
-    msg_out(f'/orp/oldhistory/ entry', True, False)
+def orp_history():
+    msg_out(f'/orp/history/ entry', True, False)
     get_client_ip(request)
 
     # look up user (as required)
     _user = request.args.get('username', '')
-    _u = current_user if current_user.is_authenticated else User.query.filter_by(username=_user).first_or_404()
+    _u = User.query.filter_by(username=_user).first_or_404()
 
-    # get history
-    if _u.is_admin:
-        _history = get_history(_path=ARTN_DATA_DIRECTORY, _type='.dna.json',
-                               _lookback=ARTN_LOOKBACK_PERIOD, _user=_user)
-    else:
-        if _user.strip().lower() == _u.username.strip().lower():
-            _history = get_history(_path=ARTN_DATA_DIRECTORY, _type='.dna.json',
-                                   _lookback=ARTN_LOOKBACK_PERIOD, _user=_user)
+    # build form
+    form = UserHistoryForm(telescope='Kuiper', instrument='Mont4k', observation='object', user=_u.username)
+
+    # GET method
+    if request.method == 'GET':
+        form.after.data = get_date_time(-90)
+        form.before.data = get_date_time(0)
+
+    # validate form (POST request)
+    if form.validate_on_submit():
+
+        # get form value(s)
+        _after = str(form.after.data).strip().split()[0]
+        _before = str(form.before.data).strip().split()[0]
+        _ins = form.instrument.data.strip()
+        _obs = form.observation.data.lower().strip()
+        _pdf = form.pdf.data
+        _tel = form.telescope.data.strip()
+        _user = form.user.data.lower().strip()
+
+        _ajd=iso_to_jd(f'{_after}T00:00:00.000000')
+        _bjd=iso_to_jd(f'{_before}T00:00:00.000000')
+        msg_out(f'/orp/history/ _after={_after}, _ajd={_ajd}, _before={_before}, _bjd={_bjd}, _ins={_ins}, _obs={_obs}, _pdf={_pdf}, _tel={_tel}, _user={_user}', True, False)
+
+        if f'{_ins}' not in ARTN_SUPPORTED_NODES[f'{_tel}']:
+            return render_template('409.html', reason=f'Invalid telescope ({_tel}) and instrument ({_ins}) combination!', caller='orp_history')
+
+        # get history
+        if _u.is_admin:
+            _history = get_user_history(_ajd, _bjd, _ins, _obs, _tel, _user)
         else:
-            _history = []
-            msg_out(f'ERROR: User {_u.username} does not have permission to view record(s) for {_user}', True, True)
-            return render_template('401.html')
-    _total = len(_history)
-    msg_out(f'/orp/oldhistory/ _history={_history}, _total={_total}', True, False)
+            if _user.strip().lower() == _u.username.strip().lower():
+                _history = get_user_history(_ajd, _bjd, _ins, _obs, _tel, _user)
+            else:
+                _history = []
+                msg_out(f'ERROR: User {_u.username} does not have permission to view record(s) for {_user}', True, True)
+                return render_template('401.html')
+        _total = len(_history)
 
-    # output
-    page, per_page, offset = get_page_args(page_parameter='page', per_page_parameter='per_page')
-    per_page = ARTN_RESULTS_PER_PAGE
-    offset = (page - 1) * ARTN_RESULTS_PER_PAGE
-    pagination_history = get_history_page(_history, offset, per_page)
-    pagination = Pagination(page=page, per_page=per_page, offset=offset, total=_total, css_framework='bootstrap4')
-    return render_template('history.html', history=pagination_history, total=_total,
-                           page=page, per_page=per_page, pagination=pagination, user=_user)
+        # render page or create pdf
+        _s_all = f"{_total} observations on server scopenet.as.arizona.edu in directory {ARTN_DATA_ROOT}/{_tel}/{_ins} between {_after} and {_before}"
+        _nod = TEL__NODES[_tel.lower()]
+        _html = f'user_history_results_pdf.html' if _pdf else f'user_history_results.html'
+        msg_out(f'/orp/history/ using template {_html}', True, False)
+        _rendered = render_template(_html, pdf=_pdf, user=_u, tel=_tel, nod=_nod, after=_after, before=_before, history=_history, n_all=_total, s_all=_s_all)
+        if _pdf:
+            _obslog = pdfkit.from_string(_rendered, False, css=f"{ARTN_BASE_DIR}/static/css/main.css")
+            _response = make_response(_obslog)
+            _response.headers['Content-Type'] = 'application/pdf'
+            _response.headers['Content-Disposition'] = f'attachment; filename={_tel}.{_ins}.{_u.firstname}.{_u.lastname}.pdf'
+            return _response
+        else:
+            return _rendered
+
+    # return
+    return render_template('user_history.html', form=form)
 
 
 # +

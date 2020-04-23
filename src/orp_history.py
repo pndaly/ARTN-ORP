@@ -140,6 +140,15 @@ _organization_.append('Steward Observatory')
 _version_.append('2.5')
 
 
+# v2.6
+_author_.append('P. N. Daly')
+_comment_.append('Re-worked observation history for new directory structure')
+_date_.append('04/20/2020')
+_email_.append('pndaly@email.arizona.edu')
+_organization_.append('Steward Observatory')
+_version_.append('2.6')
+
+
 # reverse list(s)
 _author_.reverse()
 _comment_.reverse()
