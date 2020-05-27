@@ -335,10 +335,15 @@ def upload_file(_columns=None, _num=0, _user=None):
                     f"for {_username}", True, True)
             continue
 
+        # check telescope / instrument pairing
+        if f'{_instrument}' not in ARTN_SUPPORTED_NODES[f'{_telescope}']:
+            msg_out(f"upload_file> invalid telescope ({_telescope}) and instrument ({_instrument}) combination", True, False)
+            continue
+
         # check known limit(s)
         _d = dec_to_deg(_dec_dms)
-        if _d > TEL__DEC_LIMIT[f'{_telescope.lower()}']:
-            msg_out(f"upload_file> requested declination {_d:.3f} > {TEL__DEC_LIMIT[_telescope.lower()]} limit "
+        if _d > TEL__DEC__LIMIT[f'{_telescope.lower()}']:
+            msg_out(f"upload_file> requested declination {_d:.3f} > {TEL__DEC__LIMIT[_telescope.lower()]} limit "
                     f"for {_telescope} telescope", True, False)
             continue
 
@@ -1379,7 +1384,7 @@ def orp_old_history():
             msg_out(f'/orp/old_history/ _username={str(_username)}, _lookback={_lookback}', True, False)
 
         if f'{_ins}' not in ARTN_SUPPORTED_NODES[f'{_tel}']:
-            return render_template('409.html', reason=f'Invalid telescope ({_tel}) and instrument ({_ins}) combination!', caller='orp_history')
+            return render_template('409.html', reason=f'Invalid telescope ({_tel}) and instrument ({_ins}) combination!', caller='orp_old_history')
 
         # get history
         _history = []
@@ -1915,7 +1920,7 @@ def orp_obsreq(username=''):
     _u = current_user if current_user.is_authenticated else User.query.filter_by(username=username).first_or_404()
 
     # build form
-    form = ObsReqForm()
+    form = ObsReqForm(telescope='Kuiper', instrument='Mont4k', user=_u.username)
 
     # GET method
     if request.method == 'GET':
@@ -1951,10 +1956,14 @@ def orp_obsreq(username=''):
         _iso = get_iso()
         _mjd = float(iso_to_mjd(_iso))
 
+        # validate telescope / instrument pair
+        if f'{_instrument}' not in ARTN_SUPPORTED_NODES[f'{_telescope}']:
+            return render_template('409.html', reason=f'Invalid telescope ({_telescope}) and instrument ({_instrument}) combination!', caller='orp_osbreq')
+
         # check known limit(s)
         _d = dec_to_deg(_dec_dms)
-        if _d > TEL__DEC_LIMIT[f'{_telescope.lower()}']:
-            msg_out(f"ERROR: requested declination {_d:.3f} > {TEL__DEC_LIMIT[_telescope.lower()]} limit "
+        if _d > TEL__DEC__LIMIT[f'{_telescope.lower()}']:
+            msg_out(f"ERROR: requested declination {_d:.3f} > {TEL__DEC__LIMIT[_telescope.lower()]} limit "
                     f"for {_telescope} telescope", True, True)
             return redirect(url_for('orp_user', username=_u.username))
 
@@ -2500,6 +2509,10 @@ def orp_update(username=''):
         _obsreq.cadence = form.cadence.data.strip()
         _obsreq.telescope = form.telescope.data.strip()
 
+        # validate telescope / instrument pair
+        if f'{_obsreq.instrument}' not in ARTN_SUPPORTED_NODES[f'{_obsreq.telescope}']:
+            return render_template('409.html', reason=f'Invalid telescope ({_obsreq.telescope}) and instrument ({_obsreq.instrument}) combination!', caller='orp_update')
+
         # reset flags
         _obsreq.queued = False
         _obsreq.completed = False
@@ -2542,8 +2555,8 @@ def orp_update(username=''):
 
         _dec_dms = form.dec_dms.data.strip()
         _obsreq.dec_deg = dec_to_deg(_dec_dms)
-        if _obsreq.dec_deg > TEL__DEC_LIMIT[f'{_obsreq.telescope.lower()}']:
-            msg_out(f"ERROR: requested declination {_obsreq.dec_deg:.3f} > {TEL__DEC_LIMIT[_obsreq.telescope.lower()]} "
+        if _obsreq.dec_deg > TEL__DEC__LIMIT[f'{_obsreq.telescope.lower()}']:
+            msg_out(f"ERROR: requested declination {_obsreq.dec_deg:.3f} > {TEL__DEC__LIMIT[_obsreq.telescope.lower()]} "
                     f"limit for {_obsreq.telescope} telescope", True, True)
             return redirect(url_for('orp_user', username=_u.username))
 

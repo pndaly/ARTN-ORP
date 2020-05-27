@@ -200,14 +200,14 @@ TEL__NODES = {
 
 TEL__AKA = {_k: _v['aka'] for _k, _v in TEL__NODES.items() if 'aka' in _v}
 TEL__ALTITUDE = {_k: _v['altitude'] for _k, _v in TEL__NODES.items() if 'altitude' in _v}
-TEL__DEC_LIMIT = {_k: _v['declination_limit'] for _k, _v in TEL__NODES.items() if 'declination_limit' in _v}
+TEL__DEC__LIMIT = {_k: _v['declination_limit'] for _k, _v in TEL__NODES.items() if 'declination_limit' in _v}
 TEL__DUSK = {_k: _v['astronomical_dusk'] for _k, _v in TEL__NODES.items() if 'astronomical_dusk' in _v}
 TEL__LATITUDE = {_k: _v['latitude'] for _k, _v in TEL__NODES.items() if 'latitude' in _v}
 TEL__LONGITUDE = {_k: _v['longitude'] for _k, _v in TEL__NODES.items() if 'longitude' in _v}
-TEL__MAX_AIRMASS = {_k: _v['max_airmass'] for _k, _v in TEL__NODES.items() if 'max_airmass' in _v}
-TEL__MAX_MOONEX = {_k: _v['max_moon_exclusion'] for _k, _v in TEL__NODES.items() if 'max_moon_exclusion' in _v}
-TEL__MIN_AIRMASS = {_k: _v['min_airmass'] for _k, _v in TEL__NODES.items() if 'min_airmass' in _v}
-TEL__MIN_MOONEX = {_k: _v['min_moon_exclusion'] for _k, _v in TEL__NODES.items() if 'min_moon_exclusion' in _v}
+TEL__MAX__AIRMASS = {_k: _v['max_airmass'] for _k, _v in TEL__NODES.items() if 'max_airmass' in _v}
+TEL__MAX__MOONEX = {_k: _v['max_moon_exclusion'] for _k, _v in TEL__NODES.items() if 'max_moon_exclusion' in _v}
+TEL__MIN__AIRMASS = {_k: _v['min_airmass'] for _k, _v in TEL__NODES.items() if 'min_airmass' in _v}
+TEL__MIN__MOONEX = {_k: _v['min_moon_exclusion'] for _k, _v in TEL__NODES.items() if 'min_moon_exclusion' in _v}
 TEL__NAME = [_k.lower() for _k in TEL__NODES]
 TEL__RANDOM = random.randrange(0, len(TEL__NODES), 1)
 TEL__TWILIGHT = {_k: _v['astronomical_twilight'] for _k, _v in TEL__NODES.items() if 'astronomical_twilight' in _v}
@@ -317,8 +317,8 @@ class Telescope(object):
         _altaz = _radecs.transform_to(_frame)
 
         # extract axes
-        _max_airmass = TEL__MAX_AIRMASS[f'{self.__name.lower()}']
-        _min_airmass = TEL__MIN_AIRMASS[f'{self.__name.lower()}']
+        _max_airmass = TEL__MAX__AIRMASS[f'{self.__name.lower()}']
+        _min_airmass = TEL__MIN__AIRMASS[f'{self.__name.lower()}']
         _time_axis = _start[(_altaz.secz <= _max_airmass) & (_altaz.secz >= _min_airmass)]
         _airmass_axis = _altaz.secz[(_altaz.secz <= _max_airmass) & (_altaz.secz >= _min_airmass)]
 
@@ -414,8 +414,8 @@ class Telescope(object):
         _time = Time(_time.iso)
         _time = Time(_time) + (ndays * u.day * np.linspace(0.0, 1.0, AST__5_MINUTES*ndays))
 
-        _moon_lower = TEL__MIN_MOONEX[f'{self.__name.lower()}']
-        _moon_upper = TEL__MAX_MOONEX[f'{self.__name.lower()}'] - _moon_lower
+        _moon_lower = TEL__MIN__MOONEX[f'{self.__name.lower()}']
+        _moon_upper = TEL__MAX__MOONEX[f'{self.__name.lower()}'] - _moon_lower
 
         # get illumination and moon alt-az for time
         _illuminati = self.__observer.moon_illumination(_time)
@@ -541,8 +541,8 @@ class Telescope(object):
         _solar_altaz = get_sun(_time).transform_to(_altaz)
 
         # get limit(s)
-        _max_airmass = TEL__MAX_AIRMASS[f'{self.__name.lower()}']
-        _min_airmass = TEL__MIN_AIRMASS[f'{self.__name.lower()}']
+        _max_airmass = TEL__MAX__AIRMASS[f'{self.__name.lower()}']
+        _min_airmass = TEL__MIN__AIRMASS[f'{self.__name.lower()}']
         _dusk = TEL__DUSK[f'{self.__name.lower()}'] * u.deg
         _twilight = TEL__TWILIGHT[f'{self.__name.lower()}'] * u.deg
         _horizon = AST__HORIZON * u.deg
