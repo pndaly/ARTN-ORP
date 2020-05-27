@@ -156,6 +156,7 @@ ARTN_MAIL_USE_SSL = bool(os.getenv('MAIL_USE_SSL', 1))
 ARTN_MAIL_USERNAME = os.getenv('MAIL_USERNAME', "artn@dev.null")
 ARTN_MAIL_PASSWORD = os.getenv('MAIL_PASSWORD', "********")
 
+# noinspection PyPep8,PyPep8,PyPep8,PyPep8,PyPep8,PyPep8
 ARTN_DATE_RULE = re.compile("\d{4}-\d{2}-\d{2}[ T]?\d{2}:\d{2}:\d")
 ARTN_PASSWORD_RULE = re.compile("(^(?=.*?[A-Z])(?=.*[a-z])(?=.*?[0-9]).{8,}$)")
 
@@ -561,6 +562,7 @@ ARTN_OBSERVATION_EXPIRED = read_png()
 def get_iers(_url=ASTROPLAN_IERS_URL, _verbose=True):
 
     # get logger
+    _iers_log = None
     if _verbose:
         _iers_log = UtilsLogger('IERS-Logger').logger
 
