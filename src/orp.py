@@ -1765,7 +1765,7 @@ def orp_old_nightlog():
         return render_template('403.html')
 
     # build form
-    form = OldNightLogForm()
+    form = OldNightLogForm(telescope='Kuiper')
 
     # GET method
     if request.method == 'GET':
@@ -2452,7 +2452,7 @@ def orp_update(username=''):
     _obsreq = ObsReq.query.filter_by(id=_dbid).first_or_404()
 
     # build form
-    form = UpdateObsReqForm()
+    form = UpdateObsReqForm(telescope='Kuiper', instrument='Mont4k', user=_u.username)
 
     # GET method
     if request.method == 'GET':
