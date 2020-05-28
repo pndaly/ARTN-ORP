@@ -164,7 +164,7 @@
   <div class="container">
    <span class="right">
     {% if current_user.is_admin %}
-     <a href="{{ url_for('orp_nightlog') }}" class="btn btn-sm btn-outline-info">Observation Log</a>
+     <a href="{{ url_for('orp_nightlog') }}" class="btn btn-sm btn-outline-info">Night Log</a>
     {% endif %}
     <a href="{{ url_for('orp_history') }}?username={{ current_user.username }}" class="btn btn-sm btn-outline-info">Observation History</a>
     <a href="{{ url_for('orp_obsreq', username=current_user.username) }}" class="btn btn-sm btn-outline-info">Create Observation Request</a>
