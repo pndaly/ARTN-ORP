@@ -18,8 +18,9 @@ from urllib.parse import urlencode
 from werkzeug.urls import url_parse
 from werkzeug.utils import secure_filename
 from src.forms.Forms import ConfirmDeleteForm, ConfirmRegistrationForm, FeedbackForm, \
-    LoginForm, OldUserHistoryForm, NightLogForm, OldNightLogForm, ObsReqForm, ProfileForm, RegistrationForm, ResetPasswordForm, \
-    ResetPasswordRequestForm, UpdateObsReqForm, UploadForm, UserHistoryForm, OBSERVATION_TYPES
+    LoginForm, OldUserHistoryForm, NightLogForm, OldNightLogForm, ObsReqForm, ProfileForm, \
+    RegistrationForm, ResetPasswordForm, ResetPasswordRequestForm, UpdateObsReqForm, UploadForm, \
+    UserHistoryForm, OBSERVATION_TYPES
 from src.models.Models import db, obsreq_filters, ObsReq, User, user_filters
 from src.telescopes.factory import *
 from src.telescopes.bok import *
@@ -328,16 +329,20 @@ def upload_file(_columns=None, _num=0, _user=None):
         _cadence = _columns['cadence'][_i]
 
         # is user allowed to upload this request?
-        if (_user is not None and _user.username.strip() == _username.strip()) or _user.is_admin:
-            pass
+        if _user is None:
+            msg_out(f"ERROR: no authorization to create an ObsReq() for {_username}", True, True)
         else:
-            msg_out(f"ERROR: {_user.username} does not have permission to create an ObsReq() "
-                    f"for {_username}", True, True)
-            continue
+            if (_user.username.strip().lower() == _username.strip().lower()) or _user.is_admin:
+                pass
+            else:
+                msg_out(f"ERROR: {_user.username} does not have permission to create an ObsReq() "
+                        f"for {_username}", True, True)
+                continue
 
         # check telescope / instrument pairing
         if f'{_instrument}' not in ARTN_SUPPORTED_NODES[f'{_telescope}']:
-            msg_out(f"upload_file> invalid telescope ({_telescope}) and instrument ({_instrument}) combination", True, False)
+            msg_out(f"upload_file> invalid telescope ({_telescope}) and instrument ({_instrument}) combination",
+                    True, False)
             continue
 
         # check known limit(s)
@@ -430,7 +435,7 @@ def history_seek_json(_path=os.getcwd(), _ajd=0.0, _bjd=0.0):
         if not isinstance(_path, str) or _path.strip() == '' or not os.path.isdir(_path):
             return {}
     except Exception:
-            return {}
+        return {}
 
     if not isinstance(_ajd, float) or not (0.0 < _ajd < get_jd()):
         return {}
@@ -438,7 +443,7 @@ def history_seek_json(_path=os.getcwd(), _ajd=0.0, _bjd=0.0):
     if not isinstance(_bjd, float) or not (_ajd < _bjd < get_jd()):
         return {}
 
-    logger.debug(f'history_seek_json> searching {_path} over {_bjd-_ajd} days')
+    msg_out(f'history_seek_json> searching {_path} over {_bjd-_ajd} days', True, False)
 
     # generator code
     _fw = (
@@ -449,10 +454,13 @@ def history_seek_json(_path=os.getcwd(), _ajd=0.0, _bjd=0.0):
 
     # return all files within jd period - this only works if the file modification time has not been altered!
     try:
-        return {f'{_k}': iso_to_jd(time.strftime('%Y-%m-%dT%H:%M:%S', time.localtime(os.stat(f'{_k}').st_mtime)))
-                for _k in _fw if (not os.path.islink(f'{_k}') and os.path.exists(f'{_k}') and
-                                  _k.endswith('.json') and int(os.stat(f'{_k}').st_size) > 2
-                                  and (_ajd < iso_to_jd(time.strftime('%Y-%m-%dT%H:%M:%S', time.localtime(os.stat(f'{_k}').st_mtime))) < _bjd))}
+        return {
+            f'{_k}': iso_to_jd(time.strftime('%Y-%m-%dT%H:%M:%S', time.localtime(os.stat(f'{_k}').st_mtime)))
+            for _k in _fw if (not os.path.islink(f'{_k}') and os.path.exists(f'{_k}') and
+                              _k.endswith('.json') and int(os.stat(f'{_k}').st_size) > 2 and
+                              (_ajd < iso_to_jd(time.strftime('%Y-%m-%dT%H:%M:%S',
+                                                              time.localtime(os.stat(f'{_k}').st_mtime))) < _bjd))
+        }
     except Exception:
         return {}
 
@@ -503,7 +511,7 @@ def history_load_user(_fdict=None, _observation='', _user=''):
     if not isinstance(_user, str) or _user.strip() == '':
         return []
 
-    logger.debug(f'history_load_user> _fdict={_fdict}, _observation={_observation}, _user={_user}')
+    msg_out(f'history_load_user> _fdict={_fdict}, _observation={_observation}, _user={_user}', True, False)
 
     # load json data
     _j_list = []
@@ -558,7 +566,8 @@ def history_get_fits_headers(_in=None):
     # get fits data
     _l_out = []
     for _e in _in:
-        _d_out = {'FILE': os.path.basename(_e['file']), 'DIRECTORY': os.path.dirname(_e['file']), 'SIZE': _e['size'], 'OWNER': _e['user']}
+        _d_out = {'FILE': os.path.basename(_e['file']), 'DIRECTORY': os.path.dirname(_e['file']),
+                  'SIZE': _e['size'], 'OWNER': _e['user']}
         with fits.open(_e['file']) as _hdul:
             for _h in ARTN_FITS_HEADERS:
                 try:
@@ -605,7 +614,8 @@ def old_history_search(_flist=None, _lookback=0.0, _name=''):
     return sorted(_udata, reverse=True)
 
 
-def get_user_history(_after=0.0, _before=get_jd(), _instrument='Mont4k', _observation='all', _telescope='Kuiper', _user=''):
+def get_user_history(_after=0.0, _before=get_jd(), _instrument='Mont4k',
+                     _observation='all', _telescope='Kuiper', _user=''):
 
     # check input(s)
     if not isinstance(_after, float) or not (0.0 < _after < get_jd()):
@@ -624,10 +634,11 @@ def get_user_history(_after=0.0, _before=get_jd(), _instrument='Mont4k', _observ
         logger.error(f'Invalid input, _telescope={_telescope}')
         return []
     if _instrument not in ARTN_SUPPORTED_NODES[_telescope]:
-        logger.error(f'Invalid telescope ({_tel}) and instrument ({_ins}) combination')
+        logger.error(f'Invalid telescope ({_telescope}) and instrument ({_instrument}) combination')
         return []
 
-    logger.info(f"get_user_history> _after={_after}, _before={_before}, _instrument={_instrument}, _observation={_observation}, _telescope={_telescope}, _user={_user}")
+    msg_out(f"get_user_history> _after={_after}, _before={_before}, _instrument={_instrument}, "
+            f"_observation={_observation}, _telescope={_telescope}, _user={_user}", True, False)
 
     # find .json files
     _json = history_seek_json(f'{ARTN_DATA_ROOT}/{_telescope}/{_instrument}', _after, _before)
@@ -675,45 +686,6 @@ def get_old_history(_path=ARTN_DATA_ROOT, _type='.dna.json', _lookback=ARTN_LOOK
         except Exception:
             continue
     return _op
-
-
-# noinspection PyBroadException
-# def get_history_fits_headers(_in=None):
-# 
-#     # check input(s)
-#     if _in is None or not isinstance(_in, list) or _in is []:
-#        return []
-# 
-#     # get fits data
-#     _l_out = []
-#     for _e in _in:
-# 
-#         # expect {'jd': _r[0], 'ts': _r[1], 'file': _r[2], 'email': _r[3],
-#         _d_out = {'file': os.path.basename(_e['file']), 'directory': os.path.dirname(_e['file']), 'size': int(os.stat(_r['file']).st_size)}
-#         with fits.open(_e['file']) as _hdul:
-#             for _h in ARTN_FITS_HEADERS:
-#                try:
-#                     _d_out[_h.replace('-', '')] = str(_hdul[0].header[_h]).strip()
-#                 except Exception:
-#                     _d_out[_h] = ''
-# 
-#         # who requested it?
-#         try:
-#             if _d_out['ARTNGID'].strip() != '' and _d_out['ARTNOID'].strip() != '':
-#                 query = db.session.query(ObsReq)
-#                 query = obsreq_filters(query, {'group_id': f"{_d_out['ARTNGID']}"})
-#                 query = obsreq_filters(query, {'observation_id': f"{_d_out['ARTNOID']}"})
-#                 _d_out['OWNER'] = query.first().username
-#             else:
-#                 _d_out['OWNER'] = ''
-#         except Exception:
-#             _d_out['OWNER'] = ''
-# 
-#         # append new record
-#         _l_out.append(_d_out)
-# 
-#     # return list sorted by Julian date key
-#     return sorted(_l_out, key=lambda _i: _i['JULIAN'])
 
 
 def get_old_history_page(_results=None, _offset=0, _per_page=ARTN_RESULTS_PER_PAGE):
@@ -1384,18 +1356,20 @@ def orp_old_history():
             msg_out(f'/orp/old_history/ _username={str(_username)}, _lookback={_lookback}', True, False)
 
         if f'{_ins}' not in ARTN_SUPPORTED_NODES[f'{_tel}']:
-            return render_template('409.html', reason=f'Invalid telescope ({_tel}) and instrument ({_ins}) combination!', caller='orp_old_history')
+            return render_template('409.html',
+                                   reason=f'Invalid telescope ({_tel}) and instrument ({_ins}) combination!',
+                                   caller='orp_old_history')
 
         # get history
         _history = []
         _d_path = f"{ARTN_DATA_ROOT}/{_tel}/{_ins}"
         if _u.is_admin:
             _history = get_old_history(_path=_d_path, _type='.dna.json',
-                                   _lookback=_lookback, _user=_username.username)
+                                       _lookback=_lookback, _user=_username.username)
         else:
             if _username.username.strip().lower() == _u.username.strip().lower():
                 _history = get_old_history(_path=_d_path, _type='.dna.json',
-                                       _lookback=_lookback, _user=_username.username)
+                                           _lookback=_lookback, _user=_username.username)
             else:
                 msg_out(f'ERROR: User {_username.username} does not have permission to view record(s) for {_user}',
                         True, True)
@@ -1409,8 +1383,9 @@ def orp_old_history():
         offset = (page - 1) * ARTN_RESULTS_PER_PAGE
         pagination_history = get_old_history_page(_history, offset, per_page)
         pagination = Pagination(page=page, per_page=per_page, offset=offset, total=_total, css_framework='bootstrap4')
-        return render_template('old_user_history_results.html', history=pagination_history, total=_total, lookback=_lookback,
-                               page=page, per_page=per_page, pagination=pagination, user=_username, telescope=_tel, instrument=_ins)
+        return render_template('old_user_history_results.html', history=pagination_history, total=_total,
+                               lookback=_lookback, page=page, per_page=per_page, pagination=pagination,
+                               user=_username, telescope=_tel, instrument=_ins)
 
     # return
     return render_template('old_user_history.html', form=form)
@@ -1452,12 +1427,15 @@ def orp_history():
         _tel = form.telescope.data.strip()
         _user = form.user.data.lower().strip()
 
-        _ajd=iso_to_jd(f'{_after}T00:00:00.000000')
-        _bjd=iso_to_jd(f'{_before}T00:00:00.000000')
-        msg_out(f'/orp/history/ _after={_after}, _ajd={_ajd}, _before={_before}, _bjd={_bjd}, _ins={_ins}, _obs={_obs}, _pdf={_pdf}, _tel={_tel}, _user={_user}', True, False)
+        _ajd = iso_to_jd(f'{_after}T00:00:00.000000')
+        _bjd = iso_to_jd(f'{_before}T00:00:00.000000')
+        msg_out(f'/orp/history/ _after={_after}, _ajd={_ajd}, _before={_before}, _bjd={_bjd}, _ins={_ins}, '
+                f'_obs={_obs}, _pdf={_pdf}, _tel={_tel}, _user={_user}', True, False)
 
         if f'{_ins}' not in ARTN_SUPPORTED_NODES[f'{_tel}']:
-            return render_template('409.html', reason=f'Invalid telescope ({_tel}) and instrument ({_ins}) combination!', caller='orp_history')
+            return render_template('409.html',
+                                   reason=f'Invalid telescope ({_tel}) and instrument ({_ins}) combination!',
+                                   caller='orp_history')
 
         # get history
         if _u.is_admin:
@@ -1472,16 +1450,19 @@ def orp_history():
         _total = len(_history)
 
         # render page or create pdf
-        _s_all = f"{_total} observations on server scopenet.as.arizona.edu in directory {ARTN_DATA_ROOT}/{_tel}/{_ins} between {_after} and {_before}"
+        _s_all = f"{_total} observations for {_user} on server scopenet.as.arizona.edu in directory " \
+                 f"{ARTN_DATA_ROOT}/{_tel}/{_ins} between {_after} and {_before}"
         _nod = TEL__NODES[_tel.lower()]
         _html = f'user_history_results_pdf.html' if _pdf else f'user_history_results.html'
         msg_out(f'/orp/history/ using template {_html}', True, False)
-        _rendered = render_template(_html, pdf=_pdf, user=_u, tel=_tel, nod=_nod, after=_after, before=_before, history=_history, n_all=_total, s_all=_s_all)
+        _rendered = render_template(_html, pdf=_pdf, user=_u, tel=_tel, nod=_nod, after=_after,
+                                    before=_before, history=_history, n_all=_total, s_all=_s_all)
         if _pdf:
             _obslog = pdfkit.from_string(_rendered, False, css=f"{ARTN_BASE_DIR}/static/css/main.css")
             _response = make_response(_obslog)
             _response.headers['Content-Type'] = 'application/pdf'
-            _response.headers['Content-Disposition'] = f'attachment; filename={_tel}.{_ins}.{_u.firstname}.{_u.lastname}.pdf'
+            _response.headers['Content-Disposition'] = f'attachment; ' \
+                                                       f'filename={_tel}.{_ins}.{_u.firstname}.{_u.lastname}.pdf'
             return _response
         else:
             return _rendered
@@ -1571,7 +1552,7 @@ def orp_login():
 
         # invalid username
         if _db_u is None:
-            msg_out(f'ERROR: Invalid username {_db_u.username}, please try again', True, True)
+            msg_out(f'ERROR: Invalid username {_u}, please try again', True, True)
             return render_template('login.html', form=form)
 
         # invalid password
@@ -1651,72 +1632,82 @@ def orp_nightlog():
         msg_out(f'/orp/nightlog/ _ins={_ins}, _iso={_iso}, _obs={_obs}, _pdf={_pdf}, _tel={_tel}', True, False)
 
         if f'{_ins}' not in ARTN_SUPPORTED_NODES[f'{_tel}']:
-            return render_template('409.html', reason=f'Invalid telescope ({_tel}) and instrument ({_ins}) combination!', caller='orp_nightlog')
+            return render_template('409.html',
+                                   reason=f'Invalid telescope ({_tel}) and instrument ({_ins}) combination!',
+                                   caller='orp_nightlog')
 
         # set default(s)
-        _d_bias, _d_calibration, _d_dark, _d_flat, _d_focus, _d_object, _d_skyflat, _d_standard = '', '', '', '', '', '', '', ''
-        _f_bias, _f_calibration, _f_dark, _f_flat, _f_focus, _f_object, _f_skyflat, _f_standard = {}, {}, {}, {}, {}, {}, {}, {}
-        _h_bias, _h_calibration, _h_dark, _h_flat, _h_focus, _h_object, _h_skyflat, _h_standard = [], [], [], [], [], [], [], []
-        _n_bias, _n_calibration, _n_dark, _n_flat, _n_focus, _n_object, _n_skyflat, _n_standard = 0, 0, 0, 0, 0, 0, 0, 0
-        _s_bias, _s_calibration, _s_dark, _s_flat, _s_focus, _s_object, _s_skyflat, _s_standard = '', '', '', '', '', '', '', ''
+        _d_bias, _d_calibration, _d_dark, _d_flat, _d_focus, _d_object, _d_skyflat, _d_standard = \
+            '', '', '', '', '', '', '', ''
+        _f_bias, _f_calibration, _f_dark, _f_flat, _f_focus, _f_object, _f_skyflat, _f_standard = \
+            {}, {}, {}, {}, {}, {}, {}, {}
+        _h_bias, _h_calibration, _h_dark, _h_flat, _h_focus, _h_object, _h_skyflat, _h_standard = \
+            [], [], [], [], [], [], [], []
+        _n_bias, _n_calibration, _n_dark, _n_flat, _n_focus, _n_object, _n_skyflat, _n_standard = \
+            0, 0, 0, 0, 0, 0, 0, 0
+        _s_bias, _s_calibration, _s_dark, _s_flat, _s_focus, _s_object, _s_skyflat, _s_standard = \
+            '', '', '', '', '', '', '', ''
         _f_all, _n_all, _s_all = {}, 0, ''
 
         # seek files and headers
-        if _obs == 'all' or _obs ==  'bias':
+        if _obs == 'all' or _obs == 'bias':
             _d_bias = f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/bias"
             _f_bias = nlog_seek_files(_d_bias)
             _h_bias = nlog_get_fits_headers(_f_bias)
             _n_bias = len(_f_bias)
             _s_bias = f"{_n_bias} BIAS observations on server scopenet.as.arizona.edu in directory {_d_bias}"
             msg_out(f'/orp/nightlog/ searching {_d_bias}', True, False)
-        if _obs == 'all' or _obs ==  'calibration':
+        if _obs == 'all' or _obs == 'calibration':
             _d_calibration = f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/calibration"
             _f_calibration = nlog_seek_files(_d_calibration)
             _h_calibration = nlog_get_fits_headers(_f_calibration)
             _n_calibration = len(_f_calibration)
-            _s_calibration = f"{_n_calibration} CALIBRATION observations on server scopenet.as.arizona.edu in directory {_d_calibration}"
+            _s_calibration = f"{_n_calibration} CALIBRATION observations on server scopenet.as.arizona.edu " \
+                             f"in directory {_d_calibration}"
             msg_out(f'/orp/nightlog/ searching {_d_calibration}', True, False)
-        if _obs == 'all' or _obs ==  'dark':
+        if _obs == 'all' or _obs == 'dark':
             _d_dark = f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/dark"
             _f_dark = nlog_seek_files(_d_dark)
             _h_dark = nlog_get_fits_headers(_f_dark)
             _n_dark = len(_f_dark)
             _s_dark = f"{_n_dark} DARK observations on server scopenet.as.arizona.edu in directory {_d_dark}"
             msg_out(f'/orp/nightlog/ searching {_d_dark}', True, False)
-        if _obs == 'all' or _obs ==  'flat':
+        if _obs == 'all' or _obs == 'flat':
             _d_flat = f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/flat"
             _f_flat = nlog_seek_files(_d_flat)
             _h_flat = nlog_get_fits_headers(_f_flat)
             _n_flat = len(_f_flat)
             _s_flat = f"{_n_flat} FLAT observations on server scopenet.as.arizona.edu in directory {_d_flat}"
             msg_out(f'/orp/nightlog/ searching {_d_flat}', True, False)
-        if _obs == 'all' or _obs ==  'focus':
+        if _obs == 'all' or _obs == 'focus':
             _d_focus = f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/focus"
             _f_focus = nlog_seek_files(_d_focus)
             _h_focus = nlog_get_fits_headers(_f_focus)
             _n_focus = len(_f_focus)
             _s_focus = f"{_n_focus} FOCUS observations on server scopenet.as.arizona.edu in directory {_d_focus}"
             msg_out(f'/orp/nightlog/ searching {_d_focus}', True, False)
-        if _obs == 'all' or _obs ==  'object':
+        if _obs == 'all' or _obs == 'object':
             _d_object = f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/object"
             _f_object = nlog_seek_files(_d_object)
             _h_object = nlog_get_fits_headers(_f_object)
             _n_object = len(_f_object)
             _s_object = f"{_n_object} OBJECT observations on server scopenet.as.arizona.edu in directory {_d_object}"
             msg_out(f'/orp/nightlog/ searching {_d_object}', True, False)
-        if _obs == 'all' or _obs ==  'skyflat':
+        if _obs == 'all' or _obs == 'skyflat':
             _d_skyflat = f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/skyflat"
             _f_skyflat = nlog_seek_files(_d_skyflat)
             _h_skyflat = nlog_get_fits_headers(_f_skyflat)
             _n_skyflat = len(_f_skyflat)
-            _s_skyflat = f"{_n_skyflat} SKYFLAT observations on server scopenet.as.arizona.edu in directory {_d_skyflat}"
+            _s_skyflat = f"{_n_skyflat} SKYFLAT observations on server scopenet.as.arizona.edu " \
+                         f"in directory {_d_skyflat}"
             msg_out(f'/orp/nightlog/ searching {_d_skyflat}', True, False)
-        if _obs == 'all' or _obs ==  'standard':
+        if _obs == 'all' or _obs == 'standard':
             _d_standard = f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/standard"
             _f_standard = nlog_seek_files(_d_standard)
             _h_standard = nlog_get_fits_headers(_f_standard)
             _n_standard = len(_f_standard)
-            _s_standard = f"{_n_standard} STANDARD observations on server scopenet.as.arizona.edu in directory {_d_standard}"
+            _s_standard = f"{_n_standard} STANDARD observations on server scopenet.as.arizona.edu " \
+                          f"in directory {_d_standard}"
             msg_out(f'/orp/nightlog/ searching {_d_standard}', True, False)
 
         # amalgamate
@@ -1733,8 +1724,8 @@ def orp_nightlog():
         msg_out(f'/orp/nightlog/ using template {_html}', True, False)
         _rendered = render_template(_html, pdf=_pdf, user=current_user, tel=_tel, nod=_nod, iso=_iso, 
                                     h_bias=_h_bias, n_bias=_n_bias, s_bias=_s_bias, 
-                                    h_calibration=_h_calibration, n_calibration=_n_calibration, s_calibration=_s_calibration, 
-                                    h_dark=_h_dark, n_dark=_n_dark, s_dark=_s_dark, 
+                                    h_calibration=_h_calibration, n_calibration=_n_calibration,
+                                    s_calibration=_s_calibration, h_dark=_h_dark, n_dark=_n_dark, s_dark=_s_dark,
                                     h_flat=_h_flat, n_flat=_n_flat, s_flat=_s_flat, 
                                     h_focus=_h_focus, n_focus=_n_focus, s_focus=_s_focus, 
                                     h_object=_h_object, n_object=_n_object, s_object=_s_object, 
@@ -1958,7 +1949,8 @@ def orp_obsreq(username=''):
 
         # validate telescope / instrument pair
         if f'{_instrument}' not in ARTN_SUPPORTED_NODES[f'{_telescope}']:
-            return render_template('409.html', reason=f'Invalid telescope ({_telescope}) and instrument ({_instrument}) combination!', caller='orp_osbreq')
+            return render_template('409.html', reason=f'Invalid telescope ({_telescope}) and instrument '
+                                                      f'({_instrument}) combination!', caller='orp_osbreq')
 
         # check known limit(s)
         _d = dec_to_deg(_dec_dms)
@@ -2511,7 +2503,8 @@ def orp_update(username=''):
 
         # validate telescope / instrument pair
         if f'{_obsreq.instrument}' not in ARTN_SUPPORTED_NODES[f'{_obsreq.telescope}']:
-            return render_template('409.html', reason=f'Invalid telescope ({_obsreq.telescope}) and instrument ({_obsreq.instrument}) combination!', caller='orp_update')
+            return render_template('409.html', reason=f'Invalid telescope ({_obsreq.telescope}) and instrument '
+                                                      f'({_obsreq.instrument}) combination!', caller='orp_update')
 
         # reset flags
         _obsreq.queued = False
@@ -2556,8 +2549,8 @@ def orp_update(username=''):
         _dec_dms = form.dec_dms.data.strip()
         _obsreq.dec_deg = dec_to_deg(_dec_dms)
         if _obsreq.dec_deg > TEL__DEC__LIMIT[f'{_obsreq.telescope.lower()}']:
-            msg_out(f"ERROR: requested declination {_obsreq.dec_deg:.3f} > {TEL__DEC__LIMIT[_obsreq.telescope.lower()]} "
-                    f"limit for {_obsreq.telescope} telescope", True, True)
+            msg_out(f"ERROR: requested declination {_obsreq.dec_deg:.3f} > {TEL__DEC__LIMIT[_obsreq.telescope.lower()]}"
+                    f" limit for {_obsreq.telescope} telescope", True, True)
             return redirect(url_for('orp_user', username=_u.username))
 
         _begin_iso = form.begin_iso.data
