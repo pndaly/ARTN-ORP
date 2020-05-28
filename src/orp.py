@@ -2697,12 +2697,20 @@ def orp_view_observable(username=''):
         query = db.session.query(ObsReq)
         msg_out(f'/orp/view_observable/{username} request.args={request.args}', True, False)
         _now = float(iso_to_mjd(get_date_time()))
+
         if _u.is_admin:
             _filter = {'begin_mjd__lte': f"{_now}", 'end_mjd__gte': f"{_now}", 'username': f''}
         else:
             _filter = {'begin_mjd__lte': f"{_now}", 'end_mjd__gte': f"{_now}", 'username': f'{_u.username}'}
         msg_out(f'/orp/view_observable/{username} _filter={_filter}', True, False)
         query = obsreq_filters(query, _filter)
+
+        # request by sort_field / sort_order
+        _sf = request.args.get('sort_field')
+        _so = request.args.get('sort_order')
+        if (_sf is None or _sf == '') and (_so is None or _so == ''):
+            query = obsreq_filters(query, {"sort_field": "id", "sort_order": "descending"})
+
         query = obsreq_filters(query, request.args)
         paginator = query.paginate(page, ARTN_RESULTS_PER_PAGE, True)
         response = {
@@ -2814,10 +2822,20 @@ def orp_view_requests(username=''):
     if request.method == 'GET':
         query = db.session.query(ObsReq)
         msg_out(f'/orp/view_requests/{username} entry request.args={request.args}', True, False)
+
+        # request by username
         if _u.is_admin:
-            query = obsreq_filters(query, {'username': f""})
+            query = obsreq_filters(query, {"username": f""})
         else:
-            query = obsreq_filters(query, {'username': f"{_u.username}"})
+            query = obsreq_filters(query, {"username": f"{_u.username}"})
+
+        # request by sort_field / sort_order
+        _sf = request.args.get('sort_field')
+        _so = request.args.get('sort_order')
+        if (_sf is None or _sf == '') and (_so is None or _so == ''):
+            query = obsreq_filters(query, {"sort_field": "id", "sort_order": "descending"})
+
+        # request by everything else
         query = obsreq_filters(query, request.args)
         paginator = query.paginate(page, ARTN_RESULTS_PER_PAGE, True)
         response = {
