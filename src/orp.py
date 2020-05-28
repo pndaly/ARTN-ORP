@@ -1451,8 +1451,6 @@ def orp_history():
         _total = len(_history)
 
         # render page or create pdf
-        _u_name = f'{_u.firstname} {_u.lastname}'
-        _u_email = f'{_u.email}'
         _s_all = f"{_total} observations for {_user} on server scopenet.as.arizona.edu in directory " \
                  f"{ARTN_DATA_ROOT}/{_tel}/{_ins} between {_after} and {_before}"
         _nod = TEL__NODES[_tel.lower()]

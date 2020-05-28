@@ -889,6 +889,7 @@ if __name__ == '__main__':
         pass
 
     # get command line argument(s)
+    # noinspection PyTypeChecker
     _p = argparse.ArgumentParser(description=f'Telescope Factory',
                                  formatter_class=argparse.RawTextHelpFormatter)
     _p.add_argument(f'--telescope', default=TEL__NAME[TEL__RANDOM],

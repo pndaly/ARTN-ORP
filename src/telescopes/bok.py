@@ -35,6 +35,7 @@ _seed = random.seed()
 # +
 # function: bok_observe()
 # -
+# noinspection PyBroadException
 def bok_observe(_obsreq=None, _user=None, _sim=False):
 
     if _sim:

@@ -205,6 +205,7 @@ def obsreq_cli_db(iargs=None):
 if __name__ == '__main__':
 
     # get command line argument(s)
+    # noinspection PyTypeChecker
     _p = argparse.ArgumentParser(
         description=f'Query ObsReq Database', formatter_class=argparse.RawTextHelpFormatter)
     _p.add_argument(f'--id', help=f'id = <int>')

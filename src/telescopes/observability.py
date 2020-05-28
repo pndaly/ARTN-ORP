@@ -635,6 +635,7 @@ def _sky_distance(iargs=None):
 if __name__ == '__main__':
 
     # get command line argument(s)
+    # noinspection PyTypeChecker
     _p = argparse.ArgumentParser(description=f'Check object visibility',
                                  formatter_class=argparse.RawTextHelpFormatter)
     _sp = _p.add_subparsers()

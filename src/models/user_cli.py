@@ -110,6 +110,7 @@ def user_cli_db(iargs=None):
 if __name__ == '__main__':
 
     # get command line argument(s)
+    # noinspection PyTypeChecker,PyTypeChecker,PyTypeChecker
     _p = argparse.ArgumentParser(description=f'Query User Database', formatter_class=argparse.RawTextHelpFormatter)
     _p.add_argument(f'--id', help=f'id <int>')
     _p.add_argument(f'--id__gte', help=f'id >= <int>')

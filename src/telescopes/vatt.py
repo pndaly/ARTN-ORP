@@ -35,6 +35,7 @@ _seed = random.seed()
 # +
 # function: vatt_observe()
 # -
+# noinspection PyBroadException
 def vatt_observe(_obsreq=None, _user=None, _sim=False):
 
     if _sim:
