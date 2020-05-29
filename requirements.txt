@@ -19,3 +19,4 @@ WTForms>=2.3.1
 werkzeug~=0.15.4
 jwt~=0.6.1
 numpy~=1.18.2
+email_validator>=1.1.1
