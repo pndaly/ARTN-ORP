@@ -201,6 +201,11 @@ def upload_from_file(_infil='', _from_cli=False, _verbose=False):
             _moonphase = _sign * random.uniform(8.5, 15.0)
         _priority_value = -_mjd if _priority == 'urgent' else _mjd
 
+        _queued_iso = ARTN_ZERO_ISO
+        _queued_mjd = ARTN_ZERO_MJD
+        _completed_iso = ARTN_ZERO_ISO
+        _completed_mjd = ARTN_ZERO_MJD
+
         # create obsreq object
         if _verbose:
             print(f"Instantiating ObsReq(username={_username}, pi=f'{_u.firstname} {_u.lastname}, {_u.affiliation}', "
@@ -213,6 +218,7 @@ def upload_from_file(_infil='', _from_cli=False, _verbose=False):
                   f"non_sidereal={_non_sidereal}, filter_name={_filter_name}, exp_time={_exp_time}, "
                   f"num_exp={_num_exp}, binning={_binning}, dither={_dither}, cadence={_cadence}, "
                   f"telescope={_telescope}, instrument={_instrument}, rts2_doc='<>', rts2_id=-1, queued=False, "
+                  f"queued_iso={_queued_iso}, queued_mjd={_queued_mjd}, completed_iso={_completed_iso}, completed_mjd={_completed_mjd}, "
                   f"completed=False, non_sidereal_json={_non_sidereal_json}, author={_u.__str__()})")
         _or = None
         try:
@@ -226,6 +232,7 @@ def upload_from_file(_infil='', _from_cli=False, _verbose=False):
                          guiding=_guiding, non_sidereal=_non_sidereal, filter_name=_filter_name, exp_time=_exp_time,
                          num_exp=_num_exp, binning=_binning, dither=_dither, cadence=_cadence, telescope=_telescope,
                          instrument=_instrument, rts2_doc='{}', rts2_id=-1, queued=False, completed=False,
+                         queued_iso=_queued_iso, queued_mjd=_queued_mjd, completed_iso=_completed_iso, completed_mjd=_completed_mjd,
                          non_sidereal_json=_non_sidereal_json, author=_u)
         except Exception as e:
             if _verbose:

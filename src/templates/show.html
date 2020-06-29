@@ -168,8 +168,24 @@
         <td>{{ record.queued }}</td>
        </tr>
        <tr class="table-info">
+        <td>Observation Queued (ISO)</td>
+        <td>{{ record.queued_iso }}</td>
+       </tr>
+       <tr class="table-info">
+        <td>Observation Queued (MJD)</td>
+        <td>{{ record.queued_mjd }}</td>
+       </tr>
+       <tr class="table-info">
         <td>Observation Completed?</td>
         <td>{{ record.completed }}</td>
+       </tr>
+       <tr class="table-info">
+        <td>Observation Completed (ISO)</td>
+        <td>{{ record.completed_iso }}</td>
+       </tr>
+       <tr class="table-info">
+        <td>Observation Completed (MJD)</td>
+        <td>{{ record.completed_mjd }}</td>
        </tr>
        <tr class="table-danger">
         <td>RTS2 JSON Doc</td>

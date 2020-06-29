@@ -32,9 +32,9 @@ RUN apt-get update && apt-get install -y \
 # +
 # install postgis
 # -
-RUN echo "CREATE EXTENSION postgis;" > postgis.sql \
-    && echo "CREATE EXTENSION postgis_topology;" >> postgis.sql \
-    && mv postgis.sql /docker-entrypoint-initdb.d 
+#RUN echo "CREATE EXTENSION postgis;" > postgis.sql \
+#    && echo "CREATE EXTENSION postgis_topology;" >> postgis.sql \
+#    && mv postgis.sql /docker-entrypoint-initdb.d 
 
 
 # +

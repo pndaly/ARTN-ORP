@@ -132,6 +132,8 @@ ARTN_NODES = {
       }
     },
 }
+ARTN_ZERO_ISO = '2000-01-01T00:00:00.000000'
+ARTN_ZERO_MJD = math.nan
 
 ASTROPLAN_IERS_URL = 'ftp://cddis.gsfc.nasa.gov/pub/products/iers/finals2000A.all'
 ASTROPLAN_IERS_URL_ALTERNATE = 'https://datacenter.iers.org/data/9/finals2000A.all'

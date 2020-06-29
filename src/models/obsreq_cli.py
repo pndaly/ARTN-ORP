@@ -46,6 +46,8 @@ def obsreq_cli_db(iargs=None):
         request_args['id__lte'] = f'{iargs.id__lte}'
     if iargs.username:
         request_args['username'] = f'{iargs.username}'
+    if iargs.exclude_username:
+        request_args['exclude_username'] = f'{iargs.exclude_username}'
     if iargs.pi:
         request_args['pi'] = f'{iargs.pi}'
     if iargs.created_iso__gte:
@@ -212,6 +214,7 @@ if __name__ == '__main__':
     _p.add_argument(f'--id__gte', help=f'id >= <int>')
     _p.add_argument(f'--id__lte', help=f'id <= <int>')
     _p.add_argument(f'--username', help=f'username <str>')
+    _p.add_argument(f'--exclude-username', help=f'exclude username <str>')
     _p.add_argument(f'--pi', help=f'pi <str>')
     _p.add_argument(f'--created_iso__gte', help=f'created_iso >= <YYYY-MM-DD>')
     _p.add_argument(f'--created_iso__lte', help=f'created_iso <= <YYYY-MM-DD>')

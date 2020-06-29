@@ -391,6 +391,7 @@ def upload_file(_columns=None, _num=0, _user=None):
                 f"guiding={_guiding}, non_sidereal={_non_sidereal}, filter_name={_filter_name}, exp_time={_exp_time}, "
                 f"num_exp={_num_exp}, binning={_binning}, dither={_dither}, cadence={_cadence}, "
                 f"telescope={_telescope}, instrument={_instrument}, rts2_doc='<>', rts2_id=-1, queued=False, "
+                f"queued_iso={ARTN_ZERO_ISO}, queued_mjd={ARTN_ZERO_MJD}, completed_iso={ARTN_ZERO_ISO}, completed_mjd={ARTN_ZERO_MJD}, "
                 f"completed=False, non_sidereal_json={_non_sidereal_json})", True, False)
         _or = None
         try:
@@ -406,6 +407,7 @@ def upload_file(_columns=None, _num=0, _user=None):
                          guiding=_guiding, non_sidereal=_non_sidereal, filter_name=_filter_name, exp_time=_exp_time,
                          num_exp=_num_exp, binning=_binning, dither=_dither, cadence=_cadence, telescope=_telescope,
                          instrument=_instrument, rts2_doc='{}', rts2_id=-1, queued=False, completed=False,
+                         queued_iso=ARTN_ZERO_ISO, queued_mjd=ARTN_ZERO_MJD, completed_iso=ARTN_ZERO_ISO, completed_mjd=ARTN_ZERO_MJD,
                          non_sidereal_json=_non_sidereal_json, author=_user)
         except Exception as _e:
             msg_out(f"ERROR: failed instantiating ObsReq(), error={_e}", True, True)
@@ -1884,7 +1886,12 @@ def orp_observe(username=''):
             if _rts2_id > 0:
                 try:
                     _obsreq.completed = False
+                    _obsreq.completed_iso = ARTN_ZERO_ISO
+                    _obsreq.completed_mjd = ARTN_ZERO_MJD
                     _obsreq.queued = True
+                    _iso = _get_iso()
+                    _obsreq.queued_iso = _iso
+                    _obsreq.queued_mjd = iso_to_mjd(_iso)
                     _obsreq.rts2_doc = _rts2_doc
                     _obsreq.rts2_id = _rts2_id
                     db.session.commit()
@@ -2002,6 +2009,7 @@ def orp_obsreq(username=''):
                      photometric=_photometric, guiding=_guiding, non_sidereal=_non_sidereal,
                      non_sidereal_json=_non_sidereal_json, filter_name=_filter_name, exp_time=_exp_time,
                      num_exp=_num_exp, binning=_binning, dither=_dither, cadence=_cadence, telescope=_telescope,
+                     queued_iso=ARTN_ZERO_ISO, queued_mjd=ARTN_ZERO_MJD, completed_iso=ARTN_ZERO_ISO, completed_mjd=ARTN_ZERO_MJD,
                      instrument=_instrument, queued=False, completed=False, author=_u)
 
         # update database
@@ -2509,7 +2517,11 @@ def orp_update(username=''):
 
         # reset flags
         _obsreq.queued = False
+        _obsreq.queued_iso = ARTN_ZERO_ISO
+        _obsreq.queued_mjd = ARTN_ZERO_MJD
         _obsreq.completed = False
+        _obsreq.completed_iso = ARTN_ZERO_ISO
+        _obsreq.completed_mjd = ARTN_ZERO_MJD
         _obsreq.rts2_id = -1
         _obsreq.rts2_doc = '{}'
 

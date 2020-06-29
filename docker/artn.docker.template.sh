@@ -5,7 +5,7 @@
 #
 # Name:        docker.sh
 # Description: Docker Control
-# Author:      Phil Daly (pndaly@email.arizona.edu)
+# Author:      Phil Daly (pndaly@arizona.edu)
 # Date:        20200317
 # Execute:     % bash docker.sh --help
 #
@@ -20,8 +20,15 @@ def_file="Dockerfile"
 def_name="xx_$$_xx"
 def_port=5432
 def_dtag="$$:artn"
+
 dry_run=0
 verbose=0
+
+my_image="artn/postgres-12:q3c2"
+my_password="db_secret"
+my_username="artn"
+my_container="artn-q3c"
+my_volume=/data2/pgdata
 
 
 # +
@@ -52,30 +59,25 @@ write_cyan () {
 }
 
 usage () {
-  write_blue   ""                                                                                                                      2>&1
-  write_blue   "Docker Control"                                                                                                        2>&1
-  write_blue   ""                                                                                                                      2>&1
-  write_green  "Use:"                                                                                                                  2>&1
-  write_green  "  %% bash ${0} --command=<str> --name=<str> [--dry-run]"                                                               2>&1
-  write_yellow ""                                                                                                                      2>&1
-  write_yellow "Input(s):"                                                                                                             2>&1
-  write_yellow "  --command=<str>,   { build | connect | create | list | pull | remove | start | status | stop }, default=${def_cmnd}" 2>&1
-  write_yellow "  --file=<str>,      build file,                                                                  default=${def_file}" 2>&1
-  write_yellow "  --name=<str>,      unique (container or image) name,                                            default=${def_name}" 2>&1
-  write_yellow "  --port=<int>,      port to expose,                                                              default=${def_port}" 2>&1
-  write_yellow "  --tag=<str>,       build tag,                                                                   default=${def_dtag}" 2>&1
-  write_yellow ""                                                                                                                      2>&1
-  write_cyan   "Flag(s):"                                                                                                              2>&1
-  write_cyan   "  --dry-run,         show (but do not execute) command(s),                                        default=false"       2>&1
-  write_cyan   "  --verbose,         be more verbose,                                                             default=false"       2>&1
-  write_cyan   ""                                                                                                                      2>&1
+  write_blue   ""                                                                                           2>&1
+  write_blue   "Docker Control"                                                                             2>&1
+  write_blue   ""                                                                                           2>&1
+  write_green  "Use:"                                                                                       2>&1
+  write_green  "  %% bash ${0} --command=<str> --name=<str> [--dry-run]"                                    2>&1
+  write_yellow ""                                                                                           2>&1
+  write_yellow "Input(s):"                                                                                  2>&1
+  write_yellow "  --command=<str>,                                                     default=${def_cmnd}" 2>&1
+  write_yellow "    build|connect|create|load|list|pull|remove|save|start|status|stop                     " 2>&1
+  write_yellow "  --file=<str>,      file,                                             default=${def_file}" 2>&1
+  write_yellow "  --name=<str>,      unique (container or image) name,                 default=${def_name}" 2>&1
+  write_yellow "  --port=<int>,      port to expose,                                   default=${def_port}" 2>&1
+  write_yellow "  --tag=<str>,       build tag,                                        default=${def_dtag}" 2>&1
+  write_yellow ""                                                                                           2>&1
+  write_cyan   "Flag(s):"                                                                                   2>&1
+  write_cyan   "  --dry-run,         show (but do not execute) command(s),             default=false"       2>&1
+  write_cyan   "  --verbose,         be more verbose,                                  default=false"       2>&1
+  write_cyan   ""                                                                                           2>&1
 }
-
-
-# +
-# check: bash v4+
-# -
-[[ -z $(bash --version | grep -i 'gnu bash' | grep 'version 4') ]] && write_red "<ERROR> invalid version of /bin/bash!" && exit 0
 
 
 # +
@@ -162,10 +164,10 @@ _artn () {
     write_magenta "_artn(${1}, ${2})"
   fi
   if [[ ${1} -eq 1 ]]; then
-    write_yellow "Dry-Run>> docker run -d --network host --name=artn -p ${2}:5432 -e POSTGRES_USER=artn -e POSTGRES_PASSWORD=secretsanta -e PGDATA=/pgdata -v /data2/pgdata/artn:/pgdata -v /data2/pgdata/backups:/backups postgres:latest"
+    write_yellow "Dry-Run>> docker run -d --network host --name=${my_container} -p ${2}:5432 -e POSTGRES_USER=${my_username} -e POSTGRES_PASSWORD=${my_password} -e PGDATA=/pgdata -v ${my_volume}/${my_container}:/pgdata -v ${my_volume}/backups:/backups ${my_image}"
   else
-    write_green "Executing>> docker run -d --network host --name=artn -p ${2}:5432 -e POSTGRES_USER=artn -e POSTGRES_PASSWORD=secretsanta -e PGDATA=/pgdata -v /data2/pgdata/artn:/pgdata -v /data2/pgdata/backups:/backups postgres:latest"
-    docker run -d --network host --name=artn -p ${2}:5432 -e POSTGRES_USER=artn -e POSTGRES_PASSWORD=secretsanta -e PGDATA=/pgdata -v /data2/pgdata/artn:/pgdata -v /data2/pgdata/backups:/backups postgres:latest
+    write_green "Executing>> docker run -d --network host --name=${my_container} -p ${2}:5432 -e POSTGRES_USER=${my_username} -e POSTGRES_PASSWORD=${my_password} -e PGDATA=/pgdata -v ${my_volume}/${my_container}:/pgdata -v ${my_volume}/backups:/backups ${my_image}"
+    docker run -d --network host --name=${my_container} -p ${2}:5432 -e POSTGRES_USER=${my_username} -e POSTGRES_PASSWORD=${my_password} -e PGDATA=/pgdata -v ${my_volume}/${my_container}:/pgdata -v ${my_volume}/backups:/backups ${my_image}
   fi
 }
 
@@ -175,14 +177,6 @@ _test () {
     write_magenta "_test(${1})"
   fi
 }
-
-
-# +
-# dictionary(s)
-# -
-declare -A supported
-supported[artn]=_artn
-supported[test]=_test
 
 
 # +
@@ -239,7 +233,14 @@ _create () {
   # check for existing port use
   [[ ! -z $(ss -tulw | grep ${3}) ]] && write_red "_create() <ERROR> port ${3} already in use!" && exit 0
   # add container
-  eval ${supported[${docker_name}]} ${1} ${3}
+  if [[ ${docker_name} == "artn" ]]; then
+    _artn ${1} ${3}
+  elif [[ ${docker_name} == "artn-q3c" ]]; then
+    _artn ${1} ${3}
+  elif [[ ${docker_name} == "test" ]]; then
+    _test ${1} ${3}
+  fi
+  # eval ${supported[${docker_name}]} ${1} ${3}
 }
 
 _list () {
@@ -309,6 +310,41 @@ _remove () {
   fi
 }
 
+
+_load () {
+  # _load ${dry_run} ${docker_file}
+  if [[ ${verbose} -eq 1 ]]; then
+    write_magenta "_load(${1}, ${2})"
+  fi
+  # load image
+  if [[ ${1} -eq 1 ]]; then
+    write_yellow "Dry-Run>> gzip -cd ${docker_file} | docker load"
+  else
+    write_green "Executing>> gzip -cd ${docker_file} | docker load"
+    gzip -cd ${docker_file} | docker load
+  fi
+}
+
+
+_save () {
+  # _save ${dry_run} ${docker_name}
+  if [[ ${verbose} -eq 1 ]]; then
+    write_magenta "_start(${1}, ${2})"
+  fi
+  # save image
+  _image=$(echo ${docker_name} | cut -d':' -f1)
+  _name=$(sed 's?/?_?g' <<< "${docker_name}")
+  _name=$(sed 's?:?_?g' <<< "${_name}")
+  _name=$(sed 's?-?_?g' <<< "${_name}")
+  if [[ ${1} -eq 1 ]]; then
+    write_yellow "Dry-Run>> docker save ${_image} | gzip > ${_name}.tgz"
+  else
+    write_green "Executing>> docker save ${_image} | gzip > ${_name}.tgz"
+    docker save ${_image} | gzip > ${_name}.tgz
+  fi
+}
+
+
 _start () {
   # _start ${dry_run} ${docker_name} ${_num_exited} ${_cid_exited}
   if [[ ${verbose} -eq 1 ]]; then
@@ -372,8 +408,6 @@ _stop () {
 }
 
 
-
-
 # +
 # execute
 # -
@@ -387,6 +421,9 @@ case $(echo ${docker_cmnd}) in
   create*)
     _create ${dry_run} ${docker_name} ${docker_port}
     ;;
+  load*)
+    _load ${dry_run} ${docker_file}
+    ;;
   list*)
     _list ${dry_run} ${docker_name}
     ;;
@@ -395,6 +432,9 @@ case $(echo ${docker_cmnd}) in
     ;;
   remove*)
     _remove ${dry_run} ${docker_name} ${_num_exited} ${_cid_exited}
+    ;;
+  save*)
+    _save ${dry_run} ${docker_name}
     ;;
   start*)
     _start ${dry_run} ${docker_name} ${_num_exited} ${_cid_exited}

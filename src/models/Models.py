@@ -8,6 +8,7 @@ from src import *
 from astropy.time import Time
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
+from sqlalchemy import not_
 from sqlalchemy.dialects.postgresql import JSONB
 from time import time
 from werkzeug.security import generate_password_hash
@@ -139,7 +140,15 @@ class ObsReq(UserMixin, db.Model):
     # noinspection PyUnresolvedReferences
     queued = db.Column(db.Boolean, default=False, nullable=False)
     # noinspection PyUnresolvedReferences
+    queued_iso = db.Column(db.DateTime, default=get_date_time(0), nullable=False)
+    # noinspection PyUnresolvedReferences
+    queued_mjd = db.Column(db.Float, default=_mjd, nullable=False)
+    # noinspection PyUnresolvedReferences
     completed = db.Column(db.Boolean, default=False, nullable=False)
+    # noinspection PyUnresolvedReferences
+    completed_iso = db.Column(db.DateTime, default=get_date_time(0), nullable=False)
+    # noinspection PyUnresolvedReferences
+    completed_mjd = db.Column(db.Float, default=_mjd, nullable=False)
     # noinspection PyUnresolvedReferences
     non_sidereal_json = db.Column(JSONB, default={}, nullable=False)
 
@@ -191,13 +200,16 @@ class ObsReq(UserMixin, db.Model):
             'telescope': self.telescope,
             'instrument': self.instrument,
             'queued': True if str(self.queued).lower() in TRUE_VALUES else False,
+            'queued_iso': self.queued_iso.isoformat(),
+            'queued_mjd': self.queued_mjd,
             'completed': True if str(self.completed).lower() in TRUE_VALUES else False,
+            'completed_iso': self.completed_iso.isoformat(),
+            'completed_mjd': self.completed_mjd,
             'rts2_doc': str(self.rts2_doc),
             'rts2_id': int(self.rts2_id),
             'non_sidereal_json': str(self.non_sidereal_json),
             'user_id': self.user_id
         }
-        # logger.debug(f"ObsReq() serialized: {_d}")
         return _d
 
     # +
@@ -400,6 +412,10 @@ def obsreq_filters(query, request_args):
     # obsreq records with username like value (API: ?username=demo)
     if request_args.get('username'):
         query = query.filter(ObsReq.username.ilike(f"%{request_args['username']}%"))
+
+    # obsreq records with username not like value (API: ?exclude_username=demo)
+    if request_args.get('exclude_username'):
+        query = query.filter(not_(ObsReq.username.ilike(f"%{request_args['exclude_username']}%")))
 
     # obsreq records with pi like value (API: ?pi=demo)
     if request_args.get('pi'):
