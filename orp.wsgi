@@ -8,6 +8,9 @@ import os
 import hashlib
 import sys
 
+print('ORP> Python Version: {}'.format(sys.version))
+print('ORP> Python Version Info: {}'.format(sys.version_info))
+
 
 # +
 # code base
