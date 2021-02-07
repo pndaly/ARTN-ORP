@@ -11,9 +11,7 @@ from datetime import timedelta
 import argparse
 import itertools
 import os
-import random
 import re
-import sys
 
 
 # +
@@ -25,7 +23,9 @@ ARTN_FITS_HEADERS = ['AIRMASS', 'ARTNGID', 'ARTNOID', 'AZIMUTH', 'BINNING', 'CAM
                      'JULIAN', 'OBJECT', 'RA', 'ROTANGLE', 'TIME-OBS']
 ARTN_HEADER = "File                       | Obseravation Date       |  Object     | RA          | Dec         | Epoch  | Filter     | ExpTime | Observation  | Airmass | Az    | El    | RotAng | TelFoc | Instrument | Bin | Camera   | Dewar    | DetSize   | Size     | Owner   "
 ARTN_OBSERVATIONS = ['all', 'bias', 'calibration', 'dark', 'flat', 'focus', 'object', 'skyflat', 'standard']
-ARTN_UNITS  = "                           | (UT)                    |  Type       | (HH:MM:SS)  | (\u00b1dd:mm:ss) |        |            | (s)     | Type         | (secZ)  | (\u00b0)   | (\u00b0)   | (\u00b0)    |        |            |     | (\u00b0C)     | (\u00b0C)     |           | (Bytes)  |         "
+ARTN_UNITS = "                           | (UT)                    |  Type       | (HH:MM:SS)  | (\u00b1dd:mm:ss) |        |            | (s)     | Type         | (secZ)  | (\u00b0)   | (\u00b0)   | (\u00b0)    |        |            |     | (\u00b0C)     | (\u00b0C)     |           | (Bytes)  |         "
+
+FORMAT_HRULE = f'-'*260
 
 
 # +
@@ -75,7 +75,7 @@ def nlog_seek_files(_path=os.getcwd()):
 # +
 # function: nlog_get_fits_headers()
 # -
-# noinspection PyBroadException
+# noinspection PyBroadException,PyUnresolvedReferences
 def nlog_get_fits_headers(_in=None):
 
     # check input(s)
@@ -96,6 +96,7 @@ def nlog_get_fits_headers(_in=None):
         # who requested it?
         try:
             if _d_out['ARTNGID'].strip() != '' and _d_out['ARTNOID'].strip() != '':
+                # noinspection PyUnresolvedReferences
                 query = db.session.query(ObsReq)
                 query = obsreq_filters(query, {'group_id': f"{_d_out['ARTNGID']}"})
                 query = obsreq_filters(query, {'observation_id': f"{_d_out['ARTNOID']}"})
@@ -115,7 +116,6 @@ def nlog_get_fits_headers(_in=None):
 # +
 # function: nlog_print_data()
 # -
-FORMAT_HRULE = f'-'*260
 def nlog_print_data(_header='', _data=None):
     if _data is not None:
         if _header.strip() != '':
@@ -138,7 +138,7 @@ DEFAULT_INSTRUMENT = 'Mont4k'
 # +
 # function: nightlog()
 # -
-# noinspection PyBroadException
+# noinspection PyBroadException,PyPep8Naming
 def nightlog(_instrument=DEFAULT_INSTRUMENT, _iso=DEFAULT_ISO, _observation=DEFAULT_OBSERVATION, _telescope=DEFAULT_TELESCOPE):
 
     # get input(s)
@@ -156,49 +156,49 @@ def nightlog(_instrument=DEFAULT_INSTRUMENT, _iso=DEFAULT_ISO, _observation=DEFA
     _f_all, _n_all = {}, 0
 
     # scrape data
-    if _observation == 'all' or _observation ==  'bias':
+    if _observation == 'all' or _observation == 'bias':
         _d_bias = f"{ARTN_DATA_DIR}/{_telescope}/{_instrument}/{_iso}/bias"
         _f_bias = nlog_seek_files(_d_bias)
         _h_bias = nlog_get_fits_headers(_f_bias)
         _n_bias = len(_f_bias)
         _s_bias = f"{len(_f_bias)} BIAS observations on server scopenet.as.arizona.edu in directory {_d_bias}"
-    if _observation == 'all' or _observation ==  'calibration':
+    if _observation == 'all' or _observation == 'calibration':
         _d_calibration = f"{ARTN_DATA_DIR}/{_telescope}/{_instrument}/{_iso}/calibration"
         _f_calibration = nlog_seek_files(_d_calibration)
         _h_calibration = nlog_get_fits_headers(_f_calibration)
         _n_calibration = len(_f_calibration)
         _s_calibration = f"{len(_f_calibration)} CALIBRATION observations on server scopenet.as.arizona.edu in directory {_d_calibration}"
-    if _observation == 'all' or _observation ==  'dark':
+    if _observation == 'all' or _observation == 'dark':
         _d_dark = f"{ARTN_DATA_DIR}/{_telescope}/{_instrument}/{_iso}/dark"
         _f_dark = nlog_seek_files(_d_dark)
         _h_dark = nlog_get_fits_headers(_f_dark)
         _n_dark = len(_f_dark)
         _s_dark = f"{len(_f_dark)} DARK observations on server scopenet.as.arizona.edu in directory {_d_dark}"
-    if _observation == 'all' or _observation ==  'flat':
+    if _observation == 'all' or _observation == 'flat':
         _d_flat = f"{ARTN_DATA_DIR}/{_telescope}/{_instrument}/{_iso}/flat"
         _f_flat = nlog_seek_files(_d_flat)
         _h_flat = nlog_get_fits_headers(_f_flat)
         _n_flat = len(_f_flat)
         _s_flat = f"{len(_f_flat)} FLAT observations on server scopenet.as.arizona.edu in directory {_d_flat}"
-    if _observation == 'all' or _observation ==  'focus':
+    if _observation == 'all' or _observation == 'focus':
         _d_focus = f"{ARTN_DATA_DIR}/{_telescope}/{_instrument}/{_iso}/focus"
         _f_focus = nlog_seek_files(_d_focus)
         _h_focus = nlog_get_fits_headers(_f_focus)
         _n_focus = len(_f_focus)
         _s_focus = f"{len(_f_focus)} FOCUS observations on server scopenet.as.arizona.edu in directory {_d_focus}"
-    if _observation == 'all' or _observation ==  'object':
+    if _observation == 'all' or _observation == 'object':
         _d_object = f"{ARTN_DATA_DIR}/{_telescope}/{_instrument}/{_iso}/object"
         _f_object = nlog_seek_files(_d_object)
         _h_object = nlog_get_fits_headers(_f_object)
         _n_object = len(_f_object)
         _s_object = f"{len(_f_object)} OBJECT observations on server scopenet.as.arizona.edu in directory {_d_object}"
-    if _observation == 'all' or _observation ==  'skyflat':
+    if _observation == 'all' or _observation == 'skyflat':
         _d_skyflat = f"{ARTN_DATA_DIR}/{_telescope}/{_instrument}/{_iso}/skyflat"
         _f_skyflat = nlog_seek_files(_d_skyflat)
         _h_skyflat = nlog_get_fits_headers(_f_skyflat)
         _n_skyflat = len(_f_skyflat)
         _s_skyflat = f"{len(_f_skyflat)} SKYFLAT observations on server scopenet.as.arizona.edu in directory {_d_skyflat}"
-    if _observation == 'all' or _observation ==  'standard':
+    if _observation == 'all' or _observation == 'standard':
         _d_standard = f"{ARTN_DATA_DIR}/{_telescope}/{_instrument}/{_iso}/standard"
         _f_standard = nlog_seek_files(_d_standard)
         _h_standard = nlog_get_fits_headers(_f_standard)
@@ -211,25 +211,26 @@ def nightlog(_instrument=DEFAULT_INSTRUMENT, _iso=DEFAULT_ISO, _observation=DEFA
 
     # print header
     FORMAT_TITLE = f"{_telescope.upper()} TELESCOPE OBSERVATION LOG"
+    # noinspection PyPep8Naming
     FORMAT_SUBTITLE = f"\u24B6\u205f {_iso} \u24c7\u205f ARTN Operator \u24c9\u205f {_n_all} Observations \u24c3"
     print(f"+{FORMAT_HRULE:^260}+\n|{FORMAT_TITLE:^260}|\n|{FORMAT_HRULE:^260}|\n|{FORMAT_SUBTITLE:^260}|")
 
     # print section(s)
-    if (_observation == 'all' or _observation ==  'bias') and _h_bias:
+    if (_observation == 'all' or _observation == 'bias') and _h_bias:
         nlog_print_data(_s_bias, _h_bias)
-    if (_observation == 'all' or _observation ==  'calibration') and _h_calibration:
+    if (_observation == 'all' or _observation == 'calibration') and _h_calibration:
         nlog_print_data(_s_calibration, _h_calibration)
-    if (_observation == 'all' or _observation ==  'dark') and _h_dark:
+    if (_observation == 'all' or _observation == 'dark') and _h_dark:
         nlog_print_data(_s_dark, _h_dark)
-    if (_observation == 'all' or _observation ==  'flat') and _h_flat:
+    if (_observation == 'all' or _observation == 'flat') and _h_flat:
         nlog_print_data(_s_flat, _h_flat)
-    if (_observation == 'all' or _observation ==  'focus') and _h_focus:
+    if (_observation == 'all' or _observation == 'focus') and _h_focus:
         nlog_print_data(_s_focus, _h_focus)
-    if (_observation == 'all' or _observation ==  'object') and _h_object:
+    if (_observation == 'all' or _observation == 'object') and _h_object:
         nlog_print_data(_s_object, _h_object)
-    if (_observation == 'all' or _observation ==  'skyflat') and _h_skyflat:
+    if (_observation == 'all' or _observation == 'skyflat') and _h_skyflat:
         nlog_print_data(_s_skyflat, _h_skyflat)
-    if (_observation == 'all' or _observation ==  'standard') and _h_standard:
+    if (_observation == 'all' or _observation == 'standard') and _h_standard:
         nlog_print_data(_s_standard, _h_standard)
 
 
