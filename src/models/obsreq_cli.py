@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.7
+#!/usr/bin/env python3
 
 
 # +
@@ -18,9 +18,7 @@ import sys
 # __doc__ string
 # -
 __doc__ = """
-
-  CLI:
-    % python3.7 obsreq_cli.py --help
+    % python3 obsreq_cli.py --help
 
 """
 
@@ -32,7 +30,7 @@ def obsreq_cli_db(iargs=None):
 
     # check input(s)
     if iargs is None:
-        raise Exception(f'Insufficient command line arguments specified\nUse: python3.7 {sys.argv[0]} --help')
+        raise Exception(f'Insufficient command line arguments specified\nUse: python3 {sys.argv[0]} --help')
 
     # set default(s)
     request_args = {}
