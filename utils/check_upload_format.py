@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.7
+#!/usr/bin/env python3
 
 
 # +
@@ -14,7 +14,7 @@ import csv
 # __doc__ string
 # -
 __doc__ = """
-  % python3.7 check_upload_format.py --help
+  % python3 check_upload_format.py --help
 """
 
 

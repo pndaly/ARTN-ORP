@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.7
+#!/usr/bin/env python3
 
 
 # +
@@ -17,7 +17,7 @@ import sys
 # -
 __doc__ = """
 
-    % python3.7 psql.py --help
+    % python3 psql.py --help
 
 """
 
