@@ -6,11 +6,13 @@
 # -
 from astropy.io import fits
 from flask import Flask, jsonify, copy_current_request_context, request, \
-    render_template, redirect, send_from_directory, url_for, make_response
+    render_template, redirect, send_from_directory, url_for, make_response, \
+    jsonify, Response
 from flask_bootstrap import Bootstrap
 from flask_mail import Mail, Message
 from flask_login import LoginManager, current_user, login_user, login_required, logout_user
 from flask_paginate import Pagination, get_page_args
+from operator import itemgetter, attrgetter
 from hashlib import md5
 from src.orp_history import *
 from threading import Thread
@@ -26,6 +28,7 @@ from src.telescopes.factory import *
 from src.telescopes.bok import *
 from src.telescopes.kuiper import *
 from src.telescopes.vatt import *
+from src.telescopes.artn_scheduler import *
 
 from src import *
 
@@ -36,7 +39,8 @@ import json
 import pdfkit
 import random
 import time
-
+import datetime
+import astropy
 
 # +
 # logging
@@ -2899,6 +2903,319 @@ def orp_view_requests(username=''):
         arg_str = urlencode(_args)
         return render_template('view_requests.html', context=response, page=paginator.page, arg_str=arg_str)
 
+# +
+# route(s): /orp/view_queue/<username>, requires login
+# -
+@app.route('/orp/orp/view_queue/<username>', methods=['GET', 'POST'])
+@app.route('/orp/view_queue/<username>', methods=['GET', 'POST'])
+@app.route('/view_queue/<username>', methods=['GET', 'POST'])
+@login_required
+def orp_view_queue(username='', telescope='Kuiper'):
+    msg_out(f'/orp/view_queue/{username} entry', True, False)
+    get_client_ip(request)
+
+    #What do I want on this page
+    #I want it to find the current date
+    #query for all queued obsreqs that are around this date
+    #display them
+    #have multiple buttons on the page
+    #   schedule the queue
+    #       display a verbose log
+    #       if something never gets scheduled in the queue mark it red in the queue table. 
+    #   submit the queue (this actually sets 'scheduled=True')
+
+    #the objects can be displayed with the rough group by and an expandable + to view the individual observation info
+    #have it display the airmass chart (javascript)
+    #encorporate a 'scheduled' boolean with a scheduled date iso bullshit (same thing as above)
+    #this is going to be a lot.
+
+    canInterrupt = len(getCurrentQueue(telescope=telescope)) > 0
+
+
+    date_list = []
+    n1 = datetime.datetime.now()
+    d1 = datetime.datetime(n1.year, n1.month, n1.day)
+    for td in range(30):
+        date_deltad = d1-datetime.timedelta(days=td)
+        date_formatted = date_deltad.strftime("%Y-%m-%d")
+        date_list.append(date_formatted)
+
+    return render_template('view_queue.html', dates=date_list, interruptable=canInterrupt, telescope=telescope)
+
+@app.route('/ajax_queued_list')
+def queued_list_query(night=None, completed=False, day_buffer=1):
+    rts2ids = []
+    page = 0
+    num_items = 10
+    if night is None:
+        night = request.args.get('night')
+        night = datetime.datetime.strptime(night, "%Y-%m-%d")
+    
+        completed = request.args.get('completed')
+        day_buffer = request.args.get('day_buffer')
+        try:
+            day_buffer = int(day_buffer)
+        except:
+            day_buffer = 1
+        
+        rts2ids_string = request.args.get('rts2ids')
+        if rts2ids_string is not None and rts2ids_string is not '':
+            for r in rts2ids_string.split(','):
+                rts2ids.append(int(r))
+
+        page = request.args.get('page')
+        page = int(page) if page is not None else 0
+
+        name_query = request.args.get('name_query')
+        print(name_query)
+
+    
+    skip = page*num_items
+    take = skip+num_items
+
+    queued_iso_begin = night - datetime.timedelta(days=day_buffer)
+    queued_iso_end = night + datetime.timedelta(days=1)
+
+    query_filter = [
+        ObsReq.queued == True,
+        ObsReq.queued_iso > queued_iso_begin,
+        ObsReq.queued_iso < queued_iso_end
+    ]
+
+    if name_query is not None and name_query != '':
+        query_filter.append(ObsReq.object_name.contains(name_query))
+
+    db_resp = ObsReq.query.filter(*query_filter).order_by(
+        ObsReq.ra_hms
+    ).all()
+
+    targets = format_orp_targets(db_resp)
+    targets = sorted(targets, key=attrgetter('ra'))
+
+    num_pages = int(len(targets)/num_items)
+    if len(targets) % num_items != 0:
+        num_pages += 1
+
+    html = '''
+    <table class="table table-striped table-lg">
+        <thead>
+            <tr>
+                <th><font color="blue">Exp Info</font></th>
+                <th><font color="blue">Object</font></th>
+                <th><font color="blue">RA</font></th>
+                <th><font color="blue">Dec</font></th>
+                <th><input id='checkalltargs' type=checkbox onclick="doEmAll(this.id)"><font color="blue"> Queue (all exps)</font></th>
+            </tr>
+            <tr>
+                <th><font color="grey"><center> </center></font></th>
+                <th><font color="grey"><center> </center></font></th>
+                <th><font color="grey"><center>J2k &deg;</center></font></th>
+                <th><font color="grey"><center>J2k &deg;</center></font></th>
+                <th><font color="grey"><center> </center></font></th>
+            </tr>
+        </thead>
+    <tbody>
+    '''
+
+    for t in targets[skip:take]:
+        t_rts2ids = [x.rts2id for x in t.exp_objs]
+        allchecked = ' checked' if all([tid in rts2ids for tid in t_rts2ids]) else ''
+
+        nameid = t.name
+        if '+' in t.name:
+            nameid = t.name.replace('+', '')
+
+        html += '''
+        <tr>
+            <td><button id="collbtn{}" onclick="changeCollapseButtonText(this.id)" type="button" class="btn btn-primary btn-xs arrow-right" data-toggle="collapse" data-target="#collapse{}"></button></td>
+            <td>{}</td>
+            <td>{}</td>
+            <td>{}</td>
+            <td><input id="queuetarg_{}" type="checkbox" onclick="objectCheckAll(this.id)"{}></td>
+        </tr>
+        '''.format(nameid,nameid,t.name,t.ra,t.dec, nameid, allchecked)
+        html+= '''
+        <tr class="collapse" id="collapse{}">
+            <td colspan="999">
+                <div>
+                    <table class="table table-striped table-sm">
+                        <thead>
+                            <tr>
+                                <td><font color='blue'>Filter</font></td>
+                                <td><font color='blue'>Exptime</font></td>
+                                <td><font color='blue'>Amount</font></td>
+                                <td><font color='blue'>RTS2 ID</font></td>
+                                <td><font color='blue'>Queue</font><td>
+                            </tr>
+                        </thead>
+                        <tbody>
+        '''.format(nameid)
+        for obsinfo in t.exp_objs:
+            thischecked = ' checked' if obsinfo.rts2id in rts2ids else ''
+            html+='''
+                                <tr>
+                                    <td>{}</td>
+                                    <td>{}</td>
+                                    <td>{}</td>
+                                    <td>{}</td>
+                                    <td><input value="{}" id="{}_{}" type="checkbox" onclick="expCheckOne(this.id)"{}></td>
+                                </tr>
+            '''.format(obsinfo.filter, obsinfo.exptime, obsinfo.amount, obsinfo.rts2id, obsinfo.rts2id, nameid, obsinfo.rts2id, thischecked)
+        html += '''
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+        '''
+    html+='''
+        </tbody>
+    </table>
+     <div class="row">
+      <div class="col">
+       <div align="left">
+    '''
+    if page != 0:
+        prevpage = page-1
+        html+='<a onclick="paginateTargetsTable({})" class="btn btn-outline-secondary">Prev</a>'.format(prevpage)
+    else:
+        html+='<a href="#" class="btn btn-outline-secondary disabled">Prev</a>'
+    html += '''
+       </div>
+      </div>
+
+      <div class="col-md-8">
+       <div align="center">
+        {} record(s) found. Showing page {} / {}.
+       </div>
+      </div>
+
+      <div class="col">
+       <div align="right">
+    '''.format(len(targets),page+1,num_pages)
+    if page != num_pages-1:
+        nextpage = page+1
+        html+='<a onclick="paginateTargetsTable({})" class="btn btn-outline-secondary">Next</a>'.format(nextpage)
+    else:
+        html+='<a href="#" class="btn btn-outline-secondary disabled">Next</a>'
+    html+='''
+       </div>
+      </div>
+     </div>
+    '''
+
+    payload = {
+        'qt_html':html
+    }
+
+    return payload
+
+@app.route('/ajax_run_scheduler')
+def run_artn_scheduler():
+
+    '''
+    Idea for interrupt:
+        if there is a current queue running
+            make the checkbox undisabled
+        if interrupt is True
+            read in the current queue rts2 ids
+            add the interrupt target as well
+            rerun the queue and make the obstime and frames cooperate
+    '''
+
+    rts2ids = []
+    rts2ids_string = request.args.get('rts2ids')
+
+    schedule_focus = True if request.args.get('schedule_focus') == 'true' else False
+    interrupt = True if request.args.get('interrupt') == 'true' else False
+    simulate = True if request.args.get('simulate') == 'true' else False
+
+    night = request.args.get('night')
+    night = datetime.datetime.strptime(night, "%Y-%m-%d")
+
+    telescope = request.args.get('telescope')
+
+    if rts2ids_string != '':
+        for r in rts2ids_string.split(','):
+            rts2ids.append(int(r))
+
+    if interrupt:
+        q = getCurrentQueue(telescope=telescope)
+        rts2ids.extend([x.id for x in q])
+        rts2ids = list(set(rts2ids))
+
+    db_resp = db.session.query(ObsReq).filter(
+        ObsReq.rts2_id.in_(rts2ids)
+    ).all()
+
+    targets = format_orp_targets(db_resp)
+    big2 = astropy.coordinates.EarthLocation.of_site('mtbigelow')
+
+    scheduler = ARTNScheduler(targets, big2, night, schedule_focus, simulate)
+
+    scheduler.run()
+    scheduler.logdump()
+    scheduler.plot()
+
+    log_html = scheduler.html_log
+    chart_html = f"<img src='data:image/png;base64,{scheduler.encoded_chart}'/>"
+
+    payload = {
+        'chart':chart_html,
+        'log':log_html
+    }
+
+    return make_response(payload, 200)
+
+@app.route('/ajax_populate_queue')
+def populate_queue():
+    rts2ids = []
+    rts2ids_string = request.args.get('rts2ids')
+
+    telescope = request.args.get('telescope')
+    schedule_focus = True if request.args.get('schedule_focus') == 'true' else False
+    interrupt = True if request.args.get('interrupt') == 'true' else False
+    simulate = True if request.args.get('simulate') == 'true' else False
+
+    night = request.args.get('night')
+    night = datetime.datetime.strptime(night, "%Y-%m-%d")
+    
+    if rts2ids_string != '':
+        for r in rts2ids_string.split(','):
+            rts2ids.append(int(r))
+
+    if interrupt:
+        q = getCurrentQueue(telescope=telescope)
+        rts2ids.extend([x.id for x in q])
+        rts2ids = list(set(rts2ids))
+
+    db_resp = db.session.query(ObsReq).filter(
+        ObsReq.rts2_id.in_(rts2ids)
+    ).all()
+
+    targets = format_orp_targets(db_resp)
+
+    if telescope == 'Kuiper':
+        big2 = astropy.coordinates.EarthLocation.of_site('mtbigelow')
+
+        scheduler = ARTNScheduler(targets, big2, night, schedule_focus, simulate)
+
+        scheduler.run()
+        try:
+            scheduler.submit_queue()
+            payload = {
+                'message':'Success'
+            }
+        except:
+            payload = {
+                'message':'Error in submitting to RTS2'
+            }
+    else:
+        payload = {
+            'message':'Telescope Queue system not yet implemented'
+        }
+
+    return make_response(payload, 200)
 
 # +
 # main()

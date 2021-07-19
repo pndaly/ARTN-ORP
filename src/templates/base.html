@@ -150,6 +150,7 @@
     {% if current_user.is_admin %}
      <a href="{{ url_for('orp_view_observable', username=current_user.username) }}" class="btn btn-sm btn-success">View Observable Request(s)</a>
      <a href="{{ url_for('orp_view_requests', username=current_user.username) }}" class="btn btn-sm btn-warning">View All Request(s)</a>
+     <a href="{{ url_for('orp_view_queue', username=current_user.username) }}" class="btn btn-sm btn-success">View Queue(s)</a>
      <a href="{{ url_for('orp_view_users') }}?username=" class="btn btn-sm btn-info">View User(s)</a>
      <!-- <a href="{{ url_for('orp_logout') }}" class="btn btn-sm btn-danger">Log Out</a> -->
     {% else %}

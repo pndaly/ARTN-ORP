@@ -141,60 +141,60 @@ def kuiper_observe(_obsreq=None, _user=None, _sim=False):
         return '{}', -1
 
     # create queue
-    _msg_err = f'ERROR: Failed calling Queue(), _sim={_sim}'
-    _msg_in = f'calling Queue(), _sim={_sim}'
-    _msg_out = f'called Queue(), _sim={_sim}'
-    try:
-        tel_log(_msg_in, True, False)
-        if not _sim:
-            _queue = Queue(f'plan')
-        tel_log(_msg_out, True, False)
-    except Exception as _e:
-        tel_log(_msg_err, True, True)
-        tel_logger.error(f'Failed calling Queue() OK, _queue={_queue}, error={_e}')
-        return '{}', -1
+    #_msg_err = f'ERROR: Failed calling Queue(), _sim={_sim}'
+    #_msg_in = f'calling Queue(), _sim={_sim}'
+    #_msg_out = f'called Queue(), _sim={_sim}'
+    #try:
+    #    tel_log(_msg_in, True, False)
+    #    if not _sim:
+    #        _queue = Queue(f'plan')
+    #    tel_log(_msg_out, True, False)
+    #except Exception as _e:
+    #    tel_log(_msg_err, True, True)
+    #    tel_logger.error(f'Failed calling Queue() OK, _queue={_queue}, error={_e}')
+    #    return '{}', -1
 
     # add target to queue
-    _msg_err = f'ERROR: Failed calling _queue.add_target(), _sim={_sim}'
-    _msg_in = f'calling _queue.add_target(), _sim={_sim}'
-    _msg_out = f'called _queue.add_target(), _sim={_sim}'
-    try:
-        tel_log(_msg_in, True, False)
-        if not _sim:
-            _queue.add_target(_id)
-        tel_log(_msg_out, True, False)
-    except Exception as _e:
-        tel_log(_msg_err, True, True)
-        tel_logger.error(f'Failed calling _queue.add_target(), error={_e}')
-        return '{}', -1
+    #_msg_err = f'ERROR: Failed calling _queue.add_target(), _sim={_sim}'
+    #_msg_in = f'calling _queue.add_target(), _sim={_sim}'
+    #_msg_out = f'called _queue.add_target(), _sim={_sim}'
+    #try:
+    #    tel_log(_msg_in, True, False)
+    #    if not _sim:
+    #        _queue.add_target(_id)
+    #    tel_log(_msg_out, True, False)
+    #except Exception as _e:
+    #    tel_log(_msg_err, True, True)
+    #    tel_logger.error(f'Failed calling _queue.add_target(), error={_e}')
+    #    return '{}', -1
 
     # load the queue
-    _msg_err = f'ERROR: Failed calling _queue.load(), _sim={_sim}'
-    _msg_in = f'calling _queue.load(), _sim={_sim}'
-    _msg_out = f'called _queue.load(), _sim={_sim}'
-    try:
-        tel_log(_msg_in, True, False)
-        if not _sim:
-            _queue.load()
-        tel_log(_msg_out, True, False)
-    except Exception as _e:
-        tel_log(_msg_err, True, True)
-        tel_logger.error(f'Failed calling _queue.load(), error={_e}')
-        return '{}', -1
+    #_msg_err = f'ERROR: Failed calling _queue.load(), _sim={_sim}'
+    #_msg_in = f'calling _queue.load(), _sim={_sim}'
+    #_msg_out = f'called _queue.load(), _sim={_sim}'
+    #try:
+    #    tel_log(_msg_in, True, False)
+    #    if not _sim:
+    #        _queue.load()
+    #    tel_log(_msg_out, True, False)
+    #except Exception as _e:
+    #    tel_log(_msg_err, True, True)
+    #    tel_logger.error(f'Failed calling _queue.load(), error={_e}')
+    #    return '{}', -1
 
     # save the queue (in effect, send to rts2)
-    _msg_err = f'ERROR: Failed calling _queue.save(), _sim={_sim}'
-    _msg_in = f'calling _queue.save(), _sim={_sim}'
-    _msg_in = f'called _queue.save(), _sim={_sim}'
-    try:
-        tel_log(_msg_in, True, False)
-        if not _sim:
-            _queue.save()
-        tel_log(_msg_out, True, False)
-    except Exception as _e:
-        tel_log(_msg_err, True, True)
-        tel_logger.error(f'Failed calling _queue.save(), error={_e}')
-        return '{}', -1
+    #_msg_err = f'ERROR: Failed calling _queue.save(), _sim={_sim}'
+    #_msg_in = f'calling _queue.save(), _sim={_sim}'
+    #_msg_in = f'called _queue.save(), _sim={_sim}'
+    #try:
+    #    tel_log(_msg_in, True, False)
+    #    if not _sim:
+    #        _queue.save()
+    #    tel_log(_msg_out, True, False)
+    #except Exception as _e:
+    #    tel_log(_msg_err, True, True)
+    #    tel_logger.error(f'Failed calling _queue.save(), error={_e}')
+    #    return '{}', -1
 
     # return
     tel_log(f'Queued {_object_name} on the {_tel_name} telescope', False, True)
