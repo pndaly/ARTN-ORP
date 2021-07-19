@@ -24,14 +24,14 @@
     {% endif %}
     <div class="col-md-1 mr-auto">
      {{ form.telescope.label }}<br>
-     {{ form.telescope(disabled=true) }}<br>
+     {{ form.telescope(disabled=false) }}<br>
      {% for error in form.telescope.errors %}
       <span class="error-label"><small>[{{ error }}]</small></span>
      {% endfor %}
     </div>
     <div class="col-md-1 mr-auto">
      {{ form.instrument.label }}<br>
-     {{ form.instrument(disabled=true) }}<br>
+     {{ form.instrument(disabled=false) }}<br>
      {% for error in form.instrument.errors %}
       <span class="error-label"><small>[{{ error }}]</small></span>
      {% endfor %}
