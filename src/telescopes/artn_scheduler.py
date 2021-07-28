@@ -257,6 +257,7 @@ class FFTarget():
         for key, value in self.__dict__.items():
             print('{}: {}, {}'.format(key, value, type(value)))
 
+
 def FocusRunDecider(frame, frame_night):
     FOCUS_FIELD_IDS = [3611, 3612, 3613, 3614, 3615, 3616, 3617, 3618, 3619, 3620, 3621, 3622, 3623, 3624]
     com = rts2comm()
@@ -298,8 +299,6 @@ def FocusRunDecider(frame, frame_night):
 class ARTNScheduler():
 
 	def __init__(self, targets, location, night, schedule_focus=True, simulate= False, utcoffset=7*u.hour):
-
-		right_now = datetime.datetime.now()
 
 		self.targets = targets
 		self.location = location
@@ -345,6 +344,7 @@ class ARTNScheduler():
 
 		runlog = []
 		self.log.append('Starting Scheduler!')
+
 		#Setting the peak airmass for all targets throughout the night
 		[t.set_altaz(self.frame_night, True) for t in self.targets]
 
@@ -537,8 +537,8 @@ class ARTNScheduler():
 		return self.scheduled_targets
 
 	def submit_queue(self, telescope='Kuiper', set_queue='plan'):
-		readout=10
-		slew_rate=60
+		readout=10 #seconds
+		slew_rate=60 #seconds
 
 		if telescope == 'Kuiper':
 			try:
@@ -556,7 +556,7 @@ class ARTNScheduler():
 					
 					start = t.start_observation
 					#Queue target with start and end times. Those must be specified in ctime (seconds from 1-1-1070).
-					test_time = astropy.time.Time('{}-{}-{} 00:00:00'.format(1070, 1, 1))
+					test_time = astropy.time.Time('{}-{}-{} 00:00:00'.format(1970, 1, 1))
 
 					for exp in t.exp_objs:
 						rts2id = exp.rts2id

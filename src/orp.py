@@ -41,6 +41,7 @@ import random
 import time
 import datetime
 import astropy
+import signal
 
 # +
 # logging
@@ -2903,6 +2904,7 @@ def orp_view_requests(username=''):
         arg_str = urlencode(_args)
         return render_template('view_requests.html', context=response, page=paginator.page, arg_str=arg_str)
 
+
 # +
 # route(s): /orp/view_queue/<username>, requires login
 # -
@@ -2929,9 +2931,6 @@ def orp_view_queue(username='', telescope='Kuiper'):
     #encorporate a 'scheduled' boolean with a scheduled date iso bullshit (same thing as above)
     #this is going to be a lot.
 
-    canInterrupt = len(getCurrentQueue(telescope=telescope)) > 0
-
-
     date_list = []
     n1 = datetime.datetime.now()
     d1 = datetime.datetime(n1.year, n1.month, n1.day)
@@ -2940,10 +2939,31 @@ def orp_view_queue(username='', telescope='Kuiper'):
         date_formatted = date_deltad.strftime("%Y-%m-%d")
         date_list.append(date_formatted)
 
-    return render_template('view_queue.html', dates=date_list, interruptable=canInterrupt, telescope=telescope)
+    return render_template('view_queue.html', dates=date_list, telescope=telescope)
+
+
+@app.route('/ajax_bigartn_queue')
+def bigartn_queue_query():
+    telescope = request.args.get('telescope')
+    
+    canInterrupt = len(getCurrentQueue(telescope=telescope)) > 0
+
+    if canInterrupt:
+        html = "<i><font color='red'>There is a queue already submitted. Re-Submitting will overwrite/interrupt the queue</font></i>"
+    else:
+        html = ""
+
+    payload = {
+        "canInterrupt" : canInterrupt,
+        "html" : html
+    }
+
+    return canInterrupt
+
 
 @app.route('/ajax_queued_list')
 def queued_list_query(night=None, completed=False, day_buffer=1):
+    
     rts2ids = []
     page = 0
     num_items = 10
@@ -2967,14 +2987,12 @@ def queued_list_query(night=None, completed=False, day_buffer=1):
         page = int(page) if page is not None else 0
 
         name_query = request.args.get('name_query')
-        print(name_query)
 
-    
     skip = page*num_items
     take = skip+num_items
 
-    queued_iso_begin = night - datetime.timedelta(days=day_buffer)
-    queued_iso_end = night + datetime.timedelta(days=1)
+    queued_iso_begin = datetime.datetime.now() - datetime.timedelta(days=day_buffer)
+    queued_iso_end = datetime.datetime.now() + datetime.timedelta(days=1)
 
     query_filter = [
         ObsReq.queued == True,
@@ -3042,8 +3060,8 @@ def queued_list_query(night=None, completed=False, day_buffer=1):
                         <thead>
                             <tr>
                                 <td><font color='blue'>Filter</font></td>
-                                <td><font color='blue'>Exptime</font></td>
-                                <td><font color='blue'>Amount</font></td>
+                                <td><font color='blue'>Exptime (s)</font></td>
+                                <td><font color='blue'>Num Exp</font></td>
                                 <td><font color='blue'>RTS2 ID</font></td>
                                 <td><font color='blue'>Queue</font><td>
                             </tr>

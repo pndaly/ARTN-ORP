@@ -33,12 +33,13 @@
 <div class="col-sm-6">
  <table class="table table-striped table-bordered table-hover table-sm">
   <tbody>
-    {% if interruptable %}
-        <h3>{{ telescope }} Queue (plan)</h3> <i><font color='red'>There is a queue already submitted. Re-Submitting will overwrite/interrupt the queue</font></i>
-    {% else %}
-        <h3>{{ telescope }} Queue (plan)</h3> 
-    {% endif %}
-   <p><i>Displays all of the queued targets within the past Days</i></p>
+    
+   <h3>{{ telescope }} Queue (plan)</h3>
+   
+   <div class="row">
+       <div id="telescope_title"></div>
+   </div>
+   <p><i>Displays all of the queued targets for around a given Night</i></p>
    <tr>
         <td>
             Night
@@ -77,13 +78,9 @@
         <table class="table table-striped table-bordered table-hover table-sm">
             <tbody>
                 <tr>
-                    <td><input id="schedule_focus_fields" type="checkbox" checked> Schedule Focus Fields</td>
+                    <td><input id="schedule_focus_fields" type="checkbox" disabled> Schedule Focus Fields</td>
                     <td><input id="simulate" type="checkbox"> Simulate</td>
-                    {% if interruptable %}
-                        <td><input id="interrupt" type="checkbox"> Interrupt</td>
-                    {% else %}
-                        <td><input id="interrupt" type="checkbox" disabled> Interrupt</td>
-                    {% endif %}
+                    <td><input id="interrupt" type="checkbox" disabled> Interrupt</td>
                 </tr>
             </tbody>
         </table>
@@ -104,9 +101,11 @@
 <script>
     var checkedIDs = []
     var page = 0
+    var canCommunicate = false
 
     window.onload = function(){
         redrawTargetsTable()
+        bigartn_canCommunicate()
     };
 
     function changeCollapseButtonText(clicked_id){
@@ -211,6 +210,32 @@
         })
     }
 
+    function bigartn_canCommunicate() {
+        var telescope = '{{ telescope }}'
+        $.ajax(
+            {
+                url: '/ajax_bigartn_queue',
+                data: 'telescope='+telescope,
+                timeout: 5000,
+            }
+        ).done(function(reply){
+
+            canCommunicate = bool(reply['canInterrupt'])
+            html = reply['html']
+
+            $('#telescope_title').html(qt_html)
+            if (canCommunicate) {
+                $('#schedule_focus_fields').prop('disabled', false)
+                $('#interrupt').prop('disabled', false)
+            }
+
+        }).fail(function(jqXHR, textStatus){
+            $('#telescope_title').html("<i><font color='red'>Cannot communicate with RTS2. Will not be able to submit queue</font></i>")
+            $('#schedule_focus_fields').prop('disabled', true)
+            $('#interrupt').prop('disabled', true)
+        })
+    }
+
     $(document).ready( function() {
         $('#run_artn_scheduler').click(function() {
             $('#run_artn_scheduler').prop('disabled', true)
@@ -224,17 +249,18 @@
 
             var schedule_focus = document.getElementById('schedule_focus_fields').checked
             var interrupt = document.getElementById('interrupt').checked
-            var simulate = document.getElementById('simulate').checked
             var night = $('#night_queued').val()
             var telescope = '{{ telescope }}'
             
             $.ajax(
             {
                 url: '/ajax_run_scheduler',
-                data: 'rts2ids=' + rts2ids + '&schedule_focus=' + schedule_focus + '&night=' + night + '&interrupt=' + interrupt + '&telescope=' +telescope +'&simulate='+simulate
+                data: 'rts2ids=' + rts2ids + '&schedule_focus=' + schedule_focus + '&night=' + night + '&interrupt=' + interrupt + '&telescope=' +telescope
             }
             ).done(function (reply) {
-                $('#populate_rts2_queue').prop('disabled', false)
+                if (canCommunicate) {
+                    $('#populate_rts2_queue').prop('disabled', false)
+                }
                 $('#run_artn_scheduler').prop('disabled', false)
                 var chart = reply['chart']
                 var log = reply['log']
@@ -259,14 +285,13 @@
 
             var schedule_focus = document.getElementById('schedule_focus_fields').checked
             var interrupt = document.getElementById('interrupt').checked
-            var simulate = document.getElementById('simulate').checked
             var night = $('#night_queued').val()
             var telescope = '{{ telescope }}'
 
             $.ajax(
             {
                 url: '/ajax_populate_queue',
-                data: 'rts2ids=' + rts2ids + '&schedule_focus=' + schedule_focus + '&night=' + night + '&interrupt=' + interrupt + '&telescope=' +telescope + '&simulate=' +simulate
+                data: 'rts2ids=' + rts2ids + '&schedule_focus=' + schedule_focus + '&night=' + night + '&interrupt=' + interrupt + '&telescope=' +telescope
             }
             ).done(function (reply) {
                 $('#populate_rts2_queue').prop('disabled', false)
