@@ -19,7 +19,7 @@ from random import randint
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import sessionmaker
 from rts2solib import rts2comm, queue
-from rts2solib import scriptcomm
+# from rts2solib import scriptcomm
 
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
