@@ -407,7 +407,6 @@ class ARTNScheduler():
 				)
 
 				#for the 0th and middle hours: run a focus run
-				#TO-DO - communicate with rts2 to get targets
 
 				if self.scheduled_focus:
 					if ni == 0 or ni == int(intervals/2.0):
@@ -478,8 +477,7 @@ class ARTNScheduler():
 						if obs_time > frame_hours[-1]:
 							self.log.append("Iterating new frame")
 							break
-
-				obs_time = frame_hours[-1]
+						
 				self.log.append('Iterating new frame')
 
 		#give back the scheduled targets
