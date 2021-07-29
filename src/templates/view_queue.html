@@ -201,7 +201,7 @@
 
         $.ajax(
             {
-                url: '/ajax_queued_list',
+                url: '/orp/ajax_queued_list',
                 data: 'page=' + page + '&night=' + night + '&completed='+completed+'&day_buffer='+target_date_buffer + '&rts2ids=' + rts2ids + '&telescope=' +telescope+'&name_query='+name_query
             }
         ).done( function(payload){
@@ -214,7 +214,7 @@
         var telescope = '{{ telescope }}'
         $.ajax(
             {
-                url: '/ajax_bigartn_queue',
+                url: '/orp/ajax_bigartn_queue',
                 data: 'telescope='+telescope,
                 timeout: 5000,
             }
@@ -254,7 +254,7 @@
             
             $.ajax(
             {
-                url: '/ajax_run_scheduler',
+                url: '/orp/ajax_run_scheduler',
                 data: 'rts2ids=' + rts2ids + '&schedule_focus=' + schedule_focus + '&night=' + night + '&interrupt=' + interrupt + '&telescope=' +telescope
             }
             ).done(function (reply) {
@@ -290,7 +290,7 @@
 
             $.ajax(
             {
-                url: '/ajax_populate_queue',
+                url: '/orp/ajax_populate_queue',
                 data: 'rts2ids=' + rts2ids + '&schedule_focus=' + schedule_focus + '&night=' + night + '&interrupt=' + interrupt + '&telescope=' +telescope
             }
             ).done(function (reply) {

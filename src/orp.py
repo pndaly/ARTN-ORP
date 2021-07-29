@@ -2942,6 +2942,8 @@ def orp_view_queue(username='', telescope='Kuiper'):
     return render_template('view_queue.html', dates=date_list, telescope=telescope)
 
 
+@app.route('/orp/orp/ajax_bigartn_queue')
+@app.route('/orp/ajax_bigartn_queue')
 @app.route('/ajax_bigartn_queue')
 def bigartn_queue_query():
     telescope = request.args.get('telescope')
@@ -2961,6 +2963,8 @@ def bigartn_queue_query():
     return canInterrupt
 
 
+@app.route('/orp/orp/ajax_queued_list')
+@app.route('/orp/ajax_queued_list')
 @app.route('/ajax_queued_list')
 def queued_list_query(night=None, completed=False, day_buffer=1):
     
@@ -3128,6 +3132,8 @@ def queued_list_query(night=None, completed=False, day_buffer=1):
 
     return payload
 
+@app.route('/orp/orp/ajax_run_scheduler')
+@app.route('/orp/ajax_run_scheduler')
 @app.route('/ajax_run_scheduler')
 def run_artn_scheduler():
 
@@ -3185,6 +3191,8 @@ def run_artn_scheduler():
 
     return make_response(payload, 200)
 
+@app.route('/orp/orp/ajax_populate_queue')
+@app.route('/orp/ajax_populate_queue')
 @app.route('/ajax_populate_queue')
 def populate_queue():
     rts2ids = []
