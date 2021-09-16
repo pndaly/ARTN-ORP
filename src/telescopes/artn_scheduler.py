@@ -69,7 +69,7 @@ class queue_obj:
 			if setpeak:
 				self.peak_airmass = min(airmasses)
 
-			self.frame_airmass = min(airmasses)
+			self.frame_airmass = np.mean(airmasses)
 			self.airmass_potential = self.peak_airmass-self.frame_airmass
 		else:
 			self.peak_airmass = 99
@@ -215,7 +215,7 @@ def format_orp_targets(db_resp):
 				'Object',
                 queue_obj_constraints(
                     moon_distance_threshold=10,
-                    airmass_threshold=1.5
+                    airmass_threshold=1.75
                 ),
                 rts2ids = rts2ids
             )
@@ -281,7 +281,7 @@ def FocusRunDecider(frame, frame_night):
         focus_field.ra, focus_field.dec,
         0,
         [
-                exp_obj(2, 'V', 30),
+                exp_obj(2, 'V', 30, int(focus_field.id)),
         ],
 		'Focus',
         queue_obj_constraints(
@@ -298,12 +298,13 @@ def FocusRunDecider(frame, frame_night):
 
 class ARTNScheduler():
 
-	def __init__(self, targets, location, night, schedule_focus=True, simulate= False, utcoffset=7*u.hour):
+	def __init__(self, targets, location, night, schedule_focus=True, simulate=False, utcoffset=7*u.hour):
 
 		self.targets = targets
 		self.location = location
 		self.night = night
-		self.midnight = astropy.time.Time('{}-{}-{} 00:00:00'.format(night.year, night.month, night.day)) + utcoffset
+		#self.midnight = astropy.time.Time('{}-{}-{} 00:00:00'.format(night.year, night.month, night.day)) + utcoffset
+		self.midnight = astropy.time.Time('{}-{}-{} 23:59:59.9'.format(night.year, night.month, night.day)) + utcoffset
 		self.utcoffset = utcoffset
 		self.scheduled_focus = schedule_focus
 		self.simulate = simulate
@@ -327,7 +328,7 @@ class ARTNScheduler():
 				self.nightrange.append(self.delta_midnight[i])
 				self.sun_alt_beforemid.append(x)
 		
-		for i,x in enumerate(self.sun_altaz.alt < -18*u.deg):
+		for i,x in enumerate(self.sun_altaz.alt < -15*u.deg):
 			if x:
 				self.astronomical_night.append(self.delta_midnight[i])
 
@@ -343,7 +344,7 @@ class ARTNScheduler():
 	def run(self):
 
 		runlog = []
-		self.log.append('Starting Scheduler!')
+		self.log.append('Starting Scheduler for {}!'.format(self.night))
 
 		#Setting the peak airmass for all targets throughout the night
 		[t.set_altaz(self.frame_night, True) for t in self.targets]
@@ -353,7 +354,7 @@ class ARTNScheduler():
 		#The range of hours of observability
 		hour_intervals = int(self.astronomical_night[len(self.astronomical_night)-1]-self.astronomical_night[0])
 		if interval_run == 'half-hour':
-			intervals = hour_intervals*2
+			intervals = hour_intervals
 			slices = int(len(self.astronomical_night)/intervals)
 		else:
 			intervals = hour_intervals
@@ -364,23 +365,52 @@ class ARTNScheduler():
 		#set the first observation time to be the first timeslot
 		#	of astronomical night
 		right_now = datetime.datetime.now()
-		tmptime = astropy.time.Time('{}-{}-{} {}:{}:{}'.format(right_now.year, right_now.month, right_now.day, right_now.hour, right_now.minute, right_now.second)) + self.utcoffset
 
+		tmptime = astropy.time.Time('{}-{}-{} {}:{}:{}'.format(right_now.year, right_now.month, right_now.day, right_now.hour, right_now.minute, right_now.second)) + self.utcoffset
+		
 		night_begin = self.midnight + frames_range[0]
 		night_end = self.midnight + frames_range[len(frames_range)-1]
 
+		#if the user sets the queue in the middle of the night, and not simulate it from the beginning
+		#	this will set the initial obstime to be at the current executed time.
 		if (tmptime > night_begin and tmptime < night_end) and not self.simulate:
 			obs_time = tmptime
+			self.log.append('Starting in the middle of the night. Initial obstime set at {}\n'.format(obs_time-self.utcoffset))
 		else:
 			obs_time = night_begin
+			self.log.append('Simulating for the beginning of the night: initial obstime set at {}\n'.format(obs_time-self.utcoffset))
 
 		unscheduled_targets = self.targets
 		self.scheduled_targets = []
 
-		for ni in range(intervals):
+		#If the queue is ran in the middle of the night
+		#	this bit of code finds the frame in which to start the observations
+		for itera in range(intervals):
+			hour = itera + 1
+			if hour == intervals:
+				frame_hours = self.midnight + frames_range[itera*slices:]
+			else:
+				frame_hours = self.midnight + frames_range[itera*slices:hour*slices]
+
+			if obs_time <= frame_hours[-1] and obs_time >= frame_hours[0]:
+				start_itera = itera
+				break
+			start_itera = itera
+
+		print(start_itera, intervals)
+		#If the queue is ran in the middle of the night, this will force
+		#	a focus field to start the observations if it is requested
+		forcefocus = self.scheduled_focus and start_itera > 1
+
+		ni = start_itera -1
+		times_range = self.midnight + frames_range
+
+		#Changed to a while loop 
+		while obs_time < times_range[-1]:
+			ni += 1
+
 			#get all unscheduled targets
 			unscheduled_targets = [t for t in unscheduled_targets if not t.scheduled]
-			hour = ni+1
 
 			#find the hour intervals
 			#	if it is the last interval
@@ -389,11 +419,16 @@ class ARTNScheduler():
 			if hour == intervals:
 				frame_hours = self.midnight + frames_range[ni*slices:]
 			else:
-				frame_hours = self.midnight + frames_range[ni*slices:hour*slices]
+				frame_hours = self.midnight + frames_range[ni*slices:(ni+1)*slices]
 
-			if obs_time < frame_hours[-1]:
+			if not len(frame_hours):
+				break
+
+			#self.log.append('obstime: {}. Last Frame time: {}'.format(obs_time, frame_hours[-1]))
+
+			#if the obstime inside the frame, begin scheduling
+			if obs_time <= frame_hours[-1] and obs_time >= frame_hours[0]:
 					
-				
 				#create a new frame based on the frame_hour slice
 				#	and evaluate the altaz for each target in this frame
 				frame = astropy.coordinates.AltAz(
@@ -407,13 +442,13 @@ class ARTNScheduler():
 				)
 
 				#for the 0th and middle hours: run a focus run
-
 				if self.scheduled_focus:
-					if ni == 0 or ni == int(intervals/2.0):
+					if (ni == 0 or ni == int(intervals/2.0)) or forcefocus:
 						try:
 							focus_field = FocusRunDecider(focus_frame, self.frame_night)
 							focus_field.set_altaz(self.frame_night, setpeak=True)
 							unscheduled_targets.append(focus_field)
+							forcefocus = False
 						except:
 							self.log.append('Error in communication with the ARTN Kuiper computer')
 
@@ -436,7 +471,7 @@ class ARTNScheduler():
 
 				for p in priority_range:
 					if obs_time > frame_hours[-1]:
-							break
+						break
 
 					#self.log.append('Priority Group: {}'.format(p))
 					#This will group the targets based on priority
@@ -475,10 +510,19 @@ class ARTNScheduler():
 						#if the obs_time is greater than the last time in the frame:
 						#	break out of the priority loop and create a new frame block
 						if obs_time > frame_hours[-1]:
-							self.log.append("Iterating new frame")
+							self.log.append("Iterating new frame, {}, {}".format(ni, intervals))
 							break
 						
-				self.log.append('Iterating new frame')
+				self.log.append("Iterating new frame, {}, {}".format(ni, intervals))
+
+			# if the obstime isn't outside the frame, it needs to be iterated to be within the next frame (defined as tmp).
+			#	This will set it to be within the next frame, if it exists, otherwise exits
+			if obs_time < frame_hours[-1]:
+				tmp = self.midnight + frames_range[(ni+1)*slices:(ni+2)*slices]
+				if not len(tmp):
+					break
+				self.log.append('obstime needs to be iterated {} {}'.format(obs_time, tmp[0]))
+				obs_time = tmp[0]
 
 		#give back the scheduled targets
 		self.log.append('\nEstimated Schedule (with times relative to local midnight)')
@@ -553,7 +597,7 @@ class ARTNScheduler():
 				for t in self.scheduled_targets:
 					
 					start = t.start_observation
-					#Queue target with start and end times. Those must be specified in ctime (seconds from 1-1-1070).
+					#Queue target with start and end times. Those must be specified in ctime (seconds from 1-1-1970).
 					test_time = astropy.time.Time('{}-{}-{} 00:00:00'.format(1970, 1, 1))
 
 					for exp in t.exp_objs:
@@ -566,8 +610,7 @@ class ARTNScheduler():
 						end_td = tmp_end-test_time
 						e_end = int(end_td.to_value('day')*24*60*60)
 
-						q.add_target(rts2id)#, start=e_start, end=e_end)
-
+						q.add_target(rts2id) #, start=e_start, end=e_end)
 						start = tmp_end
 					
 			except:
@@ -621,13 +664,19 @@ class ARTNScheduler():
 
 			scheduled_time_range = np.linspace(s_start, s_end, 50)
 			bool_range = [True for x in scheduled_time_range]
-			sc_aa_tmp = [x for i,x in enumerate(cc) if dm[i] > s_start and dm[i] < s_end]
-			scheduled_altaz = np.linspace(sc_aa_tmp[0], sc_aa_tmp[-1], 50)
+			#print(s_start, s_end, min(dm), max(dm), t.name)
+
+			#this is happening because it is being set to observe outside its range of observability!!!!
+			try:
+				sc_aa_tmp = [x for i,x in enumerate(cc) if dm[i] > s_start and dm[i] < s_end]
+				scheduled_altaz = np.linspace(sc_aa_tmp[0], sc_aa_tmp[-1], 50)
+				ax.plot(scheduled_time_range, scheduled_altaz, color='red', linewidth=10, alpha=0.4)
+			except:
+				print("weird bug, yikes", t.name)
 
 			#plot the observation range as a filled column
 			ax.fill_between(scheduled_time_range, 3, 1, bool_range, facecolor='red', zorder=0, alpha=0.4)
 			#plot the observation range on top of the airmass line
-			ax.plot(scheduled_time_range, scheduled_altaz, color='red', linewidth=10, alpha=0.4)
 
 			ax.text((s_end+s_start)/2.0, 2.625, t.name, ha='center', va='center', rotation=90, size=9)
 

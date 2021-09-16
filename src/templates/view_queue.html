@@ -220,17 +220,18 @@
             }
         ).done(function(reply){
 
-            canCommunicate = bool(reply['canInterrupt'])
+            canInterrupt = reply['canInterrupt']
+            canCommunicate = reply['canCommunicate']
             html = reply['html']
-
-            $('#telescope_title').html(qt_html)
+            
             if (canCommunicate) {
-                $('#schedule_focus_fields').prop('disabled', false)
-                $('#interrupt').prop('disabled', false)
+                $('#schedule_focus_fields').prop('disabled', !canCommunicate)
+                $('#interrupt').prop('disabled', !canInterrupt)
+                $('#telescope_title').html(html)
             }
 
         }).fail(function(jqXHR, textStatus){
-            $('#telescope_title').html("<i><font color='red'>Cannot communicate with RTS2. Will not be able to submit queue</font></i>")
+            $('#telescope_title').html("<b><font color='red'>Cannot communicate with RTS2. Will not be able to submit queue</font></b>")
             $('#schedule_focus_fields').prop('disabled', true)
             $('#interrupt').prop('disabled', true)
         })
@@ -249,13 +250,14 @@
 
             var schedule_focus = document.getElementById('schedule_focus_fields').checked
             var interrupt = document.getElementById('interrupt').checked
+            var simulate = document.getElementById('simulate').checked
             var night = $('#night_queued').val()
             var telescope = '{{ telescope }}'
             
             $.ajax(
             {
                 url: '/orp/ajax_run_scheduler',
-                data: 'rts2ids=' + rts2ids + '&schedule_focus=' + schedule_focus + '&night=' + night + '&interrupt=' + interrupt + '&telescope=' +telescope
+                data: 'rts2ids=' + rts2ids + '&schedule_focus=' + schedule_focus + '&night=' + night + '&interrupt=' + interrupt + '&telescope=' +telescope + '&simulate=' +simulate
             }
             ).done(function (reply) {
                 if (canCommunicate) {
@@ -285,13 +287,14 @@
 
             var schedule_focus = document.getElementById('schedule_focus_fields').checked
             var interrupt = document.getElementById('interrupt').checked
+            var simulate = document.getElementById('simulate').checked
             var night = $('#night_queued').val()
             var telescope = '{{ telescope }}'
 
             $.ajax(
             {
                 url: '/orp/ajax_populate_queue',
-                data: 'rts2ids=' + rts2ids + '&schedule_focus=' + schedule_focus + '&night=' + night + '&interrupt=' + interrupt + '&telescope=' +telescope
+                data: 'rts2ids=' + rts2ids + '&schedule_focus=' + schedule_focus + '&night=' + night + '&interrupt=' + interrupt + '&telescope=' +telescope+ '&simulate=' +simulate
             }
             ).done(function (reply) {
                 $('#populate_rts2_queue').prop('disabled', false)

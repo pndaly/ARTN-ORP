@@ -2934,6 +2934,14 @@ def orp_view_queue(username='', telescope='Kuiper'):
     date_list = []
     n1 = datetime.datetime.now()
     d1 = datetime.datetime(n1.year, n1.month, n1.day)
+
+    delta = n1 - d1
+    print(delta)
+    delta_hours = delta.seconds//3600
+    print(delta_hours)
+    if delta_hours < 5:
+        d1 = d1-datetime.timedelta(days=1)
+
     for td in range(30):
         date_deltad = d1-datetime.timedelta(days=td)
         date_formatted = date_deltad.strftime("%Y-%m-%d")
@@ -2951,16 +2959,20 @@ def bigartn_queue_query():
     canInterrupt = len(getCurrentQueue(telescope=telescope)) > 0
 
     if canInterrupt:
-        html = "<i><font color='red'>There is a queue already submitted. Re-Submitting will overwrite/interrupt the queue</font></i>"
+        html = "<b><font color='red'>There is a queue already submitted. Re-Submitting will overwrite/interrupt the queue</font></b>"
     else:
         html = ""
 
+    print(canInterrupt)
+    print(html)
+
     payload = {
         "canInterrupt" : canInterrupt,
+        "canCommunicate" : True,
         "html" : html
     }
 
-    return canInterrupt
+    return payload
 
 
 @app.route('/orp/orp/ajax_queued_list')
@@ -3243,6 +3255,20 @@ def populate_queue():
 
     return make_response(payload, 200)
 
+####
+'''
+    To do:
+        rename view_queue to manage_queue
+            consider permissions when there is a queue already submitted
+            only artn/operator can interrupt/clear queue
+            maybe programs with ToO
+
+        create view_queue<telescope>
+            if there is a queue submitted/running for the telescope
+            have an small table that displays this information
+            maybe a nightly queue history
+'''
+####
 # +
 # main()
 # -
