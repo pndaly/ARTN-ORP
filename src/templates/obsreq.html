@@ -213,7 +213,7 @@
     $("#tnslookup").click(function(){
       var optionValue = $("#object_name").val()
       $.get('/orp/ajax_tnsloadtarget?tnsname='+optionValue, function(data, status){
-        if(Object.keys(data) > 0){ 
+        if(Object.keys(data).length > 0){ 
           $('#ra_hms').val(data["ra"]);
           $("#dec_dms").val(data["dec"]);
           $('#object_name').val(data["name"]);
