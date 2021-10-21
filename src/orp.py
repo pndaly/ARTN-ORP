@@ -3315,7 +3315,6 @@ def tnsloadtarget():
                 'dec':dec_to_dms(float(targ['dec'])),
                 'name':_n
             }
-            print(payload)
     return jsonify(payload)
 
 ####

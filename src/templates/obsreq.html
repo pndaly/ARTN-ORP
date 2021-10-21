@@ -48,7 +48,7 @@
       <span class="error-label"><small>[{{ error }}]</small></span>
      {% endfor %}
      <!-- <span class="purple-label"><small>Click <a>here</a> for Astropy lookup</small></span><br> -->
-     <span class="purple-label"><small>Astronomical name</small></span><br>
+     <span class="purple-label"><small>Astronomical name</small></span> <span><small>Click <a href='#' id="tnslookup" name="tnslookup">here</a> for SASSY TNS Q3C lookup</small></span><br>
     </div>
     <div class="col-md-4">
      {{ form.begin_iso.label }}<br>
@@ -208,6 +208,20 @@
   }
  </script>
  <script type="text/javascript">
+
+  $(document).ready(function(){
+    $("#tnslookup").click(function(){
+      var optionValue = $("#object_name").val()
+      $.get('/ajax_tnsloadtarget?tnsname='+optionValue, function(data, status){
+        if(Object.keys(data) > 0){ 
+          $('#ra_hms').val(data["ra"]);
+          $("#dec_dms").val(data["dec"]);
+          $('#object_name').val(data["name"]);
+        } 
+      });
+    });
+  });
+
   $(document).ready(function() {
     $("#non_sidereal").change(function() {
       if(this.checked) {
