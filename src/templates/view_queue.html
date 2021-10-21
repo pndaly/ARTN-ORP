@@ -27,6 +27,36 @@
         margin-left: auto;
         margin-right: auto;
     }
+
+    text.info{
+        position:relative; /*this is the key*/
+        z-index:24; 
+        /*background-color:#ccc;
+        color:#000;*/
+        text-decoration:none
+    }
+    text.info:hover{
+        z-index:25; 
+        cursor: help;
+        /*background-color:#ff0*/
+    }
+    text.info span{
+        display: none
+    }
+    text.info:hover span{ /*the span will display just on :hover state*/
+        cursor: help;
+        display:block;
+        position:absolute;
+        top:2em; left:0em; 
+        width:15em;
+        border:1px solid rgb(33, 109, 207);
+        background-color:rgb(33, 109, 207); 
+        color: white;
+        font-size: 10pt;
+        text-align: center;
+        border-radius: 18px;
+    }
+
 </style>
 
 <hr class="normal">
@@ -42,7 +72,9 @@
    <p><i>Displays all of the queued targets for around a given Night</i></p>
    <tr>
         <td>
-            Night
+            <text class="info"> Night<span>
+                This is the date passed into the scheduler. It calculates the length of the night, moon position, and target observability based off of this parameter.
+            </span></text>
             <select id='night_queued' class="form-select" aria-label="Default select example">
             {% for d in dates %}
                 <option value="{{ d }}">{{ d }}</option>
@@ -50,12 +82,14 @@
             </select>
         </td>
         <td>
-            <input id="target_date_buffer" value="1">
-            <label for="target_date_buffer">(+/-) Day(s)</label>
+            <input id="target_date_buffer" value="1"><text class="info"> (+/-) Day(s)<span>
+                This parameter is what is passed into the query to search for queued targets. It queries for targets that were queued days from now.
+            </span></text>
         </td>
         <td>
-            <input id="target_name_contains" value=''>
-            <label for="target_name_contains">Name (contains)</label>
+            <input id="target_name_contains" value=''><text class='info'> Name (contains)<span>
+                Queries for targets who's name contains the input.
+            </span></text>>
         </td>
         <!--<td><input type="checkbox" id="targets_completed"> Completed</td>-->
    </tr>
@@ -74,13 +108,40 @@
         <h4 style="display: inline-block;"> Scheduler </h4>
         <td><button id='run_artn_scheduler' type="button" class="btn btn-primary btn-sm"> Run </button></td>
         <td><button disabled id='populate_rts2_queue' type="button" class="btn btn-primary btn-sm"> Populate Queue </button></td>
-
+        <td>
+            <text class="info">Queue Type
+                <span>
+                    <b>FIFO</b> -> First In First Out. RTS2 will run the queue in the order they are scheduled with no delay if there are gaps in the schedule, as it determines observability.<br>
+                    <b>Set Times</b> -> RTS2 will queue the targets at their set times determined by the scheduler. Choosing this will respect input airmass contraints more strictly.
+                </span>
+            </text>
+            <select id='queue_type' class="form-select" aria-label="Default select example">
+                <option value=0>FIFO</option>
+                <option value=5>Set Times</option>
+            </select>
+        </td>
         <table class="table table-striped table-bordered table-hover table-sm">
             <tbody>
                 <tr>
-                    <td><input id="schedule_focus_fields" type="checkbox" disabled> Schedule Focus Fields</td>
-                    <td><input id="simulate" type="checkbox"> Simulate</td>
-                    <td><input id="interrupt" type="checkbox" disabled> Interrupt</td>
+                    <td>
+                        <input id="schedule_focus_fields" type="checkbox" disabled><text class='info'> Schedule Focus Fields
+                            <span>
+                                Choosing this will schedule a focus run at the beginning of the queue, and at closest to midnight during the queue. It selects from various observable standard starfields and chooses the one with the lowest airmass to run the focus routine.
+                            </span>
+                        </text> 
+                    </td>
+                    <td>
+                        <input id="simulate" type="checkbox"><text class="info"> Simulate
+                            <span>
+                                Selecting this will start the queue at the beginning of the night. If you leave this unselected and it is in the middle of the selected night, it will start the queue at the current time.
+                            </span>
+                        </text>
+                    </td>
+                    <td><input id="interrupt" type="checkbox" disabled> <text class="info"> Interrupt
+                        <span>
+                            If there is a current queue running, this will attempt to place your target within the queue. Leaving this unchecked will overwrite the current queue at the telescope.
+                        </span>
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -102,6 +163,7 @@
     var checkedIDs = []
     var page = 0
     var canCommunicate = false
+    var infohovered = false
 
     window.onload = function(){
         redrawTargetsTable()
@@ -192,6 +254,7 @@
         var name_query = $('#target_name_contains').val()
         var target_date_buffer = $('#target_date_buffer').val()
         var telescope = '{{ telescope }}'
+        var username = '{{ username }}'
 
         var rts2ids = ''
         for (i = 0; i < checkedIDs.length; i++) {
@@ -202,7 +265,7 @@
         $.ajax(
             {
                 url: '/orp/ajax_queued_list',
-                data: 'page=' + page + '&night=' + night + '&completed='+completed+'&day_buffer='+target_date_buffer + '&rts2ids=' + rts2ids + '&telescope=' +telescope+'&name_query='+name_query
+                data: 'page=' + page + '&night=' + night + '&completed='+completed+'&day_buffer='+target_date_buffer + '&rts2ids=' + rts2ids + '&telescope=' +telescope+'&name_query='+name_query+'&username='+username
             }
         ).done( function(payload){
             var qt_html = payload.qt_html
@@ -289,12 +352,13 @@
             var interrupt = document.getElementById('interrupt').checked
             var simulate = document.getElementById('simulate').checked
             var night = $('#night_queued').val()
+            var queue_type = $('#queue_type').val()
             var telescope = '{{ telescope }}'
 
             $.ajax(
             {
                 url: '/orp/ajax_populate_queue',
-                data: 'rts2ids=' + rts2ids + '&schedule_focus=' + schedule_focus + '&night=' + night + '&interrupt=' + interrupt + '&telescope=' +telescope+ '&simulate=' +simulate
+                data: 'rts2ids=' + rts2ids + '&schedule_focus=' + schedule_focus + '&night=' + night + '&interrupt=' + interrupt + '&telescope=' +telescope+ '&simulate=' +simulate+ '&queue_type=' +queue_type
             }
             ).done(function (reply) {
                 $('#populate_rts2_queue').prop('disabled', false)
@@ -306,10 +370,10 @@
             });
         })
 
-        //$('#night_queued').change(function() {
-        //    page = 0
-        //    redrawTargetsTable()
-        //})
+        $('#night_queued').change(function() {
+            page = 0
+            redrawTargetsTable()
+        })
 
         $('#targets_completed').change(function() {
             page = 0
@@ -326,6 +390,21 @@
             redrawTargetsTable()
         })
     });
+    $('#infohover').hover(function(){
+        document.body.style.cursor='help'
+    },function(){
+        document.body.style.cursor='default'
+        $('#cursor_info').hide();
+    });
+    $('#infohover').click(function(){
+        $('#cursor_info').show();
+    });
+    $('#cursor_info').hover(function(){
+        $('#cursor_info').show();
+    }, function(){
+        $('#cursor_info').hide();
+    });
+
 </script>
 
 {% endblock %}

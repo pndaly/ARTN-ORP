@@ -7,6 +7,7 @@
 from astropy.coordinates import Angle
 from astropy.coordinates import SkyCoord
 from astropy.time import Time
+from astropy import units as u
 from datetime import timedelta
 from datetime import datetime
 
@@ -412,6 +413,20 @@ def ra_to_deg(_ra=''):
 
 
 # +
+# function: ra_to_hms()
+# -
+# noinspection PyBroadException,PyPep8,PyUnresolvedReferences
+def ra_to_hms(ra=math.nan):
+    """ return RA from decimal to H:M:S """
+    try:
+        _c = Angle(ra, unit=u.degree).hms
+        _h, _m, _s = int(_c.h), int(_c.m), _c.s
+        return f'{_h:02d}:{_m:02d}:{_s:06.3f}'
+    except:
+        return None
+
+
+# +
 # function: dec_to_deg()
 # -
 # noinspection PyBroadException
@@ -428,6 +443,21 @@ def dec_to_deg(_dec=''):
         return float(Angle(_dec).degree)
     except Exception:
         return float('nan')
+
+
+# +
+# function: dec_to_dms()
+# -
+# noinspection PyBroadException,PyPep8,PyUnresolvedReferences
+def dec_to_dms(dec=math.nan):
+    """ return Dec from decimal to d:m:s """
+    try:
+        _c = Angle(dec, unit=u.degree).signed_dms
+        _d, _m, _s = int(_c.d), int(_c.m), _c.s
+        _sign = '+' if _c.sign == 1.0 else '-'
+        return f'{_sign}{_d:02d}:{_m:02d}:{_s:06.3f}'
+    except:
+        return None
 
 
 # +

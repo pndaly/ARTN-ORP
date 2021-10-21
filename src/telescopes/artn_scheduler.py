@@ -87,7 +87,7 @@ class queue_obj:
 		for obsinfo in self.exp_objs:
 			print("     Filter: {}, Exposure Time: {}, Amount {}".format(obsinfo.filter, obsinfo.exptime, obsinfo.amount))
 
-	def estimateoverhead(self, readout=10, slew_rate=60):
+	def estimateoverhead(self, readout=10, slew_rate=60, filter_change_rate=15):
 		#values are in seconds
 		#initial overhead is the slewrate: 60 seconds
 		t = slew_rate
@@ -98,8 +98,10 @@ class queue_obj:
 		#apply readout times for every single exposure: readouttime*N_exposure
 		read_outs = readout*sum(int(x.amount) for x in self.exp_objs)
 
+		#apply filter change times
+		filter_change_time = filter_change_rate*float(len(self.exp_objs))
 		#add it all together
-		t = t+exp_time+read_outs
+		t = t+exp_time+read_outs+filter_change_time
 
 		self.overhead = t
 		return t
@@ -138,11 +140,12 @@ class queue_obj:
 
 
 class exp_obj:
-	def __init__(self, amount, filter, exptime, rts2id=None):
+	def __init__(self, amount, filter, exptime, rts2id=None, dbid=None):
 		self.amount = amount
 		self.filter = filter
 		self.exptime = exptime
 		self.rts2id = rts2id
+		self.dbid = dbid
 
 
 class queue_obj_constraints:
@@ -202,7 +205,8 @@ def format_orp_targets(db_resp):
                         ob.num_exp,
                         ob.filter_name,
                         ob.exp_time,
-						int(ob.rts2_id)
+						int(ob.rts2_id),
+						int(ob.id)
                     )
 				)
 
@@ -298,7 +302,7 @@ def FocusRunDecider(frame, frame_night):
 
 class ARTNScheduler():
 
-	def __init__(self, targets, location, night, schedule_focus=True, simulate=False, utcoffset=7*u.hour):
+	def __init__(self, targets, location, night, schedule_focus=True, simulate=False, queue_type=0, utcoffset=7*u.hour):
 
 		self.targets = targets
 		self.location = location
@@ -308,6 +312,7 @@ class ARTNScheduler():
 		self.utcoffset = utcoffset
 		self.scheduled_focus = schedule_focus
 		self.simulate = simulate
+		self.queue_type = queue_type
 
 		self.delta_midnight = np.linspace(-12, 12, 1000)
 		day_times = self.midnight + self.delta_midnight*u.hour
@@ -380,23 +385,25 @@ class ARTNScheduler():
 			obs_time = night_begin
 			self.log.append('Simulating for the beginning of the night: initial obstime set at {}\n'.format(obs_time-self.utcoffset))
 
+		#obs_time = astropy.time.Time('2021-09-17 07:44:07.000')
 		unscheduled_targets = self.targets
 		self.scheduled_targets = []
 
 		#If the queue is ran in the middle of the night
 		#	this bit of code finds the frame in which to start the observations
+		start_itera = 0
 		for itera in range(intervals):
-			hour = itera + 1
-			if hour == intervals:
+			if (itera+1) == intervals:
 				frame_hours = self.midnight + frames_range[itera*slices:]
 			else:
-				frame_hours = self.midnight + frames_range[itera*slices:hour*slices]
-
-			if obs_time <= frame_hours[-1] and obs_time >= frame_hours[0]:
+				frame_hours = self.midnight + frames_range[itera*slices:(itera+1)*slices]
+			print(obs_time, frame_hours[-1], frame_hours[0])
+			if obs_time < frame_hours[-1] and obs_time > frame_hours[0]:
+				print('iteration: {}'.format(itera))
 				start_itera = itera
 				break
-			start_itera = itera
 
+		#obs_time = astropy.time.Time('2021-09-17 07:44:07.000')
 		print(start_itera, intervals)
 		#If the queue is ran in the middle of the night, this will force
 		#	a focus field to start the observations if it is requested
@@ -416,7 +423,7 @@ class ARTNScheduler():
 			#	if it is the last interval
 			#		get the whats left after the last slice
 			#	else: get the appropriate slice
-			if hour == intervals:
+			if (ni+1) == intervals:
 				frame_hours = self.midnight + frames_range[ni*slices:]
 			else:
 				frame_hours = self.midnight + frames_range[ni*slices:(ni+1)*slices]
@@ -505,7 +512,7 @@ class ARTNScheduler():
 						self.scheduled_targets.append(s)
 
 						#reset the current obs_time + smol overhead
-						obs_time = s.end_observation+(1.2*u.minute)
+						obs_time = s.end_observation+(1*u.minute)
 
 						#if the obs_time is greater than the last time in the frame:
 						#	break out of the priority loop and create a new frame block
@@ -580,13 +587,15 @@ class ARTNScheduler():
 
 	def submit_queue(self, telescope='Kuiper', set_queue='plan'):
 		readout=10 #seconds
-		slew_rate=60 #seconds
+		slew_rate=60 		  #seconds
+		filter_change_rate=20 #seconds
 
 		if telescope == 'Kuiper':
 			try:
 				q = queue.Queue(set_queue)
-				q.queueing = 0 #QUEUE_FIFO
-				#q.queueing = 5 #QUEUE_SET_TIMES
+				#0 is FIFO
+				#5 is SET_TIMES
+				q.queueing = self.queue_type 
 				q.save()
 				self.log.append('Submitting Schedule to RTS2 Queue')
 				self.log.append('Clearing current Queue')
@@ -594,24 +603,28 @@ class ARTNScheduler():
 				q.clear()
 				self.log.append('Scheduling')
 
+				#Queue target with start and end times. Those must be specified in ctime (seconds from 1-1-1970).
+				unixtime = astropy.time.Time('{}-{}-{} 00:00:00'.format(1970, 1, 1))
 				for t in self.scheduled_targets:
 					
 					start = t.start_observation
-					#Queue target with start and end times. Those must be specified in ctime (seconds from 1-1-1970).
-					test_time = astropy.time.Time('{}-{}-{} 00:00:00'.format(1970, 1, 1))
 
 					for exp in t.exp_objs:
 						rts2id = exp.rts2id
+						#just pass in the rts2id
+						if self.queue_type == 0:
+							q.add_target(rts2id)
+						#calculate the 
+						elif self.queue_type == 5:
+							start_td = start - unixtime
+							e_start = int(start_td.to_value('day')*24*60*60)
 
-						start_td = start - test_time
-						e_start = int(start_td.to_value('day')*24*60*60)
-
-						tmp_end = start + (exp.exptime*exp.amount + readout*exp.amount)*u.second
-						end_td = tmp_end-test_time
-						e_end = int(end_td.to_value('day')*24*60*60)
-
-						q.add_target(rts2id) #, start=e_start, end=e_end)
-						start = tmp_end
+							tmp_end = start + (exp.exptime*exp.amount + readout*exp.amount)*u.second
+							end_td = tmp_end-unixtime
+							e_end = int(end_td.to_value('day')*24*60*60)
+							
+							q.add_target(rts2id, start=e_start, end=e_end)
+							start = tmp_end + (filter_change_rate*u.second)
 					
 			except:
 				print('Error in communication with the ARTN Kuiper computer')

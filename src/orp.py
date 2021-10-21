@@ -42,6 +42,7 @@ import time
 import datetime
 import astropy
 import signal
+import urllib.parse
 
 # +
 # logging
@@ -2916,6 +2917,9 @@ def orp_view_queue(username='', telescope='Kuiper'):
     msg_out(f'/orp/view_queue/{username} entry', True, False)
     get_client_ip(request)
 
+    # look up user (as required)
+    _u = current_user if current_user.is_authenticated else User.query.filter_by(username=username).first_or_404()
+
     #What do I want on this page
     #I want it to find the current date
     #query for all queued obsreqs that are around this date
@@ -2947,7 +2951,7 @@ def orp_view_queue(username='', telescope='Kuiper'):
         date_formatted = date_deltad.strftime("%Y-%m-%d")
         date_list.append(date_formatted)
 
-    return render_template('view_queue.html', dates=date_list, telescope=telescope)
+    return render_template('view_queue.html', dates=date_list, telescope=telescope, username=username)
 
 
 @app.route('/orp/orp/ajax_bigartn_queue')
@@ -2983,6 +2987,7 @@ def queued_list_query(night=None, completed=False, day_buffer=1):
     rts2ids = []
     page = 0
     num_items = 10
+    username = request.args.get('username')
     if night is None:
         night = request.args.get('night')
         night = datetime.datetime.strptime(night, "%Y-%m-%d")
@@ -3084,6 +3089,7 @@ def queued_list_query(night=None, completed=False, day_buffer=1):
                         </thead>
                         <tbody>
         '''.format(nameid)
+        #href="{{ url_for('orp_update') }}?dbid={}"
         for obsinfo in t.exp_objs:
             thischecked = ' checked' if obsinfo.rts2id in rts2ids else ''
             html+='''
@@ -3091,10 +3097,10 @@ def queued_list_query(night=None, completed=False, day_buffer=1):
                                     <td>{}</td>
                                     <td>{}</td>
                                     <td>{}</td>
-                                    <td>{}</td>
+                                    <td><a href="/update/{}?dbid={}" target="_blank">{}</a></td>
                                     <td><input value="{}" id="{}_{}" type="checkbox" onclick="expCheckOne(this.id)"{}></td>
                                 </tr>
-            '''.format(obsinfo.filter, obsinfo.exptime, obsinfo.amount, obsinfo.rts2id, obsinfo.rts2id, nameid, obsinfo.rts2id, thischecked)
+            '''.format(obsinfo.filter, obsinfo.exptime, obsinfo.amount, username, obsinfo.dbid, obsinfo.rts2id, obsinfo.rts2id, nameid, obsinfo.rts2id, thischecked)
         html += '''
                             </tbody>
                         </table>
@@ -3214,6 +3220,7 @@ def populate_queue():
     schedule_focus = True if request.args.get('schedule_focus') == 'true' else False
     interrupt = True if request.args.get('interrupt') == 'true' else False
     simulate = True if request.args.get('simulate') == 'true' else False
+    queue_type = int(request.args.get('queue_type'))
 
     night = request.args.get('night')
     night = datetime.datetime.strptime(night, "%Y-%m-%d")
@@ -3236,9 +3243,11 @@ def populate_queue():
     if telescope == 'Kuiper':
         big2 = astropy.coordinates.EarthLocation.of_site('mtbigelow')
 
-        scheduler = ARTNScheduler(targets, big2, night, schedule_focus, simulate)
+        scheduler = ARTNScheduler(targets, big2, night, schedule_focus, simulate, queue_type)
 
         scheduler.run()
+        scheduler.logdump()
+        
         try:
             scheduler.submit_queue()
             payload = {
@@ -3254,6 +3263,61 @@ def populate_queue():
         }
 
     return make_response(payload, 200)
+
+@app.route('/orp/orp/ajax_tnsloadtarget')
+@app.route('/orp/ajax_tnsloadtarget')
+@app.route('/ajax_tnsloadtarget')
+def tnsloadtarget():
+    args = request.args
+    tns_name = args.get('tnsname')
+
+    prefix = ''
+    if 'SN' in tns_name:
+        search_tns = tns_name.split('SN')[1]
+        prefix='SN'
+    else:
+        search_tns = tns_name
+
+    keywords = {
+        'format':'json',
+        'tns_name':search_tns
+    }
+
+    base = 'https://sassy.as.arizona.edu/sassy'
+    target = 'tns_q3c'
+    url = '{}/{}/?{}'.format(base, target, urlencode(keywords))
+    r = requests.get(url)
+    payload = {}
+    if r.status_code == 200:
+        returns = json.loads(r.text)['total']
+        package = json.loads(r.text)['results']
+        if returns > 0:
+
+            targ = package[0]
+            if 'AT' in targ['tns_name']:
+                n = targ['tns_name']
+                _n = prefix+n.split('AT ')[1]
+            else:
+                _n = prefix+targ['tns_name']
+
+            print(_n, prefix, targ['tns_name'])
+            #dd = targ['discovery_date']
+            #if 'GMT' in dd:
+            #	_dd = datetime.datetime.strptime(dd, '%a, %d %b %Y %H:%M:%S GMT')
+            #	_dd = _dd.strftime('%Y-%m-%dT%H:%M:%S.%f')
+            #else:
+            #	try:
+            #		_dd = datetime.datetime.strptime(dd, '%Y-%m-%dT%H:%M:%S.%f')
+            #	except:
+            #		pass
+
+            payload = {
+                'ra':ra_to_hms(float(targ['ra'])),
+                'dec':dec_to_dms(float(targ['dec'])),
+                'name':_n
+            }
+            print(payload)
+    return jsonify(payload)
 
 ####
 '''
