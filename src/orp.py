@@ -3097,7 +3097,7 @@ def queued_list_query(night=None, completed=False, day_buffer=1):
                                     <td>{}</td>
                                     <td>{}</td>
                                     <td>{}</td>
-                                    <td><a href="/update/{}?dbid={}" target="_blank">{}</a></td>
+                                    <td><a href="/orp/update/{}?dbid={}" target="_blank">{}</a></td>
                                     <td><input value="{}" id="{}_{}" type="checkbox" onclick="expCheckOne(this.id)"{}></td>
                                 </tr>
             '''.format(obsinfo.filter, obsinfo.exptime, obsinfo.amount, username, obsinfo.dbid, obsinfo.rts2id, obsinfo.rts2id, nameid, obsinfo.rts2id, thischecked)
@@ -3300,7 +3300,6 @@ def tnsloadtarget():
             else:
                 _n = prefix+targ['tns_name']
 
-            print(_n, prefix, targ['tns_name'])
             #dd = targ['discovery_date']
             #if 'GMT' in dd:
             #	_dd = datetime.datetime.strptime(dd, '%a, %d %b %Y %H:%M:%S GMT')
