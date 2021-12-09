@@ -114,7 +114,7 @@ write_blue "%% bash $0 --source=${orp_source} --dry-run=${dry_run}"
 if [[ ${dry_run} -eq 1 ]]; then
   write_yellow "Dry-Run>> source ${orp_source}/etc/ARTN.sh ${orp_source}"
   write_yellow "Dry-Run>> source ${orp_source}/etc/ORP.sh  ${orp_source}"
-  write_yellow 'Dry-Run>> echo -e "from src import *; get_iers()" | python3.7'
+  write_yellow 'Dry-Run>> echo -e "from src import *; get_iers()" | python3'
 
 
 # +
@@ -125,8 +125,8 @@ else
   source ${orp_source}/etc/ARTN.sh ${orp_source}
   write_green "Executing>> source ${orp_source}/etc/ORP.sh  ${orp_source}"
   source ${orp_source}/etc/ORP.sh  ${orp_source}
-  write_green 'Executing>> echo -e "from src import *; get_iers()" | python3.7'
-  echo -e "from src import *; get_iers()" | python3.7
+  write_green 'Executing>> echo -e "from src import *; get_iers()" | python3'
+  echo -e "from src import *; get_iers()" | python3
 fi
 
 
