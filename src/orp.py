@@ -3606,15 +3606,14 @@ def orp_obsreq2(username=''):
                                                       f'({_obsreq.instrument}) combination!', caller='orp_update')
 
         # reset flags
-        if return_page != 'orp_manage_queue':
-            _obsreq.queued = False
-            _obsreq.queued_iso = ARTN_ZERO_ISO
-            _obsreq.queued_mjd = ARTN_ZERO_MJD
-            _obsreq.completed = False
-            _obsreq.completed_iso = ARTN_ZERO_ISO
-            _obsreq.completed_mjd = ARTN_ZERO_MJD
-            _obsreq.rts2_id = -1
-            _obsreq.rts2_doc = '{}'
+        _obsreq.queued = False
+        _obsreq.queued_iso = ARTN_ZERO_ISO
+        _obsreq.queued_mjd = ARTN_ZERO_MJD
+        _obsreq.completed = False
+        _obsreq.completed_iso = ARTN_ZERO_ISO
+        _obsreq.completed_mjd = ARTN_ZERO_MJD
+        _obsreq.rts2_id = -1
+        _obsreq.rts2_doc = '{}'
 
         # get json
         if _obsreq.non_sidereal:

@@ -212,7 +212,7 @@ def format_orp_targets(obsreqs, exposures):
 				ob.rts2_id,
                 queue_obj_constraints(
                     moon_distance_threshold=10,
-                    airmass_threshold=1.75
+                    airmass_threshold=2.5
                 ),
                 expids = expids
             )
