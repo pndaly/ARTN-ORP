@@ -24,6 +24,7 @@ from src.forms.Forms import ConfirmDeleteForm, ConfirmRegistrationForm, Feedback
     RegistrationForm, ResetPasswordForm, ResetPasswordRequestForm, UpdateObsReqForm, UploadForm, \
     UserHistoryForm, OBSERVATION_TYPES
 from src.models.Models import db, obsreq_filters, ObsReq, User, user_filters
+from src.models.Models import obsreq2_filters, ObsReq2, ObsExposure
 from src.telescopes.factory import *
 from src.telescopes.bok import *
 from src.telescopes.kuiper import *
@@ -84,7 +85,8 @@ TELESCOPES = {
     'vatt': Telescope(name='vatt')
 }
 TELESCOPES['bok'].observe = bok_observe
-TELESCOPES['kuiper'].observe = kuiper_observe
+#TELESCOPES['kuiper'].observe = kuiper_observe
+TELESCOPES['kuiper'].observe = kuiper_observe2
 TELESCOPES['vatt'].observe = vatt_observe
 
 
@@ -996,13 +998,22 @@ def cli_upload(username=''):
 # +
 # route(s): /orp/confirm_delete/<dbid>, requires login
 # -
-@app.route('/orp/orp/confirm_delete/<dbid>', methods=['GET', 'POST'])
-@app.route('/orp/confirm_delete/<dbid>', methods=['GET', 'POST'])
-@app.route('/confirm_delete/<dbid>', methods=['GET', 'POST'])
+@app.route('/orp/orp/confirm_delete/<obsreqid>', methods=['GET', 'POST'])
+@app.route('/orp/confirm_delete/<obsreqid>', methods=['GET', 'POST'])
+@app.route('/confirm_delete/<obsreqid>', methods=['GET', 'POST'])
 @login_required
-def orp_confirm_delete(dbid=''):
-    msg_out(f'/orp/confirm_delete/{dbid} entry', True, False)
+def orp_confirm_delete(obsreqid=''):
+    msg_out(f'/orp/confirm_delete/{obsreqid} entry', True, False)
     get_client_ip(request)
+
+    return_page = request.args.get('return_page', 'orp_view_requests')
+
+    _args = request.args.copy()
+    try:
+        _args.pop('obsreqid')
+    except KeyError:
+        pass
+    arg_str = urlencode(_args)
 
     # build form
     form = ConfirmDeleteForm()
@@ -1012,17 +1023,18 @@ def orp_confirm_delete(dbid=''):
 
         # update database
         try:
-            ObsReq.query.filter_by(id=dbid).delete()
+            ObsReq2.query.filter_by(id=obsreqid).delete()
+            ObsExposure.query.filter_by(obsreqid=obsreqid).delete()
             db.session.commit()
-            msg_out(f'Observation request {dbid} deleted OK', True, True)
+            msg_out(f'Observation request {obsreqid} deleted OK', True, True)
         except Exception as _e:
             db.session.rollback()
-            msg_out(f'ERROR: Failed to delete observation request {dbid}, error={_e}', True, True)
+            msg_out(f'ERROR: Failed to delete observation request {obsreqid}, error={_e}', True, True)
 
-        return redirect(url_for('orp_view_requests', username=current_user.username))
+        return redirect(url_for(return_page, username=current_user.username) + '?' + arg_str)
 
     # return for GET
-    return render_template('confirm_delete.html', form=form)
+    return render_template('confirm_delete.html', username=current_user.username, form=form, return_page=return_page)
 
 
 # +
@@ -1115,30 +1127,40 @@ def orp_delete(username=''):
     _u = current_user if current_user.is_authenticated else User.query.filter_by(username=username).first_or_404()
 
     # get dbid
-    _dbid = request.args.get('dbid', None)
-    if _dbid is None:
-        msg_out(f'ERROR: Failed to get observation id {_dbid}', True, True)
-        return redirect(url_for('orp_view_requests', username=_u.username))
+    obsreqid = request.args.get('obsreqid', None)
+    return_page = request.args.get('return_page', 'orp_view_requests')
+
+    _args = request.args.copy()
+    try:
+        _args.pop('obsreqid')
+    except KeyError:
+        pass
+    arg_str = urlencode(_args)
+
+    if obsreqid is None:
+        msg_out(f'ERROR: Failed to get observation id {obsreqid}', True, True)
+        return redirect(url_for(return_page, username=_u.username))
 
     # get observation request
-    _obsreq = ObsReq.query.filter_by(id=_dbid).first_or_404()
+    _obsreq = ObsReq2.query.filter_by(id=obsreqid).first_or_404()
 
     # confirm deletion
     if _obsreq.queued:
-        return redirect(url_for('orp_confirm_delete', dbid=_dbid))
+        return redirect(url_for('orp_confirm_delete', obsreqid=obsreqid) + '?' + arg_str +'&return_page='+return_page)
 
     # delete from database
     else:
         try:
-            ObsReq.query.filter_by(id=_dbid).delete()
+            ObsReq2.query.filter_by(id=obsreqid).delete()
+            ObsExposure.query.filter_by(obsreqid=obsreqid).delete()
             db.session.commit()
-            msg_out(f'Observation request {_dbid} deleted OK', True, True)
+            msg_out(f'Observation request {obsreqid} deleted OK', True, True)
         except Exception as _e:
             db.session.rollback()
-            msg_out(f'ERROR: Failed to delete observation request {_dbid}, error={_e}', True, True)
+            msg_out(f'ERROR: Failed to delete observation request {obsreqid}, error={_e}', True, True)
 
     # return for GET
-    return redirect(url_for('orp_view_requests', username=_u.username))
+    return redirect(url_for(return_page, username=_u.username) + '?' + arg_str)
 
 
 # +
@@ -2371,16 +2393,28 @@ def orp_show(username=''):
     _u = current_user if current_user.is_authenticated else User.query.filter_by(username=username).first_or_404()
 
     # get dbid
-    _dbid = request.args.get('dbid', None)
-    if _dbid is None:
-        msg_out(f'ERROR: Failed to get observation id {_dbid}', True, True)
+    obsreqid = request.args.get('obsreqid', None)
+    if obsreqid is None:
+        msg_out(f'ERROR: Failed to get observation id {obsreqid}', True, True)
         return redirect(url_for('orp_view_requests', username=_u.username))
+
+    return_page = request.args.get('return_page', 'orp_view_requests')
+
+    _args = request.args.copy()
+    try:
+        _args.pop('return_page')
+        _args.pop('obsreqid')
+    except KeyError:
+        pass
+    arg_str = urlencode(_args)
 
     # get observation request
     _expired = None
     _now = iso_to_jd(get_date_time())
-    _obsreq = ObsReq.query.filter_by(id=_dbid).first_or_404()
+    _obsreq = ObsReq2.query.filter_by(id=obsreqid).first_or_404()
     if _obsreq:
+        exposures = ObsExposure.query.filter_by(obsreqid=obsreqid).all()
+
         _obsreq.object_name = decode_verboten(_obsreq.object_name.strip(), ARTN_DECODE_DICT)
         _telescope = _obsreq.telescope.lower()
         _begin = iso_to_jd(_obsreq.begin_iso)
@@ -2406,7 +2440,7 @@ def orp_show(username=''):
                 if _format is not None and _format.lower() == 'json':
                     return jsonify(_obsreq.serialized())
                 else:
-                    return render_template('show.html', record=_obsreq, image=_png, expired=_expired)
+                    return render_template('show.html', record=_obsreq, exposures=exposures, image=_png, expired=_expired, return_page=return_page, arg_str=arg_str)
 
 
 # +
@@ -2706,7 +2740,7 @@ def orp_view_observable(username=''):
 
     # GET request
     if request.method == 'GET':
-        query = db.session.query(ObsReq)
+        query = db.session.query(ObsReq2)
         msg_out(f'/orp/view_observable/{username} request.args={request.args}', True, False)
         _now = float(iso_to_mjd(get_date_time()))
 
@@ -2715,15 +2749,15 @@ def orp_view_observable(username=''):
         else:
             _filter = {'begin_mjd__lte': f"{_now}", 'end_mjd__gte': f"{_now}", 'username': f'{_u.username}'}
         msg_out(f'/orp/view_observable/{username} _filter={_filter}', True, False)
-        query = obsreq_filters(query, _filter)
+        query = obsreq2_filters(query, _filter)
 
         # request by sort_field / sort_order
         _sf = request.args.get('sort_field')
         _so = request.args.get('sort_order')
         if (_sf is None or _sf == '') and (_so is None or _so == ''):
-            query = obsreq_filters(query, {"sort_field": "id", "sort_order": "descending"})
+            query = obsreq2_filters(query, {"sort_field": "id", "sort_order": "descending"})
 
-        query = obsreq_filters(query, request.args)
+        query = obsreq2_filters(query, request.args)
         paginator = query.paginate(page, ARTN_RESULTS_PER_PAGE, True)
         response = {
             'total': paginator.total,
@@ -2747,8 +2781,8 @@ def orp_view_observable(username=''):
         # iterate over searches
         for search_args in searches:
             search_result = {}
-            query = db.session.query(ObsReq)
-            query = obsreq_filters(query, search_args)
+            query = db.session.query(ObsReq2)
+            query = obsreq2_filters(query, search_args)
             search_result['query'] = search_args
             search_result['num_requests'] = query.count()
             search_result['results'] = ObsReq.serialize_list(query.all())
@@ -2778,7 +2812,7 @@ def orp_view_observable(username=''):
         except KeyError:
             pass
         arg_str = urlencode(_args)
-        return render_template('view_observable.html', context=response, page=paginator.page, arg_str=arg_str)
+        return render_template('view_observable.html', context=response, page=paginator.page, arg_str=arg_str, )
 
 
 # +
@@ -2832,30 +2866,35 @@ def orp_view_requests(username=''):
 
     # GET request
     if request.method == 'GET':
-        query = db.session.query(ObsReq)
+        #query = db.session.query(ObsReq)
+        query = db.session.query(ObsReq2)
         msg_out(f'/orp/view_requests/{username} entry request.args={request.args}', True, False)
 
         # request by username
         if _u.is_admin:
-            query = obsreq_filters(query, {"username": f""})
+            #query = obsreq_filters(query, {"username": f""})
+            query = obsreq2_filters(query, {"username": f""})
         else:
-            query = obsreq_filters(query, {"username": f"{_u.username}"})
+            #query = obsreq_filters(query, {"username": f"{_u.username}"})
+            query = obsreq2_filters(query, {"username": f"{_u.username}"})
 
         # request by sort_field / sort_order
         _sf = request.args.get('sort_field')
         _so = request.args.get('sort_order')
         if (_sf is None or _sf == '') and (_so is None or _so == ''):
-            query = obsreq_filters(query, {"sort_field": "id", "sort_order": "descending"})
+            #query = obsreq_filters(query, {"sort_field": "id", "sort_order": "descending"})
+            query = obsreq2_filters(query, {"sort_field": "id", "sort_order": "descending"})
 
         # request by everything else
-        query = obsreq_filters(query, request.args)
+        #query = obsreq_filters(query, request.args)
+        query = obsreq2_filters(query, request.args)
         paginator = query.paginate(page, ARTN_RESULTS_PER_PAGE, True)
         response = {
             'total': paginator.total,
             'pages': paginator.pages,
             'has_next': paginator.has_next,
             'has_prev': paginator.has_prev,
-            'results': ObsReq.serialize_list(paginator.items)
+            'results': ObsReq2.serialize_list(paginator.items)
         }
 
     # POST request
@@ -2872,11 +2911,11 @@ def orp_view_requests(username=''):
         # iterate over searches
         for search_args in searches:
             search_result = {}
-            query = db.session.query(ObsReq)
-            query = obsreq_filters(query, search_args)
+            query = db.session.query(ObsReq2)
+            query = obsreq2_filters(query, search_args)
             search_result['query'] = search_args
             search_result['num_requests'] = query.count()
-            search_result['results'] = ObsReq.serialize_list(query.all())
+            search_result['results'] = ObsReq2.serialize_list(query.all())
             search_results.append(search_result)
             total += search_result['num_requests']
 
@@ -2907,13 +2946,13 @@ def orp_view_requests(username=''):
 
 
 # +
-# route(s): /orp/view_queue/<username>, requires login
+# route(s): /orp/manage_queue/<username>, requires login + admin
 # -
-@app.route('/orp/orp/view_queue/<username>', methods=['GET', 'POST'])
-@app.route('/orp/view_queue/<username>', methods=['GET', 'POST'])
-@app.route('/view_queue/<username>', methods=['GET', 'POST'])
+@app.route('/orp/orp/manage_queue/<username>', methods=['GET', 'POST'])
+@app.route('/orp/manage_queue/<username>', methods=['GET', 'POST'])
+@app.route('/manage_queue/<username>', methods=['GET', 'POST'])
 @login_required
-def orp_view_queue(username='', telescope='Kuiper'):
+def orp_manage_queue(username='', telescope='Kuiper'):
     msg_out(f'/orp/view_queue/{username} entry', True, False)
     get_client_ip(request)
 
@@ -2940,9 +2979,7 @@ def orp_view_queue(username='', telescope='Kuiper'):
     d1 = datetime.datetime(n1.year, n1.month, n1.day)
 
     delta = n1 - d1
-    print(delta)
     delta_hours = delta.seconds//3600
-    print(delta_hours)
     if delta_hours < 5:
         d1 = d1-datetime.timedelta(days=1)
 
@@ -2951,7 +2988,7 @@ def orp_view_queue(username='', telescope='Kuiper'):
         date_formatted = date_deltad.strftime("%Y-%m-%d")
         date_list.append(date_formatted)
 
-    return render_template('view_queue.html', dates=date_list, telescope=telescope, username=username)
+    return render_template('manage_queue.html', dates=date_list, telescope=telescope, username=username)
 
 
 @app.route('/orp/orp/ajax_bigartn_queue')
@@ -2984,7 +3021,7 @@ def bigartn_queue_query():
 @app.route('/ajax_queued_list')
 def queued_list_query(night=None, completed=False, day_buffer=1):
     
-    rts2ids = []
+    expids = []
     page = 0
     num_items = 10
     username = request.args.get('username')
@@ -2999,10 +3036,10 @@ def queued_list_query(night=None, completed=False, day_buffer=1):
         except:
             day_buffer = 1
         
-        rts2ids_string = request.args.get('rts2ids')
-        if rts2ids_string is not None and rts2ids_string is not '':
-            for r in rts2ids_string.split(','):
-                rts2ids.append(int(r))
+        expids_string = request.args.get('expids')
+        if expids_string is not None and expids_string is not '':
+            for r in expids_string.split(','):
+                expids.append(int(r))
 
         page = request.args.get('page')
         page = int(page) if page is not None else 0
@@ -3016,19 +3053,23 @@ def queued_list_query(night=None, completed=False, day_buffer=1):
     queued_iso_end = datetime.datetime.now() + datetime.timedelta(days=1)
 
     query_filter = [
-        ObsReq.queued == True,
-        ObsReq.queued_iso > queued_iso_begin,
-        ObsReq.queued_iso < queued_iso_end
+        ObsReq2.queued == True,
+        ObsReq2.queued_iso > queued_iso_begin,
+        ObsReq2.queued_iso < queued_iso_end
     ]
 
     if name_query is not None and name_query != '':
-        query_filter.append(ObsReq.object_name.contains(name_query))
+        query_filter.append(ObsReq2.object_name.contains(name_query))
 
-    db_resp = ObsReq.query.filter(*query_filter).order_by(
-        ObsReq.ra_hms
+    obsreqs = ObsReq2.query.filter(*query_filter).order_by(
+        ObsReq2.ra_hms
     ).all()
 
-    targets = format_orp_targets(db_resp)
+    obsreqids = [x.id for x in obsreqs]
+
+    exposures = ObsExposure.query.filter(ObsExposure.obsreqid.in_(obsreqids)).all()
+
+    targets = format_orp_targets(obsreqs, exposures)
     targets = sorted(targets, key=attrgetter('ra'))
 
     num_pages = int(len(targets)/num_items)
@@ -3057,8 +3098,8 @@ def queued_list_query(night=None, completed=False, day_buffer=1):
     '''
 
     for t in targets[skip:take]:
-        t_rts2ids = [x.rts2id for x in t.exp_objs]
-        allchecked = ' checked' if all([tid in rts2ids for tid in t_rts2ids]) else ''
+        t_expids = [x.expid for x in t.exp_objs]
+        allchecked = ' checked' if all([tid in expids for tid in t_expids]) else ''
 
         nameid = t.name
         if '+' in t.name:
@@ -3067,12 +3108,12 @@ def queued_list_query(night=None, completed=False, day_buffer=1):
         html += '''
         <tr>
             <td><button id="collbtn{}" onclick="changeCollapseButtonText(this.id)" type="button" class="btn btn-primary btn-xs arrow-right" data-toggle="collapse" data-target="#collapse{}"></button></td>
-            <td>{}</td>
+            <td><a href="/orp/obsreq2/{}?obsreqid={}&return_page=orp_manage_queue">{}</a></td>
             <td>{}</td>
             <td>{}</td>
             <td><input id="queuetarg_{}" type="checkbox" onclick="objectCheckAll(this.id)"{}></td>
         </tr>
-        '''.format(nameid,nameid,t.name,t.ra,t.dec, nameid, allchecked)
+        '''.format(nameid,nameid,username,t.id,t.name,t.ra,t.dec, nameid, allchecked)
         html+= '''
         <tr class="collapse" id="collapse{}">
             <td colspan="999">
@@ -3083,7 +3124,6 @@ def queued_list_query(night=None, completed=False, day_buffer=1):
                                 <td><font color='blue'>Filter</font></td>
                                 <td><font color='blue'>Exptime (s)</font></td>
                                 <td><font color='blue'>Num Exp</font></td>
-                                <td><font color='blue'>RTS2 ID</font></td>
                                 <td><font color='blue'>Queue</font><td>
                             </tr>
                         </thead>
@@ -3091,16 +3131,15 @@ def queued_list_query(night=None, completed=False, day_buffer=1):
         '''.format(nameid)
         #href="{{ url_for('orp_update') }}?dbid={}"
         for obsinfo in t.exp_objs:
-            thischecked = ' checked' if obsinfo.rts2id in rts2ids else ''
+            thischecked = ' checked' if obsinfo.expid in expids else ''
             html+='''
                                 <tr>
                                     <td>{}</td>
                                     <td>{}</td>
                                     <td>{}</td>
-                                    <td><a href="/orp/update/{}?dbid={}" target="_blank">{}</a></td>
                                     <td><input value="{}" id="{}_{}" type="checkbox" onclick="expCheckOne(this.id)"{}></td>
                                 </tr>
-            '''.format(obsinfo.filter, obsinfo.exptime, obsinfo.amount, username, obsinfo.dbid, obsinfo.rts2id, obsinfo.rts2id, nameid, obsinfo.rts2id, thischecked)
+            '''.format(obsinfo.filter, obsinfo.exptime, obsinfo.amount,obsinfo.expid, nameid, obsinfo.expid, thischecked)
         html += '''
                             </tbody>
                         </table>
@@ -3150,6 +3189,7 @@ def queued_list_query(night=None, completed=False, day_buffer=1):
 
     return payload
 
+
 @app.route('/orp/orp/ajax_run_scheduler')
 @app.route('/orp/ajax_run_scheduler')
 @app.route('/ajax_run_scheduler')
@@ -3165,8 +3205,8 @@ def run_artn_scheduler():
             rerun the queue and make the obstime and frames cooperate
     '''
 
-    rts2ids = []
-    rts2ids_string = request.args.get('rts2ids')
+    exposureids = []
+    exposureids_string = request.args.get('expids')
 
     schedule_focus = True if request.args.get('schedule_focus') == 'true' else False
     interrupt = True if request.args.get('interrupt') == 'true' else False
@@ -3177,20 +3217,40 @@ def run_artn_scheduler():
 
     telescope = request.args.get('telescope')
 
-    if rts2ids_string != '':
-        for r in rts2ids_string.split(','):
-            rts2ids.append(int(r))
+    if exposureids_string != '':
+        for r in exposureids_string.split(','):
+            exposureids.append(int(r))
 
     if interrupt:
         q = getCurrentQueue(telescope=telescope)
-        rts2ids.extend([x.id for x in q])
-        rts2ids = list(set(rts2ids))
+        rts2ids = [x.id for x in q]
+        interruptable_obsrqsids = db.session.query(ObsReq2.id).filter(
+            ObsReq2.rts2_id.in_(rts2ids)
+        ).all()
 
-    db_resp = db.session.query(ObsReq).filter(
-        ObsReq.rts2_id.in_(rts2ids)
+        inter_obsreqids = [x.id for x in interruptable_obsrqsids]
+
+        interruptable_expids = db.session.query(ObsExposure.id).filter(
+            ObsExposure.obsreqid.in_(inter_obsreqids),
+            ObsExposure.completed == False,
+            ObsExposure.queued == True,
+        ).all()
+
+        exposureids.extend([x.id for x in interruptable_expids])
+        exposureids = list(set(exposureids))
+
+    scheduled_exposures = db.session.query(ObsExposure).filter(
+        ObsExposure.id.in_(exposureids)
     ).all()
 
-    targets = format_orp_targets(db_resp)
+    obsreqsids = list(set([x.obsreqid for x in scheduled_exposures]))
+
+    obsreqs = db.session.query(ObsReq2).filter(
+        ObsReq2.id.in_(obsreqsids)
+    ).all()
+
+    targets = format_orp_targets(obsreqs, scheduled_exposures)
+
     big2 = astropy.coordinates.EarthLocation.of_site('mtbigelow')
 
     scheduler = ARTNScheduler(targets, big2, night, schedule_focus, simulate)
@@ -3209,12 +3269,13 @@ def run_artn_scheduler():
 
     return make_response(payload, 200)
 
+
 @app.route('/orp/orp/ajax_populate_queue')
 @app.route('/orp/ajax_populate_queue')
 @app.route('/ajax_populate_queue')
 def populate_queue():
-    rts2ids = []
-    rts2ids_string = request.args.get('rts2ids')
+    exposureids = []
+    exposureids_string = request.args.get('expids')
 
     telescope = request.args.get('telescope')
     schedule_focus = True if request.args.get('schedule_focus') == 'true' else False
@@ -3225,20 +3286,39 @@ def populate_queue():
     night = request.args.get('night')
     night = datetime.datetime.strptime(night, "%Y-%m-%d")
     
-    if rts2ids_string != '':
-        for r in rts2ids_string.split(','):
-            rts2ids.append(int(r))
+    if exposureids_string != '':
+        for r in exposureids_string.split(','):
+            exposureids.append(int(r))
 
     if interrupt:
         q = getCurrentQueue(telescope=telescope)
-        rts2ids.extend([x.id for x in q])
-        rts2ids = list(set(rts2ids))
+        rts2ids = [x.id for x in q]
+        interruptable_obsrqsids = db.session.query(ObsReq2.id).filter(
+            ObsReq2.rts2_id.in_(rts2ids)
+        ).all()
 
-    db_resp = db.session.query(ObsReq).filter(
-        ObsReq.rts2_id.in_(rts2ids)
+        inter_obsreqids = [x.id for x in interruptable_obsrqsids]
+
+        interruptable_expids = db.session.query(ObsExposure.id).filter(
+            ObsExposure.obsreqid.in_(inter_obsreqids),
+            ObsExposure.completed == False,
+            ObsExposure.queued == True,
+        ).all()
+
+        exposureids.extend([x.id for x in interruptable_expids])
+        exposureids = list(set(exposureids))
+
+    scheduled_exposures = db.session.query(ObsExposure).filter(
+        ObsExposure.id.in_(exposureids)
     ).all()
 
-    targets = format_orp_targets(db_resp)
+    obsreqsids = list(set([x.obsreqid for x in scheduled_exposures]))
+
+    obsreqs = db.session.query(ObsReq2).filter(
+        ObsReq2.id.in_(obsreqsids)
+    ).all()
+
+    targets = format_orp_targets(obsreqs, scheduled_exposures)
 
     if telescope == 'Kuiper':
         big2 = astropy.coordinates.EarthLocation.of_site('mtbigelow')
@@ -3248,11 +3328,21 @@ def populate_queue():
         scheduler.run()
         scheduler.logdump()
         
+        scheduler.submit_queue()
         try:
-            scheduler.submit_queue()
-            payload = {
-                'message':'Success'
-            }
+            success = scheduler.submit_queue()
+            if success:
+                payload = {
+                    'message':'Success'
+                }
+                for se in scheduled_exposures:
+                    se.completed = False
+                    se.queued = True
+                db.session.commit()
+            else:
+                payload = {
+                    'message':'Error in submitting to RTS2'
+                }
         except:
             payload = {
                 'message':'Error in submitting to RTS2'
@@ -3264,13 +3354,14 @@ def populate_queue():
 
     return make_response(payload, 200)
 
+
 @app.route('/orp/orp/ajax_tnsloadtarget')
 @app.route('/orp/ajax_tnsloadtarget')
 @app.route('/ajax_tnsloadtarget')
 def tnsloadtarget():
     args = request.args
     tns_name = args.get('tnsname')
-
+    
     prefix = ''
     if 'SN' in tns_name:
         search_tns = tns_name.split('SN')[1]
@@ -3317,10 +3408,562 @@ def tnsloadtarget():
             }
     return jsonify(payload)
 
+
+@app.route('/orp/orp/obsreq2/<username>', methods=['GET', 'POST'])
+@app.route('/orp/obsreq2/<username>', methods=['GET', 'POST'])
+@app.route('/obsreq2/<username>', methods=['GET', 'POST'])
+@login_required
+def orp_obsreq2(username=''):
+    
+    '''
+        Things to do:
+            be able to save multiple exposures on obsreq page X
+            be able view multiple exposures on obsreq page X
+            be able to edit multiple exposures on obsreq page X
+
+            data conversion for current database. 
+
+            be able to submit obsreq with multiple exposures to rts2
+    '''
+
+    msg_out(f'/orp/obsreq2/{username} entry', True, False)
+    get_client_ip(request)
+
+    # look up user (as required)
+    _u = current_user if current_user.is_authenticated else User.query.filter_by(username=username).first_or_404()
+
+    # build form
+    form = ObsReqForm(telescope='Kuiper', instrument='Mont4k', user=_u.username)
+    page_form = request.form
+    obsreqid = request.args.get('obsreqid', None)
+    return_page = request.args.get('return_page', 'orp_view_requests')
+
+    _args = request.args.copy()
+    print(_args)
+    try:
+        _args.pop('obsreqid')
+        _args.pop('page')
+    except KeyError:
+        pass
+    arg_str = urlencode(_args)
+
+	#test to load page
+    if obsreqid and request.method != 'POST':
+
+        _obsreq = ObsReq2.query.filter_by(id=obsreqid).first_or_404()
+
+        form.username.data = _obsreq.username
+        form.priority.data = _obsreq.priority
+        form.object_name.data = decode_verboten(_obsreq.object_name.strip(), ARTN_DECODE_DICT)
+        form.ra_hms.data = _obsreq.ra_hms
+        form.dec_dms.data = _obsreq.dec_dms
+        form.begin_iso.data = _obsreq.begin_iso
+        form.end_iso.data = _obsreq.end_iso
+        form.airmass.data = float(_obsreq.airmass)
+        form.lunarphase.data = _obsreq.lunarphase
+        form.photometric.data = bool(_obsreq.photometric)
+        form.guiding.data = bool(_obsreq.guiding)
+        form.non_sidereal.data = bool(_obsreq.non_sidereal)
+        form.ns_params.data = json.dumps(_obsreq.non_sidereal_json)
+        form.telescope.data = _obsreq.telescope
+        form.instrument.data = _obsreq.instrument
+        form.binning.data = _obsreq.binning
+        form.dither.data = _obsreq.dither
+        form.cadence.data = _obsreq.cadence
+        form.priority.data = _obsreq.priority
+        
+        exposures = db.session.query(ObsExposure).filter(ObsExposure.obsreqid == obsreqid).all()
+
+        return render_template('obsreq2.html', form=form, exposures=exposures, fresh=False, obsreqid=_obsreq.id, arg_str=arg_str, return_page=return_page)
+
+	#test if new save
+    if obsreqid is None and form.validate_on_submit():
+         # get data
+        _priority = form.priority.data.strip().lower()
+        _object_name = encode_verboten(form.object_name.data.strip(), ARTN_ENCODE_DICT)
+        _ra_hms = form.ra_hms.data.strip()
+        _dec_dms = form.dec_dms.data.strip()
+        _begin_iso = form.begin_iso.data
+        _end_iso = form.end_iso.data
+        _airmass = form.airmass.data
+        _lunarphase = form.lunarphase.data.strip().lower()
+        _photometric = form.photometric.data
+        _guiding = form.guiding.data
+        _non_sidereal = form.non_sidereal.data
+        _telescope = form.telescope.data.strip()
+        _instrument = form.instrument.data.strip()
+        _binning = form.binning.data.strip()
+        _dither = form.dither.data.strip()
+        _cadence = form.cadence.data.strip()
+        _iso = get_iso()
+        _mjd = float(iso_to_mjd(_iso))
+
+        #get multiple exposures from the page
+        exposures = ObsExposure.ObsExposuresFromPage(page_form)
+
+        #validate multiple exposures:
+
+        # validate telescope / instrument pair
+        if f'{_instrument}' not in ARTN_SUPPORTED_NODES[f'{_telescope}']:
+            return render_template('409.html', reason=f'Invalid telescope ({_telescope}) and instrument '
+                                                      f'({_instrument}) combination!', caller='orp_osbreq')
+
+        # check known limit(s)
+        _d = dec_to_deg(_dec_dms)
+        if _d > TEL__DEC__LIMIT[f'{_telescope.lower()}']:
+            msg_out(f"ERROR: requested declination {_d:.3f} > {TEL__DEC__LIMIT[_telescope.lower()]} limit "
+                    f"for {_telescope} telescope", True, True)
+            return redirect(url_for('orp_user', username=_u.username))
+
+        # get json
+        if _non_sidereal:
+            _str = form.ns_params.data
+            _str_start = _str.find('{')
+            _str_end = _str.rfind('}') + 1
+            _json = f"{_str[_str_start:_str_end]}"
+            if check_json(_json):
+                _non_sidereal_json = json.loads(_json)
+            else:
+                msg_out(f"ERROR: json not valid ... skipping", True, True)
+                return redirect(url_for('orp_user', username=_u.username))
+        else:
+            _non_sidereal_json = json.loads('{}')
+
+        # munge the input(s) as required
+        _begin_mjd = str(_begin_iso).replace(' ', 'T')
+        _begin_mjd = f'{_begin_mjd}.000000'
+        _begin_mjd = float(iso_to_mjd(_begin_mjd))
+
+        _end_mjd = str(_end_iso).replace(' ', 'T')
+        _end_mjd = f'{_end_mjd}.000000'
+        _end_mjd = float(iso_to_mjd(_end_mjd))
+
+        # assign a (nominal) moonphase calculation
+        _sign = -1.0 if random.uniform(-1.0, 1.0) < 0.0 else 1.0
+        if _lunarphase == 'dark':
+            _moonphase = _sign * random.uniform(0.0, 5.5)
+        elif _lunarphase == 'grey':
+            _moonphase = _sign * random.uniform(5.5, 8.5)
+        else:
+            _moonphase = _sign * random.uniform(8.5, 15.0)
+
+        # noinspection PyArgumentList
+        _or = ObsReq2(username=_u.username, pi=f'{_u.firstname} {_u.lastname}, {_u.affiliation}', created_iso=_iso,
+                     created_mjd=_mjd, observation_id=get_unique_hash(),
+                     priority=_priority, priority_value=-_mjd if _priority == 'urgent' else _mjd,
+                     object_name=_object_name, ra_hms=_ra_hms, ra_deg=ra_to_deg(_ra_hms), dec_dms=_dec_dms,
+                     dec_deg=dec_to_deg(_dec_dms), begin_iso=_begin_iso, begin_mjd=_begin_mjd, end_iso=_end_iso,
+                     end_mjd=_end_mjd, airmass=_airmass, lunarphase=_lunarphase, moonphase=_moonphase,
+                     photometric=_photometric, guiding=_guiding, non_sidereal=_non_sidereal,
+                     non_sidereal_json=_non_sidereal_json, telescope=_telescope, binning=_binning, dither=_dither, cadence=_cadence,
+                     queued_iso=ARTN_ZERO_ISO, queued_mjd=ARTN_ZERO_MJD, completed_iso=ARTN_ZERO_ISO, completed_mjd=ARTN_ZERO_MJD,
+                     instrument=_instrument, queued=False, completed=False)
+
+        # insert into database
+        try:
+            db.session.add(_or)
+            db.session.flush()
+
+            for e in exposures:
+                e.obsreqid = _or.id
+                e.completed = False
+                db.session.add(e)
+
+            db.session.commit()
+            msg_out(f'Observation request {_or.__str__()} created OK with {str(len(exposures))} exposures', True, True)
+            return redirect(url_for(return_page, username=_u.username)+'?'+arg_str)
+
+        except Exception as _e:
+            db.session.rollback()
+            msg_out(f'ERROR: Failed to create observation request for {_u.username}, error={_e}', True, True)
+            return render_template('obsreq2.html', form=form)
+
+	#test if update save
+    if obsreqid and form.validate_on_submit():
+        _obsreq = ObsReq2.query.filter_by(id=obsreqid).first_or_404()
+        
+        # update records
+        _obsreq.username = _u.username
+        _obsreq.object_name = encode_verboten(form.object_name.data.strip(), ARTN_ENCODE_DICT)
+        _obsreq.ra_hms = form.ra_hms.data.strip()
+        _obsreq.dec_dms = form.dec_dms.data.strip()
+        _obsreq.begin_iso = form.begin_iso.data
+        _obsreq.end_iso = form.end_iso.data
+        _obsreq.airmass = form.airmass.data
+        _obsreq.lunarphase = form.lunarphase.data.strip().lower()
+        _obsreq.photometric = form.photometric.data
+        _obsreq.guiding = form.guiding.data
+        _obsreq.non_sidereal = form.non_sidereal.data
+        _obsreq.filter_name = form.filter_name.data.strip()
+        _obsreq.telescope = form.telescope.data.strip()
+        _obsreq.binning = form.binning.data.strip()
+        _obsreq.dither = form.dither.data.strip()
+        _obsreq.cadence = form.cadence.data.strip()
+
+        # validate telescope / instrument pair
+        if f'{_obsreq.instrument}' not in ARTN_SUPPORTED_NODES[f'{_obsreq.telescope}']:
+            return render_template('409.html', reason=f'Invalid telescope ({_obsreq.telescope}) and instrument '
+                                                      f'({_obsreq.instrument}) combination!', caller='orp_update')
+
+        # reset flags
+        if return_page != 'orp_manage_queue':
+            _obsreq.queued = False
+            _obsreq.queued_iso = ARTN_ZERO_ISO
+            _obsreq.queued_mjd = ARTN_ZERO_MJD
+            _obsreq.completed = False
+            _obsreq.completed_iso = ARTN_ZERO_ISO
+            _obsreq.completed_mjd = ARTN_ZERO_MJD
+            _obsreq.rts2_id = -1
+            _obsreq.rts2_doc = '{}'
+
+        # get json
+        if _obsreq.non_sidereal:
+            _str = form.ns_params.data
+            _str_start = _str.find('{')
+            _str_end = _str.rfind('}') + 1
+            _json = f"{_str[_str_start:_str_end]}"
+            msg_out(f"_json={_json}", True, True)
+            if check_json(_json):
+                _obsreq.non_sidereal_json = json.loads(_json)
+            else:
+                msg_out(f"ERROR: json not valid ... skipping", True, True)
+                return redirect(url_for('orp_user', username=_u.username))
+        else:
+            _obsreq.non_sidereal_json = json.loads('{}')
+
+        # munge the input(s) as required
+        _old_priority_value = _obsreq.priority_value
+        _old_priority = _obsreq.priority.strip().lower()
+        _new_priority = form.priority.data.strip().lower()
+
+        _priority_value = 0.0
+        if _new_priority != _old_priority:
+            if _new_priority == 'routine':
+                _priority_value = _obsreq.created_mjd,
+            elif _new_priority == 'urgent':
+                created_iso = get_iso()
+                created_mjd = iso_to_mjd(created_iso)
+                _priority_value = -created_mjd if _obsreq.priority == 'urgent' else created_mjd
+        _obsreq.priority_value = _priority_value
+        _obsreq.priority = _new_priority
+
+        _ra_hms = form.ra_hms.data.strip()
+        _obsreq.ra_deg = ra_to_deg(_ra_hms)
+
+        _dec_dms = form.dec_dms.data.strip()
+        _obsreq.dec_deg = dec_to_deg(_dec_dms)
+        if _obsreq.dec_deg > TEL__DEC__LIMIT[f'{_obsreq.telescope.lower()}']:
+            msg_out(f"ERROR: requested declination {_obsreq.dec_deg:.3f} > {TEL__DEC__LIMIT[_obsreq.telescope.lower()]}"
+                    f" limit for {_obsreq.telescope} telescope", True, True)
+            return redirect(url_for('orp_user', username=_u.username))
+
+        _begin_iso = form.begin_iso.data
+        _begin_mjd = str(_begin_iso).replace(' ', 'T')
+        _begin_mjd = f'{_begin_mjd}.000000'
+        _begin_mjd = float(iso_to_mjd(_begin_mjd))
+        _obsreq.begin_mjd = _begin_mjd
+
+        _end_iso = form.end_iso.data
+        _end_mjd = str(_end_iso).replace(' ', 'T')
+        _end_mjd = f'{_end_mjd}.000000'
+        _end_mjd = float(iso_to_mjd(_end_mjd))
+        _obsreq.end_mjd = _end_mjd
+
+        _sign = -1.0 if random.uniform(-1.0, 1.0) < 0.0 else 1.0
+        if _obsreq.lunarphase == 'dark':
+            _obsreq.moonphase = _sign * random.uniform(0.0, 5.5)
+        elif _obsreq.lunarphase == 'grey':
+            _obsreq.moonphase = _sign * random.uniform(5.5, 8.5)
+        else:
+            _obsreq.moonphase = _sign * random.uniform(8.5, 15.0)
+
+        #get the requested exposures table
+        updated_exposures = ObsExposure.ObsExposuresFromPage(page_form)
+        prev_exposures = db.session.query(ObsExposure).filter(ObsExposure.obsreqid == obsreqid)
+
+        #test if any exposures were deleted
+        updated_expids = [x.id for x in updated_exposures]
+        for p_exp in prev_exposures:
+            if p_exp.id not in updated_expids:
+                db.session.delete(p_exp)
+
+        #update all exposures information, or if new insertion
+        for up_exp in updated_exposures:
+            up_exp.obsreqid = int(obsreqid)
+            if up_exp.id is None:
+                db.session.add(up_exp)
+            prev = prev_exposures.filter(ObsExposure.id == up_exp.id).first()
+            if prev:
+                prev.filter_name = up_exp.filter_name
+                prev.exp_time = up_exp.exp_time
+                prev.num_exp = up_exp.num_exp
+
+        db.session.flush()
+        db.session.commit()
+        msg_out(f'Observation request {_obsreq.__str__()} updated OK with {str(len(updated_exposures))} exposures', True, True)
+        return redirect(url_for(return_page, username=_u.username) + '?' + arg_str)
+
+    return render_template('obsreq2.html', form=form, fresh=True, arg_str=arg_str, return_page=return_page)
+
+
+# +
+# route(s): /orp/observe/<username>?dbid=<num>, requires login
+# -
+@app.route('/orp/orp/observe2/<username>', methods=['GET', 'POST'])
+@app.route('/orp/observe2/<username>', methods=['GET', 'POST'])
+@app.route('/observe2/<username>', methods=['GET', 'POST'])
+@login_required
+def orp_observe2(username=''):
+    #implement view_request argstring as well
+
+    print('bingbang')
+
+    msg_out(f'/orp/observe/{username} entry', True, False)
+    get_client_ip(request)
+
+    # look up user (as required)
+    _u = current_user if current_user.is_authenticated else User.query.filter_by(username=username).first_or_404()
+
+    obsreqid = request.args.get('obsreqid', None)
+    return_page = request.args.get('return_page', 'orp_view_requests')
+
+    _args = request.args.copy()
+    try:
+        _args.pop('return_page')
+        _args.pop('obsreqid')
+    except KeyError:
+        pass
+    arg_str = urlencode(_args)
+
+    if obsreqid is None:
+        msg_out(f'ERROR: Failed to get observation id {obsreqid}', True, True)
+        return redirect(url_for('orp_view_requests', username=_u.username))
+
+    # get observation
+    _obsreq = None
+    _exposures = []
+    try:
+        _obsreq = ObsReq2.query.filter_by(id=obsreqid).first_or_404()
+        _exposures = ObsExposure.query.filter_by(obsreqid=obsreqid).all()
+    except Exception as _e:
+        msg_out(f'ERROR: Failed to get observation request {obsreqid}, error={_e}', True, True)
+        return redirect(url_for('orp_view_requests', username=_u.username))
+    else:
+        msg_out(f"orp_observe> observation request: obsreqid={obsreqid}, "
+                f"_object_name={decode_verboten(_obsreq.object_name, ARTN_DECODE_DICT)}, "
+                f"_user={_u.username}", True, False)
+
+    # call telescope-specific routine
+    _rts2_doc = None
+    _rts2_id = -1
+
+    if _obsreq is not None:
+
+        _tel_name = _obsreq.telescope.lower()
+        msg_out(f"orp_observe> calling TELESCOPES['{_tel_name}'].observe()", True, False)
+        _rts2_doc, _rts2_id = TELESCOPES[f'{_tel_name}'].observe(_obsreq=_obsreq, _exposures=_exposures, _user=_u)
+        msg_out(f"orp_observe> called TELESCOPES['{_tel_name}'].observe()", True, False)
+
+        if _rts2_doc is not None:
+            if _rts2_id != -1:
+                msg_out(f'Observation request {obsreqid} sent to telescope OK', True, False)
+            if _rts2_id > 0:
+                try:
+                    _obsreq.completed = False
+                    _obsreq.completed_iso = ARTN_ZERO_ISO
+                    _obsreq.completed_mjd = ARTN_ZERO_MJD
+                    _obsreq.queued = True
+                    _iso = get_iso()
+                    _obsreq.queued_iso = _iso
+                    _obsreq.queued_mjd = iso_to_mjd(_iso)
+                    _obsreq.rts2_doc = _rts2_doc
+                    _obsreq.rts2_id = _rts2_id
+                    db.session.commit()
+                    msg_out(f'Observation request {obsreqid} committed to database OK', True, False)
+                except Exception as _e:
+                    db.session.rollback()
+                    msg_out(f'ERROR: Failed to send observation request {obsreqid} to telescope, error={_e}', True, True)
+
+    # return for GET
+    #make this go back to the view_requests
+    return redirect(url_for(return_page, username=_u.username) + '?' + arg_str)
+
+
+
+@app.route('/orp/orp/dataconvert_obsreq2/<username>', methods=['GET', 'POST'])
+@app.route('/orp/dataconvert_obsreq2/<username>', methods=['GET', 'POST'])
+@app.route('/dataconvert_obsreq2/<username>', methods=['GET', 'POST'])
+def dataconvert_obsreq2(username=''):
+
+    db_resp = db.session.query(ObsReq).all()
+
+    '''Dirty way to group obsreqs'''
+    target_names = []
+
+    print('Length of old ObsReq Entries: ', len(db_resp))
+
+    SNs = []
+
+    for resp in db_resp:
+        objname = resp.object_name
+        
+
+        sn20splitkeys = ['sn20', 'SN20', 'at20', 'AT20', 'sn.ws.20', 'SN.ws.20', 'fuk20']
+        for sk in sn20splitkeys:
+            if sk in objname:
+                atin = 'sn20' in objname or 'SN20' in objname or '.ws.20' in objname or 'fuk20' in objname
+                if '-' in objname:
+                    objname = objname.split(sk)[1].split('-')[0]
+                else:
+                    objname = objname.split(sk)[1]
+                if atin:
+                    SNs.append(objname)
+
+        sn20splitkeys2 = ['2015','2017', '2018', '2019', '2020', '2021', '2022']
+        for sk in sn20splitkeys2:
+            if sk in objname:
+                if '-' in objname:
+                    objname = objname.split('20')[1].split('-')[0]
+                else:
+                    objname = objname.split('20')[1]
+                SNs.append(objname)
+
+        if '.us.' in objname:
+            objname = objname.split('.us.')[0]
+        elif '.ws.' in objname:
+            objname = objname.split('.ws.')[0]
+        if '_' in objname:
+            objname = objname.split('_')[0]
+
+        if objname  == 'sn' or objname == 'SN':
+            objname = resp.object_name.split('.ws.')[1]
+        if objname == 'GW':
+            objname = resp.object_name
+
+        target_names.append(objname)
+
+    dumbbumbles = ['SA112-check', 'NGC4559-OT-U', 'NGC4559-OT-R', 'HD']
+    target_names = [x for x in target_names if x != '' and x not in dumbbumbles]
+    target_names = list(set(target_names))
+    target_names.append('140982')
+
+    print(sorted(target_names))
+    print('Grouped targetnames: ', len(target_names))
+
+    new_expdata = []
+    new_obsreqdata = []
+
+    oldids = []
+
+    for t in target_names:
+        if t == '20ue':
+            observations = [x for x in db_resp if t in x.object_name and '20uec' not in x.object_name]
+        else:
+            observations = [x for x in db_resp if t in x.object_name]
+        ob1 = observations[0]
+        if t == '140982':
+            t = 'HD140982'
+
+        '''
+        create the ObsReq2 from ob1
+        session.flush() for obsreq2 id
+        iterate over all observations
+            create ObsExposure
+                obsreqid = or.id
+        session.commit()
+        '''
+
+        target_keytests = ['00','09','16','17','18','19','20','21','22']
+        for tt in target_keytests:
+            if t.startswith(tt):
+                if t in SNs:
+                    t = 'SN20'+t
+                else:
+                    t = 'AT20'+t
+
+        _or = ObsReq2(
+            username = ob1.username,
+            pi = ob1.pi,
+            priority = ob1.priority,
+            priority_value = ob1.priority_value,
+            created_iso = ob1.created_iso,
+            created_mjd = ob1.created_mjd,
+            object_name = t,
+            ra_hms = ob1.ra_hms,
+            ra_deg = ob1.ra_deg,
+            dec_dms = ob1.dec_dms,
+            dec_deg = ob1.dec_deg,
+            observation_id = ob1.observation_id,
+            begin_iso = ob1.begin_iso,
+            begin_mjd = ob1.begin_mjd,
+            end_iso = ob1.end_iso,
+            end_mjd = ob1.end_mjd,
+            airmass = ob1.airmass,
+            lunarphase = ob1.lunarphase,
+            moonphase = ob1.moonphase,
+            photometric = ob1.photometric,
+            guiding = ob1.guiding,
+            binning = ob1.binning,
+            dither = ob1.dither,
+            cadence = ob1.cadence,
+            non_sidereal = ob1.non_sidereal,
+            non_sidereal_json = ob1.non_sidereal_json,
+            telescope = ob1.telescope,
+            instrument = ob1.instrument, 
+            rts2_doc = ob1.rts2_doc,
+            rts2_id = ob1.rts2_id,
+            queued = ob1.queued,
+            queued_iso = ob1.queued_iso,
+            queued_mjd = ob1.queued_mjd,
+            completed = ob1.completed,
+            completed_iso = ob1.completed_iso,
+            completed_mjd = ob1.completed_mjd,
+            user_id = ob1.user_id
+        )
+
+        db.session.add(_or)
+        db.session.flush()
+
+        new_obsreqdata.append(_or)
+
+        for ob in observations:
+            oldids.append(ob.id)
+            obexp = ObsExposure(
+                obsreqid = _or.id,
+                filter_name = ob.filter_name,
+                exp_time = ob.exp_time,
+                num_exp = ob.num_exp,
+                completed = ob.completed,
+            )
+            db.session.add(obexp)
+            new_expdata.append(obexp)
+        
+    unique_oldids = list(set(oldids))
+    for uo in unique_oldids:
+        test = [x for x in oldids if x == uo]
+        if len(test) > 1:
+            duped = [x for x in db_resp if x.id == uo][0].object_name
+            print("duped name: ", duped)
+
+
+    print()
+    print('Length of grouped exposures', len(new_obsreqdata))
+    print('Length of new data exposures: ', len(new_expdata))
+    
+    db.session.commit()
+
+    return 'sucksess'
+
 ####
 '''
+    NEW TODO 1st.
+        1.) Write a data conversion script to 'dirty group observations' X
+        2.) Make it so that the rts2doc json object works when submitting to rts2 
+        3.) Edit the view observable request(s) and view all request(s) tables X
+        4.) test test test submissions X
+
     To do:
-        rename view_queue to manage_queue
+        rename view_queue to manage_queue X
             consider permissions when there is a queue already submitted
             only artn/operator can interrupt/clear queue
             maybe programs with ToO

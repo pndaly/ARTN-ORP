@@ -51,6 +51,284 @@ db = SQLAlchemy()
 # logger = UtilsLogger('Models-Logger').logger
 # logger.debug(f"Models logger initialized")
 
+# +
+# class: ObsTarget(), inherits from UserMixin, db.Model
+# -
+class ObsTarget(UserMixin, db.Model):
+
+    # +
+    # member variable(s)
+    # -
+
+    # define table name
+    __tablename__ = 'obstarget'
+    _iso = get_iso()
+    _mjd = float(iso_to_mjd(_iso))
+
+    # +
+    # table mapping
+    # -
+    # noinspection PyUnresolvedReferences
+    id = db.Column(db.Integer, primary_key=True, index=True)
+    # noinspection PyUnresolvedReferences
+    username = db.Column(db.String(ARTN_CHAR_64), nullable=False)
+    # noinspection PyUnresolvedReferences
+    created_iso = db.Column(db.DateTime, default=_iso, nullable=False)
+    # noinspection PyUnresolvedReferences
+    created_mjd = db.Column(db.Float, default=_mjd, nullable=False)
+    # noinspection PyUnresolvedReferences
+    object_name = db.Column(db.String(ARTN_CHAR_64), nullable=False)
+    # noinspection PyUnresolvedReferences
+    ra_hms = db.Column(db.String(ARTN_CHAR_16), nullable=False)
+    # noinspection PyUnresolvedReferences
+    ra_deg = db.Column(db.Float, default=math.nan, nullable=False)
+    # noinspection PyUnresolvedReferences
+    dec_dms = db.Column(db.String(ARTN_CHAR_16), nullable=False)
+    # noinspection PyUnresolvedReferences
+    dec_deg = db.Column(db.Float, default=math.nan, nullable=False)
+
+
+# +
+# class: ObsReq2(), inherits from UserMixin, db.Model
+# -
+class ObsReq2(UserMixin, db.Model):
+
+    # +
+    # member variable(s)
+    # -
+
+    # define table name
+    __tablename__ = 'obsreq2'
+    _iso = get_iso()
+    _mjd = float(iso_to_mjd(_iso))
+
+    # +
+    # table mapping
+    # -
+    # noinspection PyUnresolvedReferences
+    id = db.Column(db.Integer, primary_key=True, index=True)
+    # noinspection PyUnresolvedReferences
+    username = db.Column(db.String(ARTN_CHAR_64), nullable=False)
+    # noinspection PyUnresolvedReferences
+    pi = db.Column(db.String(ARTN_CHAR_256), nullable=False)
+    # noinspection PyUnresolvedReferences
+    priority = db.Column(db.String(ARTN_CHAR_16), default='Routine', nullable=False)
+    # noinspection PyUnresolvedReferences
+    priority_value = db.Column(db.Float, default=_mjd, nullable=False)
+    # noinspection PyUnresolvedReferences
+    created_iso = db.Column(db.DateTime, default=_iso, nullable=False)
+    # noinspection PyUnresolvedReferences
+    created_mjd = db.Column(db.Float, default=_mjd, nullable=False)
+    # noinspection PyUnresolvedReferences
+    object_name = db.Column(db.String(ARTN_CHAR_64), nullable=False)
+    # noinspection PyUnresolvedReferences
+    ra_hms = db.Column(db.String(ARTN_CHAR_16), nullable=False)
+    # noinspection PyUnresolvedReferences
+    ra_deg = db.Column(db.Float, default=math.nan, nullable=False)
+    # noinspection PyUnresolvedReferences
+    dec_dms = db.Column(db.String(ARTN_CHAR_16), nullable=False)
+    # noinspection PyUnresolvedReferences
+    dec_deg = db.Column(db.Float, default=math.nan, nullable=False)
+    # noinspection PyUnresolvedReferences
+    observation_id = db.Column(db.String(ARTN_CHAR_128), default=get_unique_hash(), nullable=False, unique=True)
+    # noinspection PyUnresolvedReferences
+    begin_iso = db.Column(db.DateTime, default=get_date_time(), nullable=False)
+    # noinspection PyUnresolvedReferences
+    begin_mjd = db.Column(db.Float, default=_mjd, nullable=False)
+    # noinspection PyUnresolvedReferences
+    end_iso = db.Column(db.DateTime, default=get_date_time(30), nullable=False)
+    # noinspection PyUnresolvedReferences
+    end_mjd = db.Column(db.Float, default=_mjd, nullable=False)
+    # noinspection PyUnresolvedReferences
+    airmass = db.Column(db.Float, default=1.0, nullable=False)
+    # noinspection PyUnresolvedReferences
+    lunarphase = db.Column(db.String(ARTN_CHAR_16), default='Dark', nullable=False)
+    # noinspection PyUnresolvedReferences
+    moonphase = db.Column(db.Float, default=0.0, nullable=False)
+    # noinspection PyUnresolvedReferences
+    photometric = db.Column(db.Boolean, default=False, nullable=False)
+    # noinspection PyUnresolvedReferences
+    guiding = db.Column(db.Boolean, default=False, nullable=False)
+    # noinspection PyUnresolvedReferences
+    non_sidereal = db.Column(db.Boolean, default=False, nullable=False)
+    # noinspection PyUnresolvedReferences
+    telescope = db.Column(db.String(ARTN_CHAR_16), default='Any', nullable=False)
+    # noinspection PyUnresolvedReferences
+    instrument = db.Column(db.String(ARTN_CHAR_16), default='Any', nullable=False)
+    # noinspection PyUnresolvedReferences
+    rts2_doc = db.Column(JSONB, default={}, nullable=False)
+    # noinspection PyUnresolvedReferences
+    rts2_id = db.Column(db.Integer, default=-1, nullable=False)
+    # noinspection PyUnresolvedReferences
+    queued = db.Column(db.Boolean, default=False, nullable=False)
+    # noinspection PyUnresolvedReferences
+    queued_iso = db.Column(db.DateTime, default=get_date_time(0), nullable=False)
+    # noinspection PyUnresolvedReferences
+    queued_mjd = db.Column(db.Float, default=_mjd, nullable=False)
+    # noinspection PyUnresolvedReferences
+    completed = db.Column(db.Boolean, default=False, nullable=False)
+    # noinspection PyUnresolvedReferences
+    completed_iso = db.Column(db.DateTime, default=get_date_time(0), nullable=False)
+    # noinspection PyUnresolvedReferences
+    completed_mjd = db.Column(db.Float, default=_mjd, nullable=False)
+    # noinspection PyUnresolvedReferences
+    binning = db.Column(db.String(ARTN_CHAR_16), default='Any', nullable=False)
+    # noinspection PyUnresolvedReferences
+    dither = db.Column(db.String(ARTN_CHAR_16), default='Any', nullable=False)
+    # noinspection PyUnresolvedReferences
+    cadence = db.Column(db.String(ARTN_CHAR_16), default='Any', nullable=False)
+    # noinspection PyUnresolvedReferences
+    non_sidereal_json = db.Column(JSONB, default={}, nullable=False)
+
+    # noinspection PyUnresolvedReferences
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+
+
+    # +
+    # property: pretty_serialized()
+    # -
+    @property
+    def pretty_serialized(self):
+        return json.dumps(self.serialized(), indent=2)
+
+    # +
+    # method: serialized()
+    # -
+    def serialized(self):
+        _exposures = ObsExposure.query.filter_by(obsreqid=self.id).all()
+        _exposures_serialized = [x.serialized() for x in _exposures]
+        _d = {
+            'id': int(self.id),
+            'username': self.username,
+            'pi': self.pi,
+            'created_iso': f'{self.created_iso}',
+            'created_mjd': f'{self.created_mjd:.6f}',
+            'observation_id': self.observation_id,
+            'priority': self.priority,
+            'priority_value': f'{self.priority_value:.6f}',
+            'object_name': self.object_name,
+            'ra_hms': self.ra_hms,
+            'ra_deg': f'{self.ra_deg:.3f}',
+            'dec_dms': self.dec_dms,
+            'dec_deg': f'{self.dec_deg:.3f}',
+            'begin_iso': f'{self.begin_iso}',
+            'begin_mjd': f'{self.begin_mjd:.6f}',
+            'end_iso': f'{self.end_iso}',
+            'end_mjd': f'{self.end_mjd:.6f}',
+            'airmass': f'{self.airmass:.2f}',
+            'lunarphase': self.lunarphase,
+            'moonphase': f'{self.moonphase:.1f}',
+            'photometric': True if str(self.photometric).lower() in TRUE_VALUES else False,
+            'guiding': True if str(self.guiding).lower() in TRUE_VALUES else False,
+            'non_sidereal': True if str(self.non_sidereal).lower() in TRUE_VALUES else False,
+            'binning': self.binning,
+            'dither': self.dither,
+            'cadence': self.cadence,
+            'telescope': self.telescope,
+            'instrument': self.instrument,
+            'queued': True if str(self.queued).lower() in TRUE_VALUES else False,
+            'queued_iso': self.queued_iso.isoformat(),
+            'queued_mjd': self.queued_mjd,
+            'completed': True if str(self.completed).lower() in TRUE_VALUES else False,
+            'completed_iso': self.completed_iso.isoformat(),
+            'completed_mjd': self.completed_mjd,
+            'rts2_doc': str(self.rts2_doc),
+            'rts2_id': int(self.rts2_id),
+            'non_sidereal_json': str(self.non_sidereal_json),
+            'user_id': self.user_id,
+            'exposures':_exposures_serialized
+        }
+        return _d
+
+    # +
+    # (overload) method: __str__()
+    # -
+    def __str__(self):
+        return self.id
+
+    # +
+    # (overload) method: __repr__()
+    # -
+    def __repr__(self):
+        _s = self.serialized()
+        return f'<ObsReq {_s}>'
+
+    # +
+    # (static) method: serialize_list()
+    # -
+    @staticmethod
+    def serialize_list(s_records):
+        return [_s.serialized() for _s in s_records]
+
+
+class ObsExposure(UserMixin, db.Model):
+    # +
+    # member variable(s)
+    # -
+
+    # define table name
+    __tablename__ = 'obsexposure'
+    _iso = get_iso()
+    _mjd = float(iso_to_mjd(_iso))
+
+    # +
+    # table mapping
+    # -
+    # noinspection PyUnresolvedReferences
+    id = db.Column(db.Integer, primary_key=True, index=True)
+    # noinspection PyUnresolvedReferences
+    obsreqid = db.Column(db.Integer, nullable=False)
+    # noinspection PyUnresolvedReferences
+    filter_name = db.Column(db.String(ARTN_CHAR_24), default='V', nullable=False)
+    # noinspection PyUnresolvedReferences
+    exp_time = db.Column(db.Float, default=0.0, nullable=False)
+    # noinspection PyUnresolvedReferences
+    num_exp = db.Column(db.Integer, default=1, nullable=False)
+    # noinspection PyUnresolvedReferences
+    completed = db.Column(db.Boolean, default=False, nullable=False)
+    # noinspection PyUnresolvedReferences
+    queued = db.Column(db.Boolean, default=False, nullable=False)
+
+
+    def serialized(self):
+        _d = {
+            'id':int(self.id),
+            'obsreqid':int(self.obsreqid),
+            'filter_name':self.filter_name,
+            'exp_time':self.exp_time,
+            'completed':str(self.completed),
+            'queued':str(self.queued)
+        }
+        return _d
+
+    @staticmethod
+    def ObsExposuresFromPage(form):
+        exposures = []
+        for expid, filter_name, exp_time, num_exp in zip(
+                form.getlist('expid'),
+                form.getlist('filter_name'),
+                form.getlist('exp_time'),
+                form.getlist('num_exp'),
+            ):
+
+            if  str(expid) == "" or str(expid) == "None":
+                exposures.append(
+                    ObsExposure(
+                        filter_name=filter_name,
+                        exp_time=exp_time,
+                        num_exp=num_exp,
+                    )
+                )
+            else:
+                exposures.append(
+                    ObsExposure(
+                        id=int(expid),
+                        filter_name=filter_name,
+                        exp_time=exp_time,
+                        num_exp=num_exp,
+                    )
+                )
+        return exposures
 
 # +
 # class: ObsReq(), inherits from UserMixin, db.Model
@@ -391,6 +669,254 @@ class User(UserMixin, db.Model):
     def serialize_list(s_records):
         return [_s.serialized() for _s in s_records]
 
+
+# +
+# function: obsreq_filters()
+# -
+def obsreq2_filters(query, request_args):
+
+    # obsreq records with id = value (API: ?id=20)
+    if request_args.get('id'):
+        query = query.filter(ObsReq2.id == int(request_args['id']))
+
+    # obsreq records with id <= value (API: ?id__lte=20)
+    if request_args.get('id__lte'):
+        query = query.filter(ObsReq2.id <= int(request_args['id__lte']))
+
+    # obsreq records with id >= value (API: ?id__gte=20)
+    if request_args.get('id__gte'):
+        query = query.filter(ObsReq2.id >= int(request_args['id__gte']))
+
+    # obsreq records with username like value (API: ?username=demo)
+    if request_args.get('username'):
+        query = query.filter(ObsReq2.username.ilike(f"%{request_args['username']}%"))
+
+    # obsreq records with username not like value (API: ?exclude_username=demo)
+    if request_args.get('exclude_username'):
+        query = query.filter(not_(ObsReq2.username.ilike(f"%{request_args['exclude_username']}%")))
+
+    # obsreq records with pi like value (API: ?pi=demo)
+    if request_args.get('pi'):
+        query = query.filter(ObsReq2.pi.ilike(f"%{request_args['pi']}%"))
+
+    # obsreq records with a created_iso >= date (API: ?created_iso__gte=2018-07-17)
+    if request_args.get('created_iso__gte'):
+        a_time = Time(request_args['created_iso__gte'], format='isot')
+        query = query.filter(ObsReq2.created_mjd >= float(a_time.mjd))
+
+    # obsreq records with a created_iso <= date (API: ?created_iso__lte=2018-07-17)
+    if request_args.get('created_iso__lte'):
+        a_time = Time(request_args['created_iso__lte'], format='isot')
+        query = query.filter(ObsReq2.created_mjd <= float(a_time.mjd))
+
+    # obsreq records with created_mjd >= value (API: ?created_mjd__gte=58526.54609935184998903)
+    if request_args.get('created_mjd__gte'):
+        query = query.filter(ObsReq2.created_mjd >= float(request_args['created_mjd__gte']))
+
+    # obsreq records with created_mjd <= value (API: ?created_mjd__lte=58526.54609935184998903)
+    if request_args.get('created_mjd__lte'):
+        query = query.filter(ObsReq2.created_mjd <= float(request_args['created_mjd__lte']))
+
+    # obsreq records with group_id like value (API: ?group_id=abcd)
+    if request_args.get('group_id'):
+        query = query.filter(ObsReq2.group_id.ilike(f"%{request_args['group_id']}%"))
+
+    # obsreq records with observation_id like value (API: ?observation_id=abcd)
+    if request_args.get('observation_id'):
+        query = query.filter(ObsReq2.observation_id.ilike(f"%{request_args['observation_id']}%"))
+
+    # obsreq records with priority like value (API: ?priority=Routine)
+    if request_args.get('priority'):
+        query = query.filter(ObsReq2.priority.ilike(f"%{request_args['priority']}%"))
+
+    # obsreq records with priority_value >= value (API: ?priority_value__gte=58526.54609935184998903)
+    if request_args.get('priority_value__gte'):
+        query = query.filter(ObsReq2.priority_value >= float(request_args['priority_value__gte']))
+
+    # obsreq records with priority_value <= value (API: ?priority_value__lte=58526.54609935184998903)
+    if request_args.get('priority_value__lte'):
+        query = query.filter(ObsReq2.priority_value <= float(request_args['priority_value__lte']))
+
+    # obsreq records with object_name like value (API: ?object_name=abcd)
+    if request_args.get('object_name'):
+        query = query.filter(ObsReq2.object_name.ilike(f"%{request_args['object_name']}%"))
+
+    # obsreq records with ra_hms like value (API: ?ra_hms=12:12:12)
+    if request_args.get('ra_hms'):
+        query = query.filter(ObsReq2.ra_hms.ilike(f"%{request_args['ra_hms']}%"))
+
+    # obsreq records with ra_deg >= value (API: ?ra_deg__gte=58526.54609935184998903)
+    if request_args.get('ra_deg__gte'):
+        query = query.filter(ObsReq2.ra_deg >= float(request_args['ra_deg__gte']))
+
+    # obsreq records with ra_deg <= value (API: ?ra_deg__lte=58526.54609935184998903)
+    if request_args.get('ra_deg__lte'):
+        query = query.filter(ObsReq2.ra_deg <= float(request_args['ra_deg__lte']))
+
+    # obsreq records with dec_dms like value (API: ?dec_dms=30:30:30)
+    if request_args.get('dec_dms'):
+        query = query.filter(ObsReq2.dec_dms.ilike(f"%{request_args['dec_dms']}%"))
+
+    # obsreq records with dec_deg >= value (API: ?dec_deg__gte=58526.54609935184998903)
+    if request_args.get('dec_deg__gte'):
+        query = query.filter(ObsReq2.dec_deg >= float(request_args['dec_deg__gte']))
+
+    # obsreq records with dec_deg >= value (API: ?dec_deg__lte=58526.54609935184998903)
+    if request_args.get('dec_deg__lte'):
+        query = query.filter(ObsReq2.dec_deg <= float(request_args['dec_deg__lte']))
+
+    # obsreq records with a begin_iso >= date (API: ?begin_iso__gte=2018-07-17)
+    if request_args.get('begin_iso__gte'):
+        a_time = Time(request_args['begin_iso__gte'], format='isot')
+        query = query.filter(ObsReq2.begin_mjd >= float(a_time.mjd))
+
+    # obsreq records with a begin_iso <= date (API: ?begin_iso__lte=2018-07-17)
+    if request_args.get('begin_iso__lte'):
+        a_time = Time(request_args['begin_iso__lte'], format='isot')
+        query = query.filter(ObsReq2.begin_mjd <= float(a_time.mjd))
+
+    # obsreq records with begin_mjd >= value (API: ?begin_mjd__gte=58526.54609935184998903)
+    if request_args.get('begin_mjd__gte'):
+        query = query.filter(ObsReq2.begin_mjd >= float(request_args['begin_mjd__gte']))
+
+    # obsreq records with begin_mjd <= value (API: ?begin_mjd__lte=58526.54609935184998903)
+    if request_args.get('begin_mjd__lte'):
+        query = query.filter(ObsReq2.begin_mjd <= float(request_args['begin_mjd__lte']))
+
+    # obsreq records with a end_iso >= date (API: ?end_iso__gte=2018-07-17)
+    if request_args.get('end_iso__gte'):
+        a_time = Time(request_args['end_iso__gte'], format='isot')
+        query = query.filter(ObsReq2.end_mjd >= float(a_time.mjd))
+
+    # obsreq records with a end_iso <= date (API: ?end_iso__lte=2018-07-17)
+    if request_args.get('end_iso__lte'):
+        a_time = Time(request_args['end_iso__lte'], format='isot')
+        query = query.filter(ObsReq2.end_mjd <= float(a_time.mjd))
+
+    # obsreq records with end_mjd >= value (API: ?end_mjd__gte=58526.54609935184998903)
+    if request_args.get('end_mjd__gte'):
+        query = query.filter(ObsReq2.end_mjd >= float(request_args['end_mjd__gte']))
+
+    # obsreq records with end_mjd <= value (API: ?end_mjd__lte=58526.54609935184998903)
+    if request_args.get('end_mjd__lte'):
+        query = query.filter(ObsReq2.end_mjd <= float(request_args['end_mjd__lte']))
+
+    # obsreq records with airmass >= value (API: ?airmass__gte=58526.54609935184998903)
+    if request_args.get('airmass__gte'):
+        query = query.filter(ObsReq2.airmass >= float(request_args['airmass__gte']))
+
+    # obsreq records with airmass <= value (API: ?airmass__lte=58526.54609935184998903)
+    if request_args.get('airmass__lte'):
+        query = query.filter(ObsReq2.airmass <= float(request_args['airmass__lte']))
+
+    # obsreq records with lunarphase like value (API: ?lunarphase=Dark)
+    if request_args.get('lunarphase'):
+        query = query.filter(ObsReq2.lunarphase.ilike(f"%{request_args['lunarphase']}%"))
+
+    # obsreq records with moonphase >= value (API: ?moonphase__gte=58526.54609935184998903)
+    if request_args.get('moonphase__gte'):
+        query = query.filter(ObsReq2.moonphase >= float(request_args['moonphase__gte']))
+
+    # obsreq records with moonphase <= value (API: ?moonphase__lte=58526.54609935184998903)
+    if request_args.get('moonphase__lte'):
+        query = query.filter(ObsReq2.moonphase <= float(request_args['moonphase__lte']))
+
+    # obsreq records with photometric = boolean (API: ?photometric=True)
+    if request_args.get('photometric'):
+        query = query.filter(ObsReq2.photometric == request_args.get('photometric').lower() in TRUE_VALUES)
+
+    # obsreq records with guiding = boolean (API: ?guiding=True)
+    if request_args.get('guiding'):
+        query = query.filter(ObsReq2.guiding == request_args.get('guiding').lower() in TRUE_VALUES)
+
+    # obsreq records with non_sidereal = boolean (API: ?non_sidereal=True)
+    if request_args.get('non_sidereal'):
+        if request_args.get('non_sidereal').lower() in TRUE_VALUES:
+            query = query.filter(ObsReq2.non_sidereal is True)
+        else:
+            query = query.filter(ObsReq2.non_sidereal is False)
+
+    # obsreq records with filter_name like value (API: ?filter=V)
+    #if request_args.get('filter_name'):
+    #    query = query.filter(ObsReq.filter_name.ilike(f"%{request_args['filter_name']}%"))
+
+    # obsreq records with exp_time >= value (API: ?exp_time__gte=58526.54609935184998903)
+    #if request_args.get('exp_time__gte'):
+    #    query = query.filter(ObsReq.exp_time >= float(request_args['exp_time__gte']))
+
+    # obsreq records with exp_time <= value (API: ?exp_time__lte=58526.54609935184998903)
+    #if request_args.get('exp_time__lte'):
+    #    query = query.filter(ObsReq.exp_time <= float(request_args['exp_time__lte']))
+
+    # obsreq records with num_exp >= value (API: ?num_exp__gte=20)
+    #if request_args.get('num_exp__gte'):
+    #    query = query.filter(ObsReq.num_exp >= int(request_args['num_exp__gte']))
+
+    # obsreq records with num_exp <= value (API: ?num_exp__lte=20)
+    #if request_args.get('num_exp__lte'):
+    #    query = query.filter(ObsReq.num_exp <= int(request_args['num_exp__lte']))
+
+    # obsreq records with binning like value (API: ?binning=1x1)
+    if request_args.get('binning'):
+        query = query.filter(ObsReq2.binning.ilike(f"%{request_args['binning']}%"))
+
+    # obsreq records with dither like value (API: ?dither=1x1)
+    if request_args.get('dither'):
+        query = query.filter(ObsReq2.dither.ilike(f"%{request_args['dither']}%"))
+
+    # obsreq records with cadence like value (API: ?cadence=Once)
+    if request_args.get('cadence'):
+        query = query.filter(ObsReq2.cadence.ilike(f"%{request_args['cadence']}%"))
+
+    # obsreq records with telescope like value (API: ?telescope=Kuiper)
+    if request_args.get('telescope'):
+        query = query.filter(ObsReq2.telescope.ilike(f"%{request_args['telescope']}%"))
+
+    # obsreq records with instrument like value (API: ?instrument=Mont4k)
+    if request_args.get('instrument'):
+        query = query.filter(ObsReq2.instrument.ilike(f"%{request_args['instrument']}%"))
+
+    # obsreq records with queued = boolean (API: ?queued=True)
+    if request_args.get('queued'):
+        query = query.filter(ObsReq2.queued == request_args.get('queued').lower() in TRUE_VALUES)
+
+    # obsreq records with completed = boolean (API: ?completed=True)
+    if request_args.get('completed'):
+        query = query.filter(ObsReq2.completed == request_args.get('completed').lower() in TRUE_VALUES)
+
+    # obsreq records with rts2_doc__key (API: ?rts2_doc__key=obs_info)
+    if request_args.get('rts2_doc__key'):
+        query = query.filter(ObsReq2.rts2_doc[f"{request_args['rts2_doc__key']}"].astext != '')
+
+    # obsreq records with rts2_id <= value (API: ?rts2_id__lte=20)
+    if request_args.get('rts2_id__lte'):
+        query = query.filter(ObsReq2.rts2_id <= int(request_args['rts2_id__lte']))
+
+    # obsreq records with rts2_id >= value (API: ?rts2_id__gte=20)
+    if request_args.get('rts2_id__gte'):
+        query = query.filter(ObsReq2.rts2_id >= int(request_args['rts2_id__gte']))
+
+    # obsreq records with non_sidereal__key (API: ?non_sidereal__key=RA_BiasRate)
+    if request_args.get('non_sidereal__key'):
+        query = query.filter(ObsReq2.non_sidereal_json[f"{request_args['non_sidereal__key']}"].astext != '')
+
+    # obsreq records with user_id <= value (API: ?user_id__lte=20)
+    if request_args.get('user_id__lte'):
+        query = query.filter(ObsReq2.user_id <= int(request_args['user_id__lte']))
+
+    # obsreq records with user_id >= value (API: ?user_id__gte=20)
+    if request_args.get('user_id__gte'):
+        query = query.filter(ObsReq2.user_id >= int(request_args['user_id__gte']))
+
+    # sort results
+    if request_args.get('sort_field') and request_args.get('sort_order'):
+        if request_args['sort_order'].lower() == 'descending':
+            query = query.order_by(getattr(ObsReq2, request_args['sort_field']).desc())
+        else:
+            query = query.order_by(getattr(ObsReq2, request_args['sort_field']).asc())
+
+    # return query
+    return query
 
 # +
 # function: obsreq_filters()

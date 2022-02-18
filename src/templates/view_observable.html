@@ -64,11 +64,11 @@
        <!-- Dec -->
        <th><font color="blue">Dec</font></th>
        <!-- Filter -->
-       <th><font color="blue">Filter</font></th>
+       <!--<th><font color="blue">Filter</font></th>-->
        <!-- Exp Time -->
-       <th><font color="blue">Exp Time</font></th>
+       <!--<th><font color="blue">Exp Time</font></th>-->
        <!-- # Exp -->
-       <th><font color="blue"># Exp</font></th>
+       <!--<th><font color="blue"># Exp</font></th>-->
        <!-- Airmass -->
        <th><font color="blue">Airmass</font></th>
        <!-- Lunarphase -->
@@ -122,13 +122,13 @@
        <!-- RA -->
        <th><font color="grey"><center>J2k &deg;</center></font></th>
        <!-- Dec -->
-       <th><font color="grey"><center>J2k &deg;</center></font></th>
+       <!--<th><font color="grey"><center>J2k &deg;</center></font></th>-->
        <!-- Filter -->
-       <th><font color="grey"><center></center></font></th>
+       <!--<th><font color="grey"><center></center></font></th>-->
        <!-- Exp Time -->
-       <th><font color="grey"><center>s</center></font></th>
+       <!--<th><font color="grey"><center>s</center></font></th>-->
        <!-- # Exp -->
-       <th><font color="grey"><center></center></font></th>
+       <!--<th><font color="grey"><center></center></font></th>-->
        <!-- Airmass -->
        <th><font color="grey"><center>1 &lt;&gt; 3.5</center></font></th>
        <!-- Lunarphase -->
@@ -169,10 +169,10 @@
        {% if record.completed %}
         <td><i title="Observation request {{ record.id }} complete" class="far fa-check-circle fa-lg" aria-hidden="true"></i></a></td>
        {% else %}
-        <td><a href="/orp/observe/{{ current_user.username }}?dbid={{ record.id }}" title="Observe obsreq {{ record.id }}"><i class="fa fa-eye fa-lg" aria-hidden="true"></i></a></td>
+        <td><a href="/orp/observe2/{{ current_user.username }}?obsreqid={{ record.id }}&return_page=orp_view_observable" title="Observe obsreq {{ record.id }}"><i class="fa fa-eye fa-lg" aria-hidden="true"></i></a></td>
        {% endif %}
        <!-- Microscope -->
-       <td><a href="/orp/show/{{ current_user.username }}?dbid={{ record.id }}" title="Show obsreq {{ record.id }}"><i class="fas fa-microscope fa-lg" aria-hidden="true"></i></a></td>
+       <td><a href="/orp/show/{{ current_user.username }}?obsreqid={{ record.id }}&return_page=orp_view_observable" title="Show obsreq {{ record.id }}"><i class="fas fa-microscope fa-lg" aria-hidden="true"></i></a></td>
        <!-- Delete -->
        <!-- <td><a href="/orp/delete/{{ current_user.username }}?dbid={{ record.id }}" title="Delete obsreq {{ record.id }}"><i class="fa fa-trash fa-lg" aria-hidden="true"></i></a></td> -->
        <!-- Edit -->
@@ -190,11 +190,11 @@
        <!-- Dec -->
        <td>{{ record.dec_deg }}</td>
        <!-- Filter -->
-       <td>{{ record.filter_name }}</td>
+       <!--<td>{{ record.filter_name }}</td>-->
        <!-- Exp Time -->
-       <td>{{ record.exp_time }}</td>
+       <!--<td>{{ record.exp_time }}</td>-->
        <!-- # Exp -->
-       <td>{{ record.num_exp }}</td>
+       <!--<td>{{ record.num_exp }}</td>-->
        <!-- Airmass -->
        <td>{{ record.airmass }}</td>
        <!-- Lunarphase -->

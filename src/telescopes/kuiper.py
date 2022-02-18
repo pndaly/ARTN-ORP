@@ -210,3 +210,99 @@ def kuiper_observe(_obsreq=None, _user=None, _sim=False):
         tel_logger.info(f'kuiper_observe> exit _obsreq={_obsreq.__repr__()}, _user={_user.__repr__()}, '
                         f'_sim={str(_sim)}')
         return _json, _id
+
+
+# +
+# function: kuiper_observe()
+# -
+def kuiper_observe2(_obsreq=None, _exposures=[], _user=None, _sim=False):
+
+    #all that really needs to happen is to submit the name,ra,dec to the stellar.create_target_api() endpoint.
+    #this creates the rts2id
+
+    # set default(s)
+    _object_name = decode_verboten(_obsreq.object_name, ARTN_DECODE_DICT)
+    _ra_hms = _obsreq.ra_hms
+    _dec_dms = _obsreq.dec_dms
+    _observation_id = _obsreq.observation_id
+    _tel_name = _obsreq.telescope
+
+    _queue = None
+    _target = None
+    _json = '{}'
+    _id = -1
+    _sim_json = '{}'
+    _sim_id = -1
+
+    # for RTS2, remove white-space in object_name and ensure it does *not* end in 'target' !
+    _object_name = _object_name.replace(' ', '_')
+    if _object_name.lower().endswith(f'target'):
+        _object_name = _object_name[:-6].strip()
+    
+    tel_log(f'Queueing {_object_name} on the {_tel_name} telescope', False, True)
+    tel_log(f'Queueing {_object_name} on the {_tel_name} telescope ({_ra_hms} {_dec_dms})', True, False)
+
+    # create the target
+    _msg_err = f'ERROR: Failed calling stellar(), _sim={_sim}'
+    _msg_in = f'Calling stellar(), _sim={_sim}'
+    _msg_out = f'Called stellar(), _sim={_sim}'
+    try:
+        tel_log(_msg_in, True, False)
+        if not _sim:
+
+            #create the obs_info
+            _obs_infos = []
+            for _e in _exposures:
+                _obs_infos.append(
+                    so_exposure(Filter=_e.filter_name, exptime=_e.exp_time, amount=_e.num_exp)
+                )
+
+            _target = stellar(name=_observation_id[:4]+_object_name, ra=_ra_hms, dec=_dec_dms,
+                              obs_info=_obs_infos, artn_obs_id=_observation_id)
+
+        tel_log(_msg_out, True, False)
+    except Exception as _e:
+        tel_log(_msg_err, True, True)
+        tel_logger.error(f'Failed calling stellar(), _target={_target}, error={_e}')
+        return '{}', -1
+
+    # create the json script
+    _msg_err = f'ERROR: Failed calling _target.create_target_api(), _sim={_sim}'
+    _msg_in = f'calling _target.create_target_api(), _sim={_sim}'
+    _msg_out = f'called _target.create_target_api(), _sim={_sim}'
+    try:
+        tel_log(_msg_in, True, False)
+        if not _sim:
+            _id = _target.create_target_api()
+        tel_log(_msg_out, True, False)
+    except Exception as _e:
+        tel_log(_msg_err, True, True)
+        tel_logger.error(f'Failed calling _target.create_target_api(), _id={_id}, error={_e}')
+        return '{}', -1
+
+    # dictify the target
+    _msg_err = f'ERROR: Failed calling _target.dictify(), _sim={_sim}'
+    _msg_in = f'calling _target.dictify(), _sim={_sim}'
+    _msg_out = f'called _target.dictify(), _sim={_sim}'
+    try:
+        tel_log(_msg_in, True, False)
+        if not _sim:
+            _json = _target.dictify()
+        tel_log(_msg_out, True, False)
+    except Exception as _e:
+        tel_log(_msg_err, True, True)
+        tel_logger.error(f'Failed calling _target.dictify(), _json={_json}, error={_e}')
+        return '{}', -1
+
+    tel_log(f'Set {_object_name} to be queued on the {_tel_name} telescope', False, True)
+
+    if _sim:
+        tel_log(f'_sim_json={_sim_json}, _sim_id={_sim_id}', True, False)
+        tel_log(f'kuiper_observe> exit _obsreq={_obsreq.__repr__()}, _user={_user.__repr__()}, '
+                f'_sim={str(_sim)}', True, False)
+        return _sim_json, _sim_id
+    else:
+        tel_logger.info(f'_json={_json}, _id={_id}')
+        tel_logger.info(f'kuiper_observe2> exit _obsreq={_obsreq.__repr__()}, _user={_user.__repr__()}, '
+                        f'_sim={str(_sim)}')
+        return _json, _id

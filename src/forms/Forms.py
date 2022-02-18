@@ -106,7 +106,7 @@ regexp_dec = re.compile(ARTN_DEC_PATTERN)
 class ConfirmDeleteForm(FlaskForm):
 
     # submit
-    submit = SubmitField('OK')
+    submit = SubmitField('Yes')
 
 
 # +

@@ -150,7 +150,7 @@
     {% if current_user.is_admin %}
      <a href="{{ url_for('orp_view_observable', username=current_user.username) }}" class="btn btn-sm btn-success">View Observable Request(s)</a>
      <a href="{{ url_for('orp_view_requests', username=current_user.username) }}" class="btn btn-sm btn-warning">View All Request(s)</a>
-     <a href="{{ url_for('orp_view_queue', username=current_user.username) }}" class="btn btn-sm btn-success">View Queue(s)</a>
+     <a href="{{ url_for('orp_manage_queue', username=current_user.username) }}" class="btn btn-sm btn-success">Manage Queue(s)</a>
      <a href="{{ url_for('orp_view_users') }}?username=" class="btn btn-sm btn-info">View User(s)</a>
      <!-- <a href="{{ url_for('orp_logout') }}" class="btn btn-sm btn-danger">Log Out</a> -->
     {% else %}
@@ -169,7 +169,7 @@
      <a href="{{ url_for('orp_nightlog') }}" class="btn btn-sm btn-outline-info">Night Log</a>
     {% endif %}
     <a href="{{ url_for('orp_history') }}?username={{ current_user.username }}" class="btn btn-sm btn-outline-info">Observation History</a>
-    <a href="{{ url_for('orp_obsreq', username=current_user.username) }}" class="btn btn-sm btn-outline-info">Create Observation Request</a>
+    <a href="{{ url_for('orp_obsreq2', username=current_user.username) }}" class="btn btn-sm btn-outline-info">Create Observation Request</a>
     <a href="{{ url_for('orp_upload', username=current_user.username) }}" class="btn btn-sm btn-outline-info">File Upload</a>
     {% if not current_user.is_admin %}
      <a href="{{ url_for('orp_profile', username=current_user.username) }}" class="btn btn-sm btn-outline-info">Edit Profile</a>

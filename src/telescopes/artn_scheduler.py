@@ -28,14 +28,16 @@ import base64
 from PIL import Image
 
 class queue_obj:
-	def __init__(self, name, ra, dec, priority, exp_objs, obj_type, constraints=None, rts2ids=[]):
+	def __init__(self, name, ra, dec, priority, exp_objs, obj_type, obsreqid, rts2id, constraints=None, expids=[]):
+		self.id = obsreqid
+		self.rts2id = rts2id
 		self.name = name
 		self.ra = ra
 		self.dec = dec
 		self.priority = priority
 		self.exp_objs = exp_objs
 		self.obj_type = obj_type
-		self.rts2ids = rts2ids
+		self.expids = expids
 		#self.skycoord = astropy.coordinates.SkyCoord(
 		#	ra=astropy.coordinates.Angle(self.ra),
 		#	dec=astropy.coordinates.Angle(self.dec)
@@ -140,12 +142,12 @@ class queue_obj:
 
 
 class exp_obj:
-	def __init__(self, amount, filter, exptime, rts2id=None, dbid=None):
+	def __init__(self, amount, filter, exptime, expid=None, obsreqid=None):
 		self.amount = amount
 		self.filter = filter
 		self.exptime = exptime
-		self.rts2id = rts2id
-		self.dbid = dbid
+		self.expid = expid
+		self.dbid = obsreqid
 
 
 class queue_obj_constraints:
@@ -178,50 +180,41 @@ def orp_targets(queued_iso=datetime.datetime(2021, 3, 22)):
         ).all()
 	return format_orp_targets(db_resp)
 
-def format_orp_targets(db_resp):
+def format_orp_targets(obsreqs, exposures):
 	'''Dirty way to group obsreqs'''
-	target_names = []
-	for resp in db_resp:
-		objname = resp.object_name
-		if '.us.' in objname:
-			objname = objname.split('.us.')[0]
-		elif '.ws.' in objname:
-			objname = objname.split('.ws.')[0]
-		if '_' in objname:
-			objname = objname.split('_')[0]
-		target_names.append(objname)
-	target_names = list(set(target_names))
+
 	
 	return_data = []
-	for t in target_names:
-		observations = [x for x in db_resp if t in x.object_name]
-		ob1 = observations[0]
+	for ob in obsreqs:
+		exp_reqs = [x for x in exposures if x.obsreqid == ob.id]
 		observation_infos = []
-		rts2ids = []
-		for ob in observations:
-			rts2ids.append(int(ob.rts2_id))
+		expids = []
+		for e in exp_reqs:
+			expids.append(int(e.id))
 			observation_infos.append(
                     exp_obj(
-                        ob.num_exp,
-                        ob.filter_name,
-                        ob.exp_time,
-						int(ob.rts2_id),
+                        e.num_exp,
+                        e.filter_name,
+                        e.exp_time,
+						e.id,
 						int(ob.id)
                     )
 				)
 
 		q = queue_obj(
-                t,
-                ob1.ra_hms,
-                ob1.dec_dms,
+                ob.object_name,
+                ob.ra_hms,
+                ob.dec_dms,
                 5,
                 observation_infos,
 				'Object',
+				ob.id,
+				ob.rts2_id,
                 queue_obj_constraints(
                     moon_distance_threshold=10,
                     airmass_threshold=1.75
                 ),
-                rts2ids = rts2ids
+                expids = expids
             )
 		return_data.append(q)
 	return return_data
@@ -288,11 +281,13 @@ def FocusRunDecider(frame, frame_night):
                 exp_obj(2, 'V', 30, int(focus_field.id)),
         ],
 		'Focus',
+		focus_field.id,
+		focus_field.id,
         queue_obj_constraints(
             moon_distance_threshold=1,
             airmass_threshold=float(3.0)
         ),
-        rts2ids = [focus_field.id]
+        expids = [focus_field.id]
     )
     return_field.skycoord = focus_field.skycoord
     return_field.set_altaz(frame_night, setpeak=True)
@@ -606,16 +601,18 @@ class ARTNScheduler():
 				#Queue target with start and end times. Those must be specified in ctime (seconds from 1-1-1970).
 				unixtime = astropy.time.Time('{}-{}-{} 00:00:00'.format(1970, 1, 1))
 				for t in self.scheduled_targets:
-					
-					start = t.start_observation
+					rts2id = t.rts2id
+					if self.queue_type == 0:
+						q.add_target(rts2id)
 
-					for exp in t.exp_objs:
-						rts2id = exp.rts2id
-						#just pass in the rts2id
-						if self.queue_type == 0:
-							q.add_target(rts2id)
-						#calculate the 
-						elif self.queue_type == 5:
+					elif self.queue_type == 5:
+						start = t.start_observation
+						start_td = start - unixtime
+						t_start = int(start_td.to_value('day')*24*60*60)
+
+						for exp in t.exp_objs:
+							#just pass in the rts2id
+							#calculate the 
 							start_td = start - unixtime
 							e_start = int(start_td.to_value('day')*24*60*60)
 
@@ -623,14 +620,17 @@ class ARTNScheduler():
 							end_td = tmp_end-unixtime
 							e_end = int(end_td.to_value('day')*24*60*60)
 							
-							q.add_target(rts2id, start=e_start, end=e_end)
 							start = tmp_end + (filter_change_rate*u.second)
+						print(t_start, e_end)
+						q.add_target(rts2id, start=t_start, end=e_end)
 					
 			except:
 				print('Error in communication with the ARTN Kuiper computer')
 				self.log.append('Error in communication with the ARTN Kuiper computer')
+				return False
 
 			self.log.append('Queue populated')
+			return True
 
 	def plot(self):
 		#fig = plt.figure(figsize=(11,7))
