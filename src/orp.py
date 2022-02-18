@@ -3795,6 +3795,7 @@ def orp_observe2(username=''):
 @app.route('/dataconvert_obsreq2/<username>', methods=['GET', 'POST'])
 def dataconvert_obsreq2(username=''):
 
+    return 'Not for you'
     db_resp = db.session.query(ObsReq).all()
 
     '''Dirty way to group obsreqs'''
@@ -3921,8 +3922,8 @@ def dataconvert_obsreq2(username=''):
             user_id = ob1.user_id
         )
 
-        db.session.add(_or)
-        db.session.flush()
+        #db.session.add(_or)
+        #db.session.flush()
 
         new_obsreqdata.append(_or)
 
@@ -3935,7 +3936,7 @@ def dataconvert_obsreq2(username=''):
                 num_exp = ob.num_exp,
                 completed = ob.completed,
             )
-            db.session.add(obexp)
+            #db.session.add(obexp)
             new_expdata.append(obexp)
         
     unique_oldids = list(set(oldids))
@@ -3950,7 +3951,7 @@ def dataconvert_obsreq2(username=''):
     print('Length of grouped exposures', len(new_obsreqdata))
     print('Length of new data exposures: ', len(new_expdata))
     
-    db.session.commit()
+    #db.session.commit()
 
     return 'sucksess'
 
