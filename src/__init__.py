@@ -111,7 +111,7 @@ ARTN_NODES = {
           'name': 'Mont4k',
           'binning': 'None, 1x1, 2x2, 3x3, 4x4',
           'dither': 'None, NxM, n-RA, n-Dec',
-          'filters': 'U, B, V, R, I, Clear'
+          'filters': 'U, B, V, R, I, Clear, Halpha'
       }
     },
     'Vatt': {
