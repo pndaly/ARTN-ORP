@@ -93,7 +93,7 @@ ARTN_NODES = {
           'name': '90Prime',
           'binning': 'None, 1x1, 2x2, 3x3',
           'dither': 'None, NxM, n-RA, n-Dec',
-          'filters': 'U, B, V, R, I, Clear'
+          'filters': 'U, B, V, R, I, Clear, Open'
       }
     },
     'Kuiper':  {
@@ -111,7 +111,7 @@ ARTN_NODES = {
           'name': 'Mont4k',
           'binning': 'None, 1x1, 2x2, 3x3, 4x4',
           'dither': 'None, NxM, n-RA, n-Dec',
-          'filters': 'U, B, V, R, I, Clear, Halpha'
+          'filters': 'U, B, V, R, I, Clear, Halpha, Open'
       }
     },
     'Vatt': {
@@ -129,14 +129,15 @@ ARTN_NODES = {
           'name': 'Vatt4k',
           'binning': 'None, 1x1, 2x2, 3x3, 4x4',
           'dither': 'None, NxM, n-RA, n-Dec',
-          'filters': 'U, B, V, R, I, Clear'
+          'filters': 'U, B, V, R, I, Clear, Open'
       }
     },
 }
 ARTN_ZERO_ISO = '2000-01-01T00:00:00.000000'
 ARTN_ZERO_MJD = math.nan
 
-ASTROPLAN_IERS_URL = 'ftp://cddis.gsfc.nasa.gov/pub/products/iers/finals2000A.all'
+ASTROPLAN_IERS_URL = 'https://maia.usno.navy.mil/ser7/finals2000A.all'
+#ASTROPLAN_IERS_URL = 'ftp://cddis.gsfc.nasa.gov/pub/products/iers/finals2000A.all'
 ASTROPLAN_IERS_URL_ALTERNATE = 'https://datacenter.iers.org/data/9/finals2000A.all'
 
 FALSE_VALUES = ['false', 'f', '0']

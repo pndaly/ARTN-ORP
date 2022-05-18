@@ -44,7 +44,7 @@ DITHER = [('None', 'None'), ('n-RA', 'n-RA'), ('n-Dec', 'n-Dec'), ('NxM', 'NxM')
 EXP_TIME_DEFAULT = 30.0
 EXP_TIME_MIN = 0.0
 EXP_TIME_MAX = 1800.0
-FILTER_NAMES = [('U', 'U'), ('B', 'B'), ('V', 'V'), ('R', 'R'), ('I', 'I'), ('Clear', 'Clear'), ('Halpha', 'Halpha')]
+FILTER_NAMES = [('U', 'U'), ('B', 'B'), ('V', 'V'), ('R', 'R'), ('I', 'I'), ('Clear', 'Clear'), ('Open', 'Open'), ('Halpha', 'Halpha')]
 LOOKBACK_PERIOD = [('30', '30 Days'), ('60', '60 Days'),
                    ('90', '90 Days'), ('180', '180 Days'), ('365', '365 Days')]
 LUNARPHASE = [('Dark', 'Dark'), ('Grey', 'Grey'), ('Bright', 'Bright'), ('mBright', 'mBright'), ('Any', 'Any')]

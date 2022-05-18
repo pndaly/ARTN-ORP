@@ -101,12 +101,12 @@ TEL__NODES = {
             'name': '90Prime',
             'binning': 'None, 1x1, 2x2, 3x3',
             'dither': 'None, NxM, n-RA, n-Dec',
-            'filters': 'U, B, V, R, I, Clear'
+            'filters': 'U, B, V, R, I, Clear, Open'
         },
         'spectrograph': {
             'name': 'BCSpec',
             'binning': 'None, 1x1, 2x2, 3x3',
-            'filters': 'U, B, V, R, I, Clear'
+            'filters': 'U, B, V, R, I, Clear, Open'
         },
         'primary_imperial': 2.29 * M_TO_FT * 12.0,
         'latitude': 31.9629,
@@ -132,7 +132,7 @@ TEL__NODES = {
             'name': 'Mont4k',
             'binning': 'None, 1x1, 2x2, 3x3, 4x4',
             'dither': 'None, NxM, n-RA, n-Dec',
-            'filters': 'U, B, V, R, I, Clear, Halpha'
+            'filters': 'U, B, V, R, I, Clear, Halpha, Open'
         },
         'latitude': 32.4165,
         'longitude': -110.7345,
@@ -157,7 +157,7 @@ TEL__NODES = {
         'spectrograph': {
             'name': 'BinoSpec',
             'binning': 'None, 1x1, 2x2, 3x3, 4x4',
-            'filters': 'U, B, V, R, I, Clear'
+            'filters': 'U, B, V, R, I, Clear, Open'
         },
         'latitude': 31.6883,
         'longitude': -110.8850,
@@ -183,7 +183,7 @@ TEL__NODES = {
             'name': 'Vatt4k',
             'binning': 'None, 1x1, 2x2, 3x3, 4x4',
             'dither': 'None, NxM, n-RA, n-Dec',
-            'filters': 'U, B, V, R, I, Clear'
+            'filters': 'U, B, V, R, I, Clear, Open'
         },
         'latitude': 32.7016,
         'longitude': -109.8719,
