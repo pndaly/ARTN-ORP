@@ -51,6 +51,93 @@ db = SQLAlchemy()
 # logger = UtilsLogger('Models-Logger').logger
 # logger.debug(f"Models logger initialized")
 
+
+# +
+# class: NightlyQueue(), inherits from UserMixin, db.Model
+# -
+class NightlyQueue(UserMixin, db.Model):
+    # +
+    # member variable(s)
+    # -
+
+    # define table name
+    __tablename__ = 'nightlyqueue'
+    _iso = get_iso()
+    _mjd = float(iso_to_mjd(_iso))
+
+    # +
+    # table mapping
+    # -
+    # noinspection PyUnresolvedReferences
+    id = db.Column(db.Integer, primary_key=True, index=True)
+    # noinspection PyUnresolvedReferences
+    night = db.Column(db.String(ARTN_CHAR_256), nullable=False)
+    # noinspection PyUnresolvedReferences
+    queued_iso = db.Column(db.DateTime, default=get_date_time(0), nullable=False)
+    # noinspection PyUnresolvedReferences
+    queued_mjd = db.Column(db.Float, default=_mjd, nullable=False)
+    # noinspection PyUnresolvedReferences
+    telescope = db.Column(db.String(ARTN_CHAR_16), nullable=False)
+    # noinspection PyUnresolvedReferences
+    submitted = db.Column(db.Boolean, default=False, nullable=False)
+    # noinspection PyUnresolvedReferences
+    completed = db.Column(db.Boolean, default=False, nullable=False)
+    # noinspection PyUnresolvedReferences
+    completed_iso = db.Column(db.DateTime, nullable=True)
+    # noinspection PyUnresolvedReferences
+    completed_mjd = db.Column(db.Float, nullable=True)
+    # noinspection PyUnresolvedReferences
+    interrupt = db.Column(db.Boolean, default=False, nullable=False)
+    # noinspection PyUnresolvedReferences
+    queuetype = db.Column(db.Integer, default=0, nullable=False)
+
+
+# +
+# class: NightlyQueue(), inherits from UserMixin, db.Model
+# -
+class NightlyQueueExposure(UserMixin, db.Model):
+    # +
+    # member variable(s)
+    # -
+
+    # define table name
+    __tablename__ = 'nightlyqueueexposure'
+    _iso = get_iso()
+    _mjd = float(iso_to_mjd(_iso))
+
+    # +
+    # table mapping
+    # -
+    # noinspection PyUnresolvedReferences
+    id = db.Column(db.Integer, primary_key=True, index=True)
+    # noinspection PyUnresolvedReferences
+    obsreqid = db.Column(db.Integer, nullable=False)
+    # noinspection PyUnresolvedReferences
+    nightlyqueueid = db.Column(db.Integer, nullable=False)
+    # noinspection PyUnresolvedReferences
+    queueorder = db.Column(db.Integer, nullable=True)
+    # noinspection PyUnresolvedReferences
+    rts2_id = db.Column(db.Integer, nullable=False)
+    # noinspection PyUnresolvedReferences
+    starttime = db.Column(db.DateTime, nullable=True)
+    # noinspection PyUnresolvedReferences
+    endtime = db.Column(db.DateTime, nullable=True)
+    # noinspection PyUnresolvedReferences
+    rts2start_t = db.Column(db.Integer, nullable=True)
+    # noinspection PyUnresolvedReferences
+    rts2end_t = db.Column(db.Integer, nullable=True)
+    # noinspection PyUnresolvedReferences
+    unscheduled = db.Column(db.Boolean, default=False)
+    # noinspection PyUnresolvedReferences
+    schedule_log = db.Column(db.String(ARTN_CHAR_256), nullable=False)
+    # noinspection PyUnresolvedReferences
+    filename = db.Column(db.String(ARTN_CHAR_256), nullable=True, default='')
+    # noinspection PyUnresolvedReferences
+    overhead = db.Column(db.Float, nullable=False, default=0.0)
+    # noinspection PyUnresolvedReferences
+    currently_being_observed = db.Column(db.Boolean, nullable=False, default=False)
+
+
 # +
 # class: ObsTarget(), inherits from UserMixin, db.Model
 # -
@@ -183,7 +270,6 @@ class ObsReq2(UserMixin, db.Model):
     # noinspection PyUnresolvedReferences
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
-
     # +
     # property: pretty_serialized()
     # -
@@ -194,9 +280,14 @@ class ObsReq2(UserMixin, db.Model):
     # +
     # method: serialized()
     # -
-    def serialized(self):
+    def serialized(self, queuedonly=False):
         _exposures = ObsExposure.query.filter_by(obsreqid=self.id).all()
-        _exposures_serialized = [x.serialized() for x in _exposures]
+        
+        if queuedonly:
+            _exposures_serialized = [x.serialized() for x in _exposures if x.queued and not x.completed]
+        else:
+            _exposures_serialized = [x.serialized() for x in _exposures]
+        
         _d = {
             'id': int(self.id),
             'username': self.username,
@@ -240,6 +331,25 @@ class ObsReq2(UserMixin, db.Model):
         }
         return _d
 
+    def stellar_dictify(self, _exposures=None):
+        if _exposures == None:
+            _exposures = ObsExposure.query.filter_by(obsreqid=self.id, queued=True, completed=False).all()
+        thedict = {
+            "name"  : self.object_name,
+            "ra"    : self.ra_hms,
+            "dec"   : self.dec_dms,
+            "obs_id"    : self.rts2_id,
+            "obs_info" : []
+        }
+        for obs in _exposures:
+            thedict['obs_info'].append({
+                "obsexpid": obs.id,
+                "Filter"  : obs.filter_name,
+                "exptime" : obs.exp_time,
+                "amount"  : obs.num_exp,
+            })
+
+        self.rts2_doc = thedict
     # +
     # (overload) method: __str__()
     # -
@@ -261,6 +371,9 @@ class ObsReq2(UserMixin, db.Model):
         return [_s.serialized() for _s in s_records]
 
 
+# +
+# class: ObsExposure(), inherits from UserMixin, db.Model
+# -
 class ObsExposure(UserMixin, db.Model):
     # +
     # member variable(s)
@@ -288,7 +401,8 @@ class ObsExposure(UserMixin, db.Model):
     completed = db.Column(db.Boolean, default=False, nullable=False)
     # noinspection PyUnresolvedReferences
     queued = db.Column(db.Boolean, default=False, nullable=False)
-
+    # noinspection PyUnresolvedReferences
+    filename = db.Column(db.String(ARTN_CHAR_256), default="", nullable=True)
 
     def serialized(self):
         _d = {
@@ -296,6 +410,7 @@ class ObsExposure(UserMixin, db.Model):
             'obsreqid':int(self.obsreqid),
             'filter_name':self.filter_name,
             'exp_time':self.exp_time,
+            'num_exp':self.num_exp,
             'completed':str(self.completed),
             'queued':str(self.queued)
         }
@@ -329,6 +444,7 @@ class ObsExposure(UserMixin, db.Model):
                     )
                 )
         return exposures
+
 
 # +
 # class: ObsReq(), inherits from UserMixin, db.Model

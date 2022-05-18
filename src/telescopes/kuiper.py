@@ -281,18 +281,18 @@ def kuiper_observe2(_obsreq=None, _exposures=[], _user=None, _sim=False):
         return '{}', -1
 
     # dictify the target
-    _msg_err = f'ERROR: Failed calling _target.dictify(), _sim={_sim}'
-    _msg_in = f'calling _target.dictify(), _sim={_sim}'
-    _msg_out = f'called _target.dictify(), _sim={_sim}'
-    try:
-        tel_log(_msg_in, True, False)
-        if not _sim:
-            _json = _target.dictify()
-        tel_log(_msg_out, True, False)
-    except Exception as _e:
-        tel_log(_msg_err, True, True)
-        tel_logger.error(f'Failed calling _target.dictify(), _json={_json}, error={_e}')
-        return '{}', -1
+    #_msg_err = f'ERROR: Failed calling _target.dictify(), _sim={_sim}'
+    #_msg_in = f'calling _target.dictify(), _sim={_sim}'
+    #_msg_out = f'called _target.dictify(), _sim={_sim}'
+    #try:
+    #    tel_log(_msg_in, True, False)
+    #    if not _sim:
+    #        _json = _target.dictify()
+    #    tel_log(_msg_out, True, False)
+    #except Exception as _e:
+    #    tel_log(_msg_err, True, True)
+    #    tel_logger.error(f'Failed calling _target.dictify(), _json={_json}, error={_e}')
+    #    return '{}', -1
 
     tel_log(f'Set {_object_name} to be queued on the {_tel_name} telescope', False, True)
 

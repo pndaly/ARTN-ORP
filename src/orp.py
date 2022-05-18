@@ -24,12 +24,13 @@ from src.forms.Forms import ConfirmDeleteForm, ConfirmRegistrationForm, Feedback
     RegistrationForm, ResetPasswordForm, ResetPasswordRequestForm, UpdateObsReqForm, UploadForm, \
     UserHistoryForm, OBSERVATION_TYPES
 from src.models.Models import db, obsreq_filters, ObsReq, User, user_filters
-from src.models.Models import obsreq2_filters, ObsReq2, ObsExposure
+from src.models.Models import obsreq2_filters, ObsReq2, ObsExposure, NightlyQueue, NightlyQueueExposure
 from src.telescopes.factory import *
 from src.telescopes.bok import *
 from src.telescopes.kuiper import *
 from src.telescopes.vatt import *
 from src.telescopes.artn_scheduler import *
+from rts2solib import rts2comm
 
 from src import *
 
@@ -865,6 +866,69 @@ def get_old_nightlog_fits(_in=None):
     # return list sorted by Julian date key
     return sorted(_l_out, key=lambda _i: _i['JULIAN'])
 
+
+def get_current_queue_table(rts2ids, obsreqs_dict, table_class, expids, username):
+
+    html= ''
+
+    for rts2_id in rts2ids:
+        try:
+            ob = obsreqs_dict[rts2_id]
+            t_expids = [x['id'] for x in ob['exposures']]
+            allchecked = ' checked' if all([tid in expids for tid in t_expids]) else ''
+            ob = obsreqs_dict[rts2_id]
+            nameid = ob['object_name']
+            if '+' in nameid:
+                nameid = nameid.replace('+', '')
+            
+            html += '''
+            <tr class="{}">
+                <td><button id="collbtn{}" onclick="changeCollapseButtonText(this.id)" type="button" class="btn btn-primary btn-xs arrow-right" data-toggle="collapse" data-target="#collapse{}"></button></td>
+                <td><a href="/orp/obsreq2/{}?obsreqid={}&return_page=orp_manage_queue">{}</a></td>
+                <td>{}</td>
+                <td>{}</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><input id="queuetarg_{}" type="checkbox" onclick="objectCheckAll(this.id)"{}></td>
+            </tr>
+            '''.format(table_class,nameid,nameid,username,ob['id'],ob['object_name'],ob['ra_hms'],ob['dec_dms'], nameid, allchecked)
+            html+= '''
+            <tr class="collapse" id="collapse{}">
+                <td colspan="999">
+                    <div>
+                        <table class="table table-striped table-sm">
+                            <thead>
+                                <tr>
+                                    <td><font color='blue'>Filter</font></td>
+                                    <td><font color='blue'>Exptime (s)</font></td>
+                                    <td><font color='blue'>Num Exp</font></td>
+                                    <td><font color='blue'>Requeue</font><td>
+                                </tr>
+                            </thead>
+                            <tbody>
+            '''.format(nameid)
+            for obexp in ob['exposures']:
+                thischecked = ' checked' if obexp['id'] in expids else ''
+                html+='''
+                                    <tr>
+                                        <td>{}</td>
+                                        <td>{}</td>
+                                        <td>{}</td>
+                                        <td><input value="{}" id="{}_{}" type="checkbox" onclick="expCheckOne(this.id)"{}></td>
+                                    </tr>
+                '''.format(obexp['filter_name'], obexp['exp_time'], obexp['num_exp'], obexp['id'], nameid, obexp['id'], thischecked)
+            html += '''
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+            '''
+        except:
+            pass
+    
+    return html
 
 # +
 # error handler(s)
@@ -2990,6 +3054,183 @@ def orp_manage_queue(username='', telescope='Kuiper'):
 
     return render_template('manage_queue.html', dates=date_list, telescope=telescope, username=username)
 
+# +
+# route(s): /orp/manage_queue/<username>, requires login + admin
+# -
+@app.route('/orp/orp/view_current_queue/<username>', methods=['GET', 'POST'])
+@app.route('/orp/view_current_queue/<username>', methods=['GET', 'POST'])
+@app.route('/view_current_queue/<username>', methods=['GET', 'POST'])
+@login_required
+def orp_view_current_queue(username='', telescope='Kuiper'):
+    msg_out(f'/orp/view_current_queue/{username} entry', True, False)
+    get_client_ip(request)
+
+    # look up user (as required)
+    _u = current_user if current_user.is_authenticated else User.query.filter_by(username=username).first_or_404()
+
+    telescope = request.args.get('telescope')
+    view_current = request.args.get('current', False)
+    currentqueue = getCurrentQueue(telescope=telescope)
+    currently_submitted_queue = len(currentqueue) > 0
+
+    queuenight = datetime.datetime.now()
+    if queuenight.hour < 8:
+        queuenight += datetime.timedelta(days=-1)
+    queuenight_str = queuenight.strftime("%Y-%m-%d")
+
+    #queued_iso_begin = datetime.datetime.now() - datetime.timedelta(days=30)
+    #submitted_queues = NightlyQueue.query.filter(NightlyQueue.queued_iso > queued_iso_begin).all()
+    #date_list = list(sorted([x.night for x in submitted_queues], reverse=True))
+
+
+
+    if currently_submitted_queue:
+        '''
+            plan_executed_ids -> [1] rts2_ids of executed exposures
+            plan_executed_names -> [1] database names of executed exposures 
+            plan_ids -> [1] rts2_ids of targets in queue
+            current_target -> [1] rts2_id of current target
+            plan_ids -> [1] rts2_ids of targets in queue
+            next_id -> [1] rts2_id of next target
+        '''
+
+        communicator = rts2comm()
+        rts2all = communicator._getall()
+        rts2_sel_values = rts2all['SEL']['d']
+        
+        executed_ids = rts2_sel_values['plan_executed_ids'][1] #list of ids
+        current_id = rts2_sel_values['current_target'][1] #just the id
+        plan_ids = rts2_sel_values['plan_ids'][1] #list of ids
+
+        total_rts2ids = []
+        total_rts2ids.extend(executed_ids)
+        total_rts2ids.extend([current_id])
+        total_rts2ids.extend(plan_ids)
+        
+        around_dates = [
+            (datetime.datetime.now()-datetime.timedelta(days=1)).strftime("%Y-%m-%d"),
+            datetime.datetime.now().strftime("%Y-%m-%d"),
+            (datetime.datetime.now()+datetime.timedelta(days=1)).strftime("%Y-%m-%d")
+        ]
+        
+        obsreqs = ObsReq2.query.filter(ObsReq2.rts2_id.in_(total_rts2ids)).all()
+        total_obsreqids = [x.id for x in obsreqs]
+        executed_ids = [str(e) for e in executed_ids if e in total_obsreqids]
+        obsreqexps = ObsExposure.query.filter(ObsExposure.obsreqid.in_(total_obsreqids)).all()
+
+        obsreqs_dict = {}
+        for o in obsreqs:
+            obsexps = [x for x in obsreqexps if x.obsreqid == o.id]
+            status = None
+            if o.rts2_id in executed_ids:
+                status = 'executed'
+            if o.rts2_id in plan_ids:
+                status = 'planned'
+            if o.rts2_id == current_id:
+                status = 'current'
+            
+            obsreqs_dict[o.rts2_id] = o.serialized(queuedonly=True)
+
+        return render_template('view_current_queue.html', queuenight=queuenight_str, active=True, queuelist=obsreqs_dict, executed=executed_ids, planned_ids=plan_ids, current_id=[current_id], telescope=telescope, username=username)
+    return render_template('view_current_queue.html', active=False, queuenight=queuenight_str)
+
+
+@app.route('/orp/orp/ajax_current_queued_list')
+@app.route('/orp/ajax_current_queued_list')
+@app.route('/ajax_current_queued_list')
+def current_queued_list():
+    
+    expids = []
+    page = 0
+    num_items = 10
+    username = request.args.get('username')
+    expids_string = request.args.get('expids')
+    if expids_string is not None and expids_string is not '':
+        for r in expids_string.split(','):
+            expids.append(int(r))
+    
+    communicator = rts2comm()
+    rts2all = communicator._getall()
+    rts2_sel_values = rts2all['SEL']['d']
+    
+    executed_ids = rts2_sel_values['plan_executed_ids'][1] #list of ids
+    current_id = rts2_sel_values['current_target'][1] #just the id
+    plan_ids = rts2_sel_values['plan_ids'][1] #list of ids
+
+    executed_ids = [x for x in executed_ids if x not in [current_id]]
+
+    total_rts2ids = []
+    total_rts2ids.extend(executed_ids)
+    total_rts2ids.extend([current_id])
+    total_rts2ids.extend(plan_ids)
+
+    around_dates = [
+        (datetime.datetime.now()-datetime.timedelta(days=1)).strftime("%Y-%m-%d"),
+        datetime.datetime.now().strftime("%Y-%m-%d"),
+        (datetime.datetime.now()+datetime.timedelta(days=1)).strftime("%Y-%m-%d")
+    ]
+    
+    obsreqs = ObsReq2.query.filter(ObsReq2.rts2_id.in_(total_rts2ids)).all()
+    total_obsreqids = [x.id for x in obsreqs]
+    total_obsreq_rts2ids = [x.rts2_id for x in obsreqs]
+    executed_ids = list(set([e for e in executed_ids if e in total_obsreq_rts2ids]))
+    obsreqexps = ObsExposure.query.filter(ObsExposure.obsreqid.in_(total_obsreqids)).all()
+
+    obsreqs_dict = {}
+    for o in obsreqs:
+        obsexps = [x for x in obsreqexps if x.obsreqid == o.id]
+        status = None
+        if o.rts2_id in executed_ids:
+            status = 'executed'
+        if o.rts2_id in plan_ids:
+            status = 'planned'
+        if o.rts2_id == current_id:
+            status = 'current'
+        
+        obsreqs_dict[o.rts2_id] = o.serialized(queuedonly=True)
+
+    html = '''
+    <table class="table table-striped table-lg">
+        <thead>
+            <tr>
+                <th><font color="blue">Exp Info</font></th>
+                <th><font color="blue">Object</font></th>
+                <th><font color="blue">RA</font></th>
+                <th><font color="blue">Dec</font></th>
+                <th><font color="blue">Start (est)</font></th>
+                <th><font color="blue">End (est)</font></th>
+                <th><font color="blue">Overhead</font></th>
+                <th><font color="blue">Requeue Request</font></th>
+            </tr>
+            <tr>
+                <th><font color="grey"><center> </center></font></th>
+                <th><font color="grey"><center> </center></font></th>
+                <th><font color="grey"><center>J2k &deg;</center></font></th>
+                <th><font color="grey"><center>J2k &deg;</center></font></th>
+                <th><font color="grey"><center> </center></font></th>
+                <th><font color="grey"><center> </center></font></th>
+                <th><font color="grey"><center> </center></font></th>
+                <th><font color="grey"><center> </center></font></th>
+            </tr>
+        </thead>
+        <tbody>
+    '''
+
+    html += get_current_queue_table(executed_ids, obsreqs_dict, 'table-success', expids, username)
+    html += get_current_queue_table([current_id], obsreqs_dict, 'table-primary', expids, username)
+    html += get_current_queue_table(plan_ids, obsreqs_dict, 'table-warning', expids, username)
+
+    html += '''
+        </tbody>
+    </table>
+    '''
+
+    payload = {
+        'qt_html':html
+    }
+
+    return payload
+
 
 @app.route('/orp/orp/ajax_bigartn_queue')
 @app.route('/orp/ajax_bigartn_queue')
@@ -3003,9 +3244,6 @@ def bigartn_queue_query():
         html = "<b><font color='red'>There is a queue already submitted. Re-Submitting will overwrite/interrupt the queue</font></b>"
     else:
         html = ""
-
-    print(canInterrupt)
-    print(html)
 
     payload = {
         "canInterrupt" : canInterrupt,
@@ -3053,6 +3291,7 @@ def queued_list_query(night=None, completed=False, day_buffer=1):
     queued_iso_end = datetime.datetime.now() + datetime.timedelta(days=1)
 
     query_filter = [
+        ObsReq2.completed == False,
         ObsReq2.queued == True,
         ObsReq2.queued_iso > queued_iso_begin,
         ObsReq2.queued_iso < queued_iso_end
@@ -3139,7 +3378,7 @@ def queued_list_query(night=None, completed=False, day_buffer=1):
                                     <td>{}</td>
                                     <td><input value="{}" id="{}_{}" type="checkbox" onclick="expCheckOne(this.id)"{}></td>
                                 </tr>
-            '''.format(obsinfo.filter, obsinfo.exptime, obsinfo.amount,obsinfo.expid, nameid, obsinfo.expid, thischecked)
+            '''.format(obsinfo.filter, obsinfo.exptime, obsinfo.amount, obsinfo.expid, nameid, obsinfo.expid, thischecked)
         html += '''
                             </tbody>
                         </table>
@@ -3212,8 +3451,8 @@ def run_artn_scheduler():
     interrupt = True if request.args.get('interrupt') == 'true' else False
     simulate = True if request.args.get('simulate') == 'true' else False
 
-    night = request.args.get('night')
-    night = datetime.datetime.strptime(night, "%Y-%m-%d")
+    nightstr = request.args.get('night')
+    night = datetime.datetime.strptime(nightstr, "%Y-%m-%d")
 
     telescope = request.args.get('telescope')
 
@@ -3283,8 +3522,8 @@ def populate_queue():
     simulate = True if request.args.get('simulate') == 'true' else False
     queue_type = int(request.args.get('queue_type'))
 
-    night = request.args.get('night')
-    night = datetime.datetime.strptime(night, "%Y-%m-%d")
+    nightstr = request.args.get('night')
+    night = datetime.datetime.strptime(nightstr, "%Y-%m-%d")
     
     if exposureids_string != '':
         for r in exposureids_string.split(','):
@@ -3328,25 +3567,56 @@ def populate_queue():
         scheduler.run()
         scheduler.logdump()
         
-        scheduler.submit_queue()
-        try:
-            success = scheduler.submit_queue()
-            if success:
-                payload = {
-                    'message':'Success'
-                }
-                for se in scheduled_exposures:
-                    se.completed = False
-                    se.queued = True
-                db.session.commit()
-            else:
-                payload = {
-                    'message':'Error in submitting to RTS2'
-                }
-        except:
+        #try:
+        success = scheduler.submit_queue()
+        if success:
+
+            db_nightlyqueue = NightlyQueue(
+                night = nightstr,
+                telescope = telescope,
+                submitted = True,
+                interrupt = interrupt,
+                queuetype = queue_type,
+            )
+            db.session.add(db_nightlyqueue)
+            db.session.flush()
+
+            for targ in scheduler.scheduled_targets:
+                db_nightlyqueueobj = NightlyQueueExposure(
+                    nightlyqueueid = db_nightlyqueue.id,
+                    queueorder = targ.order,
+                    obsreqid = targ.id,
+                    rts2_id = targ.rts2id,
+                    overhead = targ.overhead,
+                    starttime = targ.db_starttime,
+                    endtime = targ.db_endtime,
+                    rts2start_t = targ.rts2start_t,
+                    rts2end_t = targ.rts2end_t,
+                    schedule_log = targ.db_log,
+                )
+                db.session.add(db_nightlyqueueobj)
+
+            payload = {
+                'message':'Success'
+            }
+
+            for se in scheduled_exposures:
+                se.completed = False
+                se.queued = True
+            db.session.flush()
+
+            for obsr in obsreqs:
+                obsr.stellar_dictify()
+            db.session.commit()
+        else:
             payload = {
                 'message':'Error in submitting to RTS2'
             }
+        
+        #except:
+        #    payload = {
+        #        'message':'Error in submitting to RTS2'
+        #    }
     else:
         payload = {
             'message':'Telescope Queue system not yet implemented'
@@ -3688,14 +3958,19 @@ def orp_obsreq2(username=''):
 
         #update all exposures information, or if new insertion
         for up_exp in updated_exposures:
+            up_exp.completed = False
+            up_exp.queued = False
             up_exp.obsreqid = int(obsreqid)
             if up_exp.id is None:
                 db.session.add(up_exp)
             prev = prev_exposures.filter(ObsExposure.id == up_exp.id).first()
             if prev:
+                prev.completed = False
+                prev.queued = False
                 prev.filter_name = up_exp.filter_name
                 prev.exp_time = up_exp.exp_time
                 prev.num_exp = up_exp.num_exp
+
 
         db.session.flush()
         db.session.commit()
@@ -3962,7 +4237,7 @@ def dataconvert_obsreq2(username=''):
         3.) Edit the view observable request(s) and view all request(s) tables X
         4.) test test test submissions X
 
-    To do:
+    To do: 
         rename view_queue to manage_queue X
             consider permissions when there is a queue already submitted
             only artn/operator can interrupt/clear queue

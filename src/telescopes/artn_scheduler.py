@@ -60,6 +60,14 @@ class queue_obj:
 		self.end_observation = None
 		self.scheduled = False
 
+		self.order = None
+		self.rts2start_t = None
+		self.rts2end_t = None
+		self.db_starttime = None
+		self.db_endtime = None
+		self.db_log = ''
+
+
 	def set_altaz(self, frame, setpeak=False):
 		self.altaz = self.skycoord.transform_to(frame)
 		airmasses = []
@@ -212,7 +220,7 @@ def format_orp_targets(obsreqs, exposures):
 				ob.rts2_id,
                 queue_obj_constraints(
                     moon_distance_threshold=10,
-                    airmass_threshold=2.5
+                    airmass_threshold=2.2
                 ),
                 expids = expids
             )
@@ -225,8 +233,6 @@ def getCurrentQueue(telescope='Kuiper', queuename='plan'):
 		try:
 			q = queue.Queue(queuename)
 			q.load()
-			for f in q.entries:
-				print(f.id, f.get_start(), f.get_end())
 			return q.entries
 		except:
 			return []
@@ -408,6 +414,7 @@ class ARTNScheduler():
 		times_range = self.midnight + frames_range
 
 		#Changed to a while loop 
+		order_iter = 0
 		while obs_time < times_range[-1]:
 			ni += 1
 
@@ -445,7 +452,8 @@ class ARTNScheduler():
 
 				#for the 0th and middle hours: run a focus run
 				if self.scheduled_focus:
-					if (ni == 0 or ni == int(intervals/2.0)) or forcefocus:
+					#if (ni == 0 or ni == int(intervals/2.0)) or forcefocus:
+					if ni == 0 or forcefocus:
 						try:
 							focus_field = FocusRunDecider(focus_frame, self.frame_night)
 							focus_field.set_altaz(self.frame_night, setpeak=True)
@@ -495,6 +503,8 @@ class ARTNScheduler():
 						s.start_observation = obs_time
 						s.end_observation = obs_time + s.overhead*u.second
 						s.scheduled = True
+						s.order = order_iter
+						order_iter += 1
 
 						self.log.append('{} scheduled: {} with overhead: {} at Priority {}'.format(
 							s.name,
@@ -548,6 +558,10 @@ class ARTNScheduler():
 			s_start = (t.start_observation-self.midnight).to('hour')/u.hour
 			s_end = (t.end_observation-self.midnight).to('hour')/u.hour
 			scheduled_time_range = np.linspace(s_start, s_end, 50)
+
+			t.db_starttime = (t.start_observation-self.utcoffset).to_value('iso', subfmt='date_hms')
+			t.db_endtime = (t.end_observation-self.utcoffset).to_value('iso', subfmt='date_hms')
+
 			self.log.append('{}: {} - {}. {} {}'.format(
 				t.name,
 				round(float(scheduled_time_range[0]), 3),
@@ -600,6 +614,7 @@ class ARTNScheduler():
 
 				#Queue target with start and end times. Those must be specified in ctime (seconds from 1-1-1970).
 				unixtime = astropy.time.Time('{}-{}-{} 00:00:00'.format(1970, 1, 1))
+				print([t.rts2id for t in self.scheduled_targets])
 				for t in self.scheduled_targets:
 					rts2id = t.rts2id
 					if self.queue_type == 0:
@@ -621,7 +636,10 @@ class ARTNScheduler():
 							e_end = int(end_td.to_value('day')*24*60*60)
 							
 							start = tmp_end + (filter_change_rate*u.second)
-						print(t_start, e_end)
+
+							t.rts2start_t = t_start
+							t.rts2end_t = e_end
+
 						q.add_target(rts2id, start=t_start, end=e_end)
 					
 			except:
@@ -698,7 +716,7 @@ class ARTNScheduler():
 		ax.grid(True, color='k')
 		ax.set_xlim(self.nightrange[0], self.nightrange[len(self.nightrange)-1])
 		ax.set_ylim(3, 0.95)
-		ax.set_xlabel('Hours from EDT Midnight')
+		ax.set_xlabel('Hours from Observatory Midnight')
 		ax.set_ylabel('Airmass')
 		
 		canvas.draw()
