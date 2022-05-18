@@ -55,3 +55,4 @@ src/telescopes/rts2_config.json
 # other repositories
 # -
 src/rts2solib
+src/rts2solib.*
