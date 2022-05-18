@@ -50,8 +50,10 @@ docker/artn.docker.sh
 etc/ARTN.sh
 etc/ORP.sh
 src/telescopes/rts2_config.json
+start.sh
 
 # +
 # other repositories
 # -
 src/rts2solib
+src/rts2solib.*

@@ -1,15 +1,10 @@
 {
-	"username": "rts2obs",
-	"password": "********",
+	"username" : "rts2obs",
+	"password" : "*********",
 	"script_path": "/tmp/",
-	"dbpath": "postgresql://rts2obs:rts2obs@localhost/stars",
-	"device_list": [
-		"C0",
-		"EXEC",
-		"F0",
-		"SEL",
-		"BIG61",
-		"W0"
-	],
-	"rts2url": "http://kuiper.as.arizona.edu:42889"
+	"dbpath"    : "postgresql://rts2obs:*******@localhost/stars",
+	"orp_dbpath"    : "postgresql+psycopg2://artn:********@scopenet.as.arizona.edu/artn",
+	"device_list": ["C0", "EXEC", "F0", "SEL", "BIG61", "W0"],
+	"rts2url"   : "http://10.30.1.24:8889",
+	"targetscript": "/etc/rts2/targetscript.py"
 }

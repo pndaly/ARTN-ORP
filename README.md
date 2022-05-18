@@ -80,9 +80,12 @@ to use them!
 
 * Database entity-relationship diagram 
 
-    If you have `eralchemy` installed, an entity-relationship diagram can be generated:
+    An entity-relationship diagram can be generated:
     
     ```bash
+    % apt install libgraphviz-dev
+    % python3 -m pip install pygraphviz
+    % python3 -m pip install eralchemy
     % eralchemy -i "postgresql+psycopg2://${ARTN_DB_USER}:${ARTN_DB_PASS}@${ARTN_DB_HOST}:${ARTN_DB_PORT}/${ARTN_DB_NAME}" -o ${ARTN_DB_NAME}.pdf
     ```
 
