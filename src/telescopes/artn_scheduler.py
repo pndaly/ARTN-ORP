@@ -408,7 +408,7 @@ class ARTNScheduler():
 		print(start_itera, intervals)
 		#If the queue is ran in the middle of the night, this will force
 		#	a focus field to start the observations if it is requested
-		forcefocus = self.scheduled_focus and start_itera > 1
+		forcefocus = self.scheduled_focus and start_itera >= 1
 
 		ni = start_itera -1
 		times_range = self.midnight + frames_range
@@ -466,7 +466,8 @@ class ARTNScheduler():
 
 				#do something with constraints: boolean observable = T/F?
 				for t in unscheduled_targets:
-					t.evaluate_constraints(frame_hours[int(len(frame_hours)/2)], self.location, self.log)
+					t.evaluate_constraints(frame_hours[0], self.location, self.log)
+					#t.evaluate_constraints(frame_hours[int(len(frame_hours)/2)], self.location, self.log)
 					
 				constrained_targets = [t for t in unscheduled_targets if t.constrained_visible]
 

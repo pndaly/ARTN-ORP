@@ -868,9 +868,8 @@ def get_old_nightlog_fits(_in=None):
 
 
 def get_current_queue_table(rts2ids, obsreqs_dict, table_class, expids, username):
-
+    FOCUS_FIELD_IDS = [3611, 3612, 3613, 3614, 3615, 3616, 3617, 3618, 3619, 3620, 3621, 3622, 3623, 3624]
     html= ''
-
     for rts2_id in rts2ids:
         try:
             ob = obsreqs_dict[rts2_id]
@@ -878,55 +877,73 @@ def get_current_queue_table(rts2ids, obsreqs_dict, table_class, expids, username
             allchecked = ' checked' if all([tid in expids for tid in t_expids]) else ''
             ob = obsreqs_dict[rts2_id]
             nameid = ob['object_name']
+            btn_disable = ''
             if '+' in nameid:
                 nameid = nameid.replace('+', '')
-            
-            html += '''
-            <tr class="{}">
-                <td><button id="collbtn{}" onclick="changeCollapseButtonText(this.id)" type="button" class="btn btn-primary btn-xs arrow-right" data-toggle="collapse" data-target="#collapse{}"></button></td>
-                <td><a href="/orp/obsreq2/{}?obsreqid={}&return_page=orp_manage_queue">{}</a></td>
-                <td>{}</td>
-                <td>{}</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td><input id="queuetarg_{}" type="checkbox" onclick="objectCheckAll(this.id)"{}></td>
-            </tr>
-            '''.format(table_class,nameid,nameid,username,ob['id'],ob['object_name'],ob['ra_hms'],ob['dec_dms'], nameid, allchecked)
-            html+= '''
-            <tr class="collapse" id="collapse{}">
-                <td colspan="999">
-                    <div>
-                        <table class="table table-striped table-sm">
-                            <thead>
-                                <tr>
-                                    <td><font color='blue'>Filter</font></td>
-                                    <td><font color='blue'>Exptime (s)</font></td>
-                                    <td><font color='blue'>Num Exp</font></td>
-                                    <td><font color='blue'>Requeue</font><td>
-                                </tr>
-                            </thead>
-                            <tbody>
-            '''.format(nameid)
-            for obexp in ob['exposures']:
-                thischecked = ' checked' if obexp['id'] in expids else ''
-                html+='''
-                                    <tr>
-                                        <td>{}</td>
-                                        <td>{}</td>
-                                        <td>{}</td>
-                                        <td><input value="{}" id="{}_{}" type="checkbox" onclick="expCheckOne(this.id)"{}></td>
-                                    </tr>
-                '''.format(obexp['filter_name'], obexp['exp_time'], obexp['num_exp'], obexp['id'], nameid, obexp['id'], thischecked)
-            html += '''
-                                </tbody>
-                            </table>
-                        </div>
-                    </td>
-                </tr>
-            '''
+            object_href = '<a href="/orp/obsreq2/{}?obsreqid={}&return_page=orp_manage_queue">{}</a>'.format(username,ob['id'],ob['object_name'])
         except:
-            pass
+            if rts2_id == 1:
+                nameid = 'DARK FRAMES'
+            if rts2_id == 2:
+                nameid = 'FLAT FRAMES'
+            if rts2_id in FOCUS_FIELD_IDS:
+                nameid = 'FOCUS FIELD'
+
+            btn_disable = 'disabled '
+            ob = {
+                'id':-1,
+                'object_name':nameid,
+                'ra_hms':'',
+                'dec_dms':'',
+                'exposures':[]
+            }
+            allchecked = False
+            object_href=nameid
+            
+        html += '''
+        <tr class="{}">
+            <td><button {}id="collbtn{}" onclick="changeCollapseButtonText(this.id)" type="button" class="btn btn-primary btn-xs arrow-right" data-toggle="collapse" data-target="#collapse{}"></button></td>
+            <td>{}</td>
+            <td>{}</td>
+            <td>{}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td><input id="queuetarg_{}" type="checkbox" onclick="objectCheckAll(this.id)"{}></td>
+        </tr>
+        '''.format(table_class,btn_disable,nameid,nameid,object_href,ob['ra_hms'],ob['dec_dms'], nameid, allchecked)
+        html+= '''
+        <tr class="collapse" id="collapse{}">
+            <td colspan="999">
+                <div>
+                    <table class="table table-striped table-sm">
+                        <thead>
+                            <tr>
+                                <td><font color='blue'>Filter</font></td>
+                                <td><font color='blue'>Exptime (s)</font></td>
+                                <td><font color='blue'>Num Exp</font></td>
+                                <td><font color='blue'>Requeue</font><td>
+                            </tr>
+                        </thead>
+                        <tbody>
+        '''.format(nameid)
+        for obexp in ob['exposures']:
+            thischecked = ' checked' if obexp['id'] in expids else ''
+            html+='''
+                                <tr>
+                                    <td>{}</td>
+                                    <td>{}</td>
+                                    <td>{}</td>
+                                    <td><input value="{}" id="{}_{}" type="checkbox" onclick="expCheckOne(this.id)"{}></td>
+                                </tr>
+            '''.format(obexp['filter_name'], obexp['exp_time'], obexp['num_exp'], obexp['id'], nameid, obexp['id'], thischecked)
+        html += '''
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+        '''
     
     return html
 
@@ -3071,7 +3088,23 @@ def orp_view_current_queue(username='', telescope='Kuiper'):
     telescope = request.args.get('telescope')
     view_current = request.args.get('current', False)
     currentqueue = getCurrentQueue(telescope=telescope)
-    currently_submitted_queue = len(currentqueue) > 0
+
+    communicator = rts2comm()
+    rts2all = communicator._getall()
+    rts2_sel_values = rts2all['SEL']['d']
+    
+    executed_ids = rts2_sel_values['plan_executed_ids'][1] #list of ids
+    current_id = rts2_sel_values['current_target'][1] #just the id
+    plan_ids = rts2_sel_values['plan_ids'][1] #list of ids
+
+    executed_ids = [x for x in executed_ids if x not in [current_id]]
+
+    total_rts2ids = []
+    total_rts2ids.extend(executed_ids)
+    total_rts2ids.extend([current_id])
+    total_rts2ids.extend(plan_ids)
+
+    currently_submitted_queue = len(total_rts2ids) > 0
 
     queuenight = datetime.datetime.now()
     if queuenight.hour < 8:
@@ -3094,18 +3127,6 @@ def orp_view_current_queue(username='', telescope='Kuiper'):
             next_id -> [1] rts2_id of next target
         '''
 
-        communicator = rts2comm()
-        rts2all = communicator._getall()
-        rts2_sel_values = rts2all['SEL']['d']
-        
-        executed_ids = rts2_sel_values['plan_executed_ids'][1] #list of ids
-        current_id = rts2_sel_values['current_target'][1] #just the id
-        plan_ids = rts2_sel_values['plan_ids'][1] #list of ids
-
-        total_rts2ids = []
-        total_rts2ids.extend(executed_ids)
-        total_rts2ids.extend([current_id])
-        total_rts2ids.extend(plan_ids)
         
         around_dates = [
             (datetime.datetime.now()-datetime.timedelta(days=1)).strftime("%Y-%m-%d"),
@@ -3173,7 +3194,7 @@ def current_queued_list():
     obsreqs = ObsReq2.query.filter(ObsReq2.rts2_id.in_(total_rts2ids)).all()
     total_obsreqids = [x.id for x in obsreqs]
     total_obsreq_rts2ids = [x.rts2_id for x in obsreqs]
-    executed_ids = list(set([e for e in executed_ids if e in total_obsreq_rts2ids]))
+    #executed_ids = list(set([e for e in executed_ids if e in total_obsreq_rts2ids]))
     obsreqexps = ObsExposure.query.filter(ObsExposure.obsreqid.in_(total_obsreqids)).all()
 
     obsreqs_dict = {}
@@ -3186,7 +3207,7 @@ def current_queued_list():
             status = 'planned'
         if o.rts2_id == current_id:
             status = 'current'
-        
+
         obsreqs_dict[o.rts2_id] = o.serialized(queuedonly=True)
 
     html = '''
