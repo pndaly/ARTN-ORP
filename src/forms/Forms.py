@@ -346,7 +346,7 @@ class UpdateObsReqForm(FlaskForm):
 class UploadForm(FlaskForm):
 
     # fields
-    filename = FileField('Filename', validators=[FileRequired(), FileAllowed(['csv', 'tsv'], 'CSV or TSV only!')])
+    filename = FileField('Filename', validators=[FileRequired(), FileAllowed(['json'], 'json only!')])
 
     # submit
     submit = SubmitField('Upload File')

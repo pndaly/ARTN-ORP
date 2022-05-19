@@ -121,6 +121,12 @@ bootstrap = Bootstrap(app)
 mail = Mail(app)
 
 
+# +
+# initialize api
+# -
+from . import api
+
+
 def create_gmail(subject='', sender='', recipients=None, text_body='', html_body=''):
     if not isinstance(subject, str) or subject.strip() == '':
         raise Exception(f'Invalid input, subject={subject}')
@@ -1019,14 +1025,14 @@ def orp_home():
 # +
 # route(s): /orp/api, requires login
 # -
-@app.route('/orp/orp/api/')
-@app.route('/orp/api/')
-@app.route('/api/')
-@login_required
-def orp_api():
-    msg_out(f'/orp/api entry', True, False)
-    get_client_ip(_request=request)
-    return render_template('api.html', url={'url': f'{ORP_APP_URL}', 'page': '/orp/api'}, user=current_user)
+#@app.route('/orp/orp/api/')
+#@app.route('/orp/api/')
+#@app.route('/api/')
+#@login_required
+#def orp_api():
+#    msg_out(f'/orp/api entry', True, False)
+#    get_client_ip(_request=request)
+#    return render_template('api.html', url={'url': f'{ORP_APP_URL}', 'page': '/orp/api'}, user=current_user)
 
 
 # +
@@ -2752,20 +2758,63 @@ def orp_upload(username=''):
         filename = secure_filename(_fn.filename)
         pathname = os.path.join(app.instance_path, 'files', f'{_u.username}_{filename}')
         _fn.save(pathname)
+        
+        #try:
+        #validate opening jsonfile
+        filedata = json.loads(open(pathname).read())
+        for obs in filedata:
+            #validate each obsreq
+            obsreq, validator, isvalid  = ObsReq2.validate_json(obs, _u)
+            if isvalid:
+                #if it is deemed valid, look for the exposures in the keys
+                if 'exposures' in obs.keys() and len(obs['exposures']):
+                    #add and flush to get obsreqid
+                    db.session.add(obsreq)
+                    db.session.flush()
+                    exps = obs['exposures']
+                    #loop over each obsexp and test their validity
+                    for e in exps:
+                        e['obsreqid'] = obsreq.id
+                        obsexp, validator, isvalid = ObsExposure.validate_json(e)
+                        if isvalid:
+                            db.session.add(obsexp)
+                        else:
+                            msg_out(f'Error: Invalid Observation Request: {obsexp.serialized()}')
+                            msg_out(f'Errors: {json.dumps(validator.errors)}')
+                            return redirect(url_for('orp_upload', username=current_user.username))
+                #No exposures
+                else:
+                    msg_out(f'Error: Invalid Observation Request: {json.dumps(obs)}')
+                    msg_out(f'Errors: list of \'exposures\' is required')
+                    return redirect(url_for('orp_upload', username=current_user.username))
+            #Invalid Observation request
+            else:
+                msg_out(f'Error: Invalid Observation Request: {json.dumps(obs)}')
+                msg_out(f'Errors: {json.dumps(validator.errors)}')
+                return redirect(url_for('orp_upload', username=current_user.username))
+        #Everything is Kosher, submit to database and return
+        db.session.commit()
+        msg_out(f'Successfully uploaded file', True, True)
+        return redirect(url_for('orp_view_requests', username=current_user.username))
+
+        #except:
+        #    msg_out(f'ERROR: Input file has invalid format, please check {filename}', True, True)
+        #    return redirect(url_for('orp_view_requests', username=current_user.username))
+
 
         # check file is valid
-        _num, _columns = check_upload_format(pathname)
-        if _num < 0 or _columns is {}:
-            msg_out(f'ERROR: Input file has invalid format, please check {filename}', True, True)
-            return redirect(url_for('orp_view_requests', username=current_user.username))
+        #_num, _columns = check_upload_format(pathname)
+        #if _num < 0 or _columns is {}:
+        #    msg_out(f'ERROR: Input file has invalid format, please check {filename}', True, True)
+        #    return redirect(url_for('orp_view_requests', username=current_user.username))
 
         # if number of lines < 100, upload synchronously otherwise use a thread
-        if _num < 100:
-            msg_out(f'Input file has {_num} records, loading synchronously', True, True)
-            upload_file(_columns, _num, _u)
-        else:
-            msg_out(f'Input file has {_num} records, loading asynchronously', True, True)
-            upload_file_async(_columns, _num, _u)
+        #if _num < 100:
+        #    msg_out(f'Input file has {_num} records, loading synchronously', True, True)
+        #    upload_file(_columns, _num, _u)
+        #else:
+        #    msg_out(f'Input file has {_num} records, loading asynchronously', True, True)
+        #    upload_file_async(_columns, _num, _u)
 
         # return to view requests
         return redirect(url_for('orp_view_requests', username=current_user.username))
@@ -4084,6 +4133,53 @@ def orp_observe2(username=''):
     return redirect(url_for(return_page, username=_u.username) + '?' + arg_str)
 
 
+@app.route('/orp/orp/test_data/<username>', methods=['GET', 'POST'])
+@app.route('/orp/test_data/<username>', methods=['GET', 'POST'])
+@app.route('/test_data/<username>', methods=['GET', 'POST'])
+def test_data(username=''):
+
+    user = current_user if current_user.is_authenticated else User.query.filter_by(username=username).first_or_404()
+    
+    test_json = {
+        'object_name':'Sam',
+        'ra':'22',
+        'dec':'-63',
+        'begin':datetime.datetime(2022, 5, 30),
+        'end':datetime.datetime(2022, 5, 30),
+        'cadence':'Once',
+        'dither':'None',
+        'guiding':True,
+        'lunarphase':'Any',
+        'instrument':'Mont4k',
+        'telescope':'Kuiper',
+        'non_sidereal_json':{'RA_BiasRate':30.0, 'Dec_BiasRate':30.0, 'ObjectRate':5.0, 'PositionAngle':0.0, 'UTC_At_Position':datetime.datetime(2022, 5, 30)},
+        'priority':'ToO',
+
+    }
+    obsreq, validator, obsreq_valid = ObsReq2.validate_json(test_json, user)
+
+
+    if obsreq_valid:
+        print('valid obsreq')
+        db.session.add(obsreq)
+        db.session.flush()    
+        test_exposure_obs = {
+            'filter':'V',
+            'num_exp':4,
+            'exp_time':333,
+            'obsreqid':obsreq.id
+        }
+        obsexp, validator, obsexp_valid = ObsExposure.validate_json(test_exposure_obs)
+        if obsexp_valid:
+            print('valid obsexp')
+            db.session.add(obsexp)
+            db.session.flush()  
+            return obsreq.serialized()
+        else:
+            return jsonify(validator.errors)
+    else:
+        return jsonify(validator.errors)
+        
 
 @app.route('/orp/orp/dataconvert_obsreq2/<username>', methods=['GET', 'POST'])
 @app.route('/orp/dataconvert_obsreq2/<username>', methods=['GET', 'POST'])

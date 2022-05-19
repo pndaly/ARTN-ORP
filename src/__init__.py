@@ -133,6 +133,8 @@ ARTN_NODES = {
       }
     },
 }
+
+ARTN_VALID_INSTRUMENT = {'Kuiper':['Mont4k']}
 ARTN_ZERO_ISO = '2000-01-01T00:00:00.000000'
 ARTN_ZERO_MJD = math.nan
 
