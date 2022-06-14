@@ -9,6 +9,7 @@ __pycache__
 # -
 *.py.2020*
 *.old
+instance/files/artn_artntest.json
 
 # +
 # Packages
