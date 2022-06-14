@@ -282,7 +282,10 @@ class ObsReq2(UserMixin, db.Model):
     cadence = db.Column(db.String(ARTN_CHAR_16), default='Any', nullable=False)
     # noinspection PyUnresolvedReferences
     non_sidereal_json = db.Column(JSONB, default={}, nullable=False)
-
+    # noinspection PyUnresolvedReferences
+    obs_status = db.Column(db.String(ARTN_CHAR_24), default=None, nullable=True)
+    # noinspection PyUnresolvedReferences
+    percent_completed = db.Column(db.Float, default=0, nullable=False)
     # noinspection PyUnresolvedReferences
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
@@ -506,12 +509,14 @@ class ObsReq2(UserMixin, db.Model):
         #returns Obsreq2, the valid class, and valid=True/False
         return o, v, len(v.errors) == 0
 
+
     # +
     # property: pretty_serialized()
     # -
     @property
     def pretty_serialized(self):
         return json.dumps(self.serialized(), indent=2)
+
 
     # +
     # method: serialized()
@@ -569,6 +574,7 @@ class ObsReq2(UserMixin, db.Model):
 
 
     def stellar_dictify(self, _exposures=None):
+
         if _exposures == None:
             _exposures = ObsExposure.query.filter_by(obsreqid=self.id, queued=True, completed=False).all()
         thedict = {
@@ -587,6 +593,8 @@ class ObsReq2(UserMixin, db.Model):
             })
 
         self.rts2_doc = thedict
+    
+    
     # +
     # (overload) method: __str__()
     # -

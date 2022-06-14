@@ -184,5 +184,5 @@ def isvalidInstance(value, ftype, fmt=None):
             tehee = True
     except:
         tehee = False
-    print(value, tehee, fmt)
+        
     return tehee

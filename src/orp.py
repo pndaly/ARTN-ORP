@@ -4060,8 +4060,6 @@ def orp_obsreq2(username=''):
 def orp_observe2(username=''):
     #implement view_request argstring as well
 
-    print('bingbang')
-
     msg_out(f'/orp/observe/{username} entry', True, False)
     get_client_ip(request)
 
