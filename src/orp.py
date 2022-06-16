@@ -3966,6 +3966,8 @@ def orp_obsreq2(username=''):
         _obsreq.completed_mjd = ARTN_ZERO_MJD
         _obsreq.rts2_id = -1
         _obsreq.rts2_doc = '{}'
+        _obsreq.obs_status = ''
+        _obsreq.percent_completed = 0.0
 
         # get json
         if _obsreq.non_sidereal:
