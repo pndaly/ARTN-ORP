@@ -54,14 +54,24 @@ def orp_api_getobsreq():
 
     filter = []
     if 'obsreqid' in args:
-        if isinstance(args['obsreqid']):
+        if isinstance(args['obsreqid'], int):
             obsreqid = int(args['obsreqid'])
             filter.append(ObsReq2.id == obsreqid)
-    if 'object_name' in args:
-        pass
+        else:
+            return jsonify('invalid obsreqid')
+    if 'rts2id' in args:
+        if isinstance(args['rts2id'], int):
+            rts2id = int(args['rts2id'])
+            filter.append(ObsReq2.rts2_id == rts2id)
+        else:
+            return jsonify('invalid rts2id')
 
-    return "meh"
-
+    if len(filter):
+        obs = db.session.query(ObsReq2).filter(*filter).all()
+        ret = [x.serialized() for x in obs]
+        return jsonify(ret)
+    
+    return jsonify('Must specify a filter')
 
 
 #Endpoint to post ObsReqs w/ ObsExposures
@@ -143,7 +153,7 @@ def orp_api_updateobsreq():
                 obsreq_update.percent_completed = percent_completed
             else:
                 return jsonify('\'percent_completed\' is required')
-                
+
         elif status == 'completed':
 
             obsreq_update.percent_completed = 100.0

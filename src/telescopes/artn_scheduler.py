@@ -78,7 +78,6 @@ class queue_obj:
 		if len(airmasses):
 			if setpeak:
 				self.peak_airmass = min(airmasses)
-
 			self.frame_airmass = np.mean(airmasses)
 			self.airmass_potential = self.peak_airmass-self.frame_airmass
 		else:
@@ -220,7 +219,7 @@ def format_orp_targets(obsreqs, exposures):
 				ob.rts2_id,
                 queue_obj_constraints(
                     moon_distance_threshold=10,
-                    airmass_threshold=2.2
+                    airmass_threshold=2.5
                 ),
                 expids = expids
             )

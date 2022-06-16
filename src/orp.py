@@ -887,6 +887,14 @@ def get_current_queue_table(rts2ids, obsreqs_dict, table_class, expids, username
             if '+' in nameid:
                 nameid = nameid.replace('+', '')
             object_href = '<a href="/orp/obsreq2/{}?obsreqid={}&return_page=orp_manage_queue">{}</a>'.format(username,ob['id'],ob['object_name'])
+            status = ob['obs_status']
+            print(nameid,status)
+            if status == 'inprogress':
+                status = 'In Progress (%{})'.format(ob['percent_completed'])
+            elif status == 'completed':
+                status = 'Completed (%100)'
+            else:
+                status = 'Queued (%0.0)'
         except:
             if rts2_id == 1:
                 nameid = 'DARK FRAMES'
@@ -905,6 +913,7 @@ def get_current_queue_table(rts2ids, obsreqs_dict, table_class, expids, username
             }
             allchecked = False
             object_href=nameid
+            status = ''
             
         html += '''
         <tr class="{}">
@@ -915,9 +924,10 @@ def get_current_queue_table(rts2ids, obsreqs_dict, table_class, expids, username
             <td></td>
             <td></td>
             <td></td>
+            <td>{}</td>
             <td><input id="queuetarg_{}" type="checkbox" onclick="objectCheckAll(this.id)"{}></td>
         </tr>
-        '''.format(table_class,btn_disable,nameid,nameid,object_href,ob['ra_hms'],ob['dec_dms'], nameid, allchecked)
+        '''.format(table_class,btn_disable,nameid,nameid,object_href,ob['ra_hms'],ob['dec_dms'], status, nameid, allchecked)
         html+= '''
         <tr class="collapse" id="collapse{}">
             <td colspan="999">
@@ -3270,6 +3280,7 @@ def current_queued_list():
                 <th><font color="blue">Start (est)</font></th>
                 <th><font color="blue">End (est)</font></th>
                 <th><font color="blue">Overhead</font></th>
+                <th><font color="blue">Status(%)</font></th>
                 <th><font color="blue">Requeue Request</font></th>
             </tr>
             <tr>
@@ -3277,6 +3288,7 @@ def current_queued_list():
                 <th><font color="grey"><center> </center></font></th>
                 <th><font color="grey"><center>J2k &deg;</center></font></th>
                 <th><font color="grey"><center>J2k &deg;</center></font></th>
+                <th><font color="grey"><center> </center></font></th>
                 <th><font color="grey"><center> </center></font></th>
                 <th><font color="grey"><center> </center></font></th>
                 <th><font color="grey"><center> </center></font></th>

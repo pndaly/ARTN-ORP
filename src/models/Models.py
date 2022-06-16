@@ -567,6 +567,8 @@ class ObsReq2(UserMixin, db.Model):
             'rts2_doc': str(self.rts2_doc),
             'rts2_id': int(self.rts2_id),
             'non_sidereal_json': str(self.non_sidereal_json),
+            'obs_status': self.obs_status,
+            'percent_completed': str(self.percent_completed),
             'user_id': self.user_id,
             'exposures':_exposures_serialized
         }
