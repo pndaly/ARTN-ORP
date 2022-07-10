@@ -710,11 +710,14 @@ def get_old_history_page(_results=None, _offset=0, _per_page=ARTN_RESULTS_PER_PA
 
 
 # noinspection PyBroadException
-def nlog_seek_files(_path=os.getcwd()):
+def nlog_seek_files(_path: str = os.getcwd(), _include: str = 'all'):
 
     # get input(s)
     _path = os.path.abspath(os.path.expanduser(f'{_path}'))
     if not os.path.isdir(_path):
+        return {}
+    _include = _include.lower().strip()
+    if _include not in ['all', 'stitched', 'raw']:
         return {}
 
     # generator code
@@ -726,9 +729,22 @@ def nlog_seek_files(_path=os.getcwd()):
 
     # get file(s)
     try:
-        return {f'{_k}': int(os.stat(f'{_k}').st_size)
-                for _k in _fw if (not os.path.islink(f'{_k}') and os.path.exists(f'{_k}') and
-                                  _k.endswith('.fits') and int(os.stat(f'{_k}').st_size) > 2)}
+        if _include == 'all':
+            return {f'{_k}': int(os.stat(f'{_k}').st_size)
+                    for _k in _fw if (not os.path.islink(f'{_k}') and os.path.exists(f'{_k}') and
+                                      _k.endswith('.fits') and int(os.stat(f'{_k}').st_size) > 2)}
+        elif (_include == 'raw' or _include == 'unstitched'):
+            return {f'{_k}': int(os.stat(f'{_k}').st_size)
+                    for _k in _fw if (not os.path.islink(f'{_k}') and os.path.exists(f'{_k}') and
+                                      'stitched' not in _k and
+                                      _k.endswith('.fits') and int(os.stat(f'{_k}').st_size) > 2)}
+        elif _include == 'stitched':
+            return {f'{_k}': int(os.stat(f'{_k}').st_size)
+                    for _k in _fw if (not os.path.islink(f'{_k}') and os.path.exists(f'{_k}') and
+                                      'stitched' in _k and
+                                      _k.endswith('.fits') and int(os.stat(f'{_k}').st_size) > 2)}
+        else:
+            return {}
     except Exception:
         return {}
 
@@ -1742,7 +1758,7 @@ def orp_nightlog():
         return render_template('403.html')
 
     # build form
-    form = NightLogForm(telescope='Kuiper', instrument='Mont4k')
+    form = NightLogForm(telescope='Kuiper', instrument='Mont4k', fits='Stitched')
 
     # GET method
     if request.method == 'GET':
@@ -1757,7 +1773,8 @@ def orp_nightlog():
         _obs = form.obs.data.lower().strip()
         _pdf = form.pdf.data
         _tel = form.telescope.data.strip()
-        msg_out(f'/orp/nightlog/ _ins={_ins}, _iso={_iso}, _obs={_obs}, _pdf={_pdf}, _tel={_tel}', True, False)
+        _fit = form.fits.data.lower().strip()
+        msg_out(f'/orp/nightlog/ _fit={_fit}, _ins={_ins}, _iso={_iso}, _obs={_obs}, _pdf={_pdf}, _tel={_tel}', True, False)
 
         if f'{_ins}' not in ARTN_SUPPORTED_NODES[f'{_tel}']:
             return render_template('409.html',
@@ -1779,59 +1796,59 @@ def orp_nightlog():
 
         # seek files and headers
         if _obs == 'all' or _obs == 'bias':
-            _d_bias = f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/bias"
-            _f_bias = nlog_seek_files(_d_bias)
+            _d_bias = f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/bias" if _fit != 'stitched' else f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/bias/stitched"
+            _f_bias = nlog_seek_files(_d_bias, _fit)
             _h_bias = nlog_get_fits_headers(_f_bias)
             _n_bias = len(_f_bias)
             _s_bias = f"{_n_bias} BIAS observations on server scopenet.as.arizona.edu in directory {_d_bias}"
             msg_out(f'/orp/nightlog/ searching {_d_bias}', True, False)
         if _obs == 'all' or _obs == 'calibration':
-            _d_calibration = f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/calibration"
-            _f_calibration = nlog_seek_files(_d_calibration)
+            _d_calibration = f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/calibration" if _fit != 'stitched' else f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/calibration/stitched"
+            _f_calibration = nlog_seek_files(_d_calibration, _fit)
             _h_calibration = nlog_get_fits_headers(_f_calibration)
             _n_calibration = len(_f_calibration)
             _s_calibration = f"{_n_calibration} CALIBRATION observations on server scopenet.as.arizona.edu " \
                              f"in directory {_d_calibration}"
             msg_out(f'/orp/nightlog/ searching {_d_calibration}', True, False)
         if _obs == 'all' or _obs == 'dark':
-            _d_dark = f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/dark"
-            _f_dark = nlog_seek_files(_d_dark)
+            _d_dark = f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/dark" if _fit != 'stitched' else f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/dark/stitched"
+            _f_dark = nlog_seek_files(_d_dark, _fit)
             _h_dark = nlog_get_fits_headers(_f_dark)
             _n_dark = len(_f_dark)
             _s_dark = f"{_n_dark} DARK observations on server scopenet.as.arizona.edu in directory {_d_dark}"
             msg_out(f'/orp/nightlog/ searching {_d_dark}', True, False)
         if _obs == 'all' or _obs == 'flat':
-            _d_flat = f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/flat"
-            _f_flat = nlog_seek_files(_d_flat)
+            _d_flat = f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/flat" if _fit != 'stitched' else f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/flat/stitched"
+            _f_flat = nlog_seek_files(_d_flat, _fit)
             _h_flat = nlog_get_fits_headers(_f_flat)
             _n_flat = len(_f_flat)
             _s_flat = f"{_n_flat} FLAT observations on server scopenet.as.arizona.edu in directory {_d_flat}"
             msg_out(f'/orp/nightlog/ searching {_d_flat}', True, False)
         if _obs == 'all' or _obs == 'focus':
-            _d_focus = f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/focus"
-            _f_focus = nlog_seek_files(_d_focus)
+            _d_focus = f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/focus" if _fit != 'stitched' else f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/focus/stitched"
+            _f_focus = nlog_seek_files(_d_focus, _fit)
             _h_focus = nlog_get_fits_headers(_f_focus)
             _n_focus = len(_f_focus)
             _s_focus = f"{_n_focus} FOCUS observations on server scopenet.as.arizona.edu in directory {_d_focus}"
             msg_out(f'/orp/nightlog/ searching {_d_focus}', True, False)
         if _obs == 'all' or _obs == 'object':
-            _d_object = f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/object"
-            _f_object = nlog_seek_files(_d_object)
+            _d_object = f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/object" if _fit != 'stitched' else f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/object/stitched"
+            _f_object = nlog_seek_files(_d_object, _fit)
             _h_object = nlog_get_fits_headers(_f_object)
             _n_object = len(_f_object)
             _s_object = f"{_n_object} OBJECT observations on server scopenet.as.arizona.edu in directory {_d_object}"
             msg_out(f'/orp/nightlog/ searching {_d_object}', True, False)
         if _obs == 'all' or _obs == 'skyflat':
-            _d_skyflat = f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/skyflat"
-            _f_skyflat = nlog_seek_files(_d_skyflat)
+            _d_skyflat = f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/skyflat" if _fit != 'stitched' else f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/skyflat/stitched"
+            _f_skyflat = nlog_seek_files(_d_skyflat, _fit)
             _h_skyflat = nlog_get_fits_headers(_f_skyflat)
             _n_skyflat = len(_f_skyflat)
             _s_skyflat = f"{_n_skyflat} SKYFLAT observations on server scopenet.as.arizona.edu " \
                          f"in directory {_d_skyflat}"
             msg_out(f'/orp/nightlog/ searching {_d_skyflat}', True, False)
         if _obs == 'all' or _obs == 'standard':
-            _d_standard = f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/standard"
-            _f_standard = nlog_seek_files(_d_standard)
+            _d_standard = f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/standard" if _fit != 'stitched' else f"{ARTN_DATA_ROOT}/{_tel}/{_ins}/{_iso}/standard/stitched"
+            _f_standard = nlog_seek_files(_d_standard, _fit)
             _h_standard = nlog_get_fits_headers(_f_standard)
             _n_standard = len(_f_standard)
             _s_standard = f"{_n_standard} STANDARD observations on server scopenet.as.arizona.edu " \
@@ -1862,7 +1879,9 @@ def orp_nightlog():
                                     n_all=_n_all, s_all=_s_all)
         msg_out(f'/orp/nightlog/ _rendered={_rendered}', True, False)
         if _pdf:
-            _obslog = pdfkit.from_string(_rendered, False, css=f"{ARTN_BASE_DIR}/static/css/main.css")
+            msg_out(f'/orp/nightlog/ _css={ARTN_BASE_DIR}/static/css/main.css', True, False)
+            _options = {'enable-local-file-access': True}
+            _obslog = pdfkit.from_string(_rendered, False, css=f"{ARTN_BASE_DIR}/static/css/main.css", options=_options)
             _response = make_response(_obslog)
             _response.headers['Content-Type'] = 'application/pdf'
             _response.headers['Content-Disposition'] = f'attachment; filename={_tel}.{_ins}.{_iso}.{_obs}.pdf'
@@ -1939,6 +1958,7 @@ def orp_old_nightlog():
         _l_skyflats = get_old_nightlog_fits(_skyflats)
 
         # render page or create pdf
+        msg_out(f'/orp/old_nightlog/ _css={ARTN_BASE_DIR}/static/css/main.css', True, False)
         if _pdf:
             _rendered = render_template(f'old_nightlog_{_tel.lower()}_pdf.html', telescope=_telescope, iso=_iso,
                                         user=current_user, darks=_l_darks, flats=_l_flats, foci=_l_foci,

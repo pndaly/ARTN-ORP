@@ -38,7 +38,15 @@
     {% endfor %}
     <span class="purple-label"><small></small></span><br>
    </div>
-   <div class="col-md-2">
+   <div class="col-md-3">
+    {{ form.fits.label }}<br>
+    {{ form.fits() }}<br>
+    {% for error in form.fits.errors %}
+     <span class="error-label"><small>[{{ error }}]</small></span>
+    {% endfor %}
+    <span class="purple-label"><small></small></span><br>
+   </div>
+   <div class="col-md-1">
     {{ form.pdf.label }}<br>
     {{ form.pdf(size=1) }}<br>
     {% for error in form.pdf.errors %}

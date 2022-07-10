@@ -13,6 +13,7 @@ from wtforms import DateTimeField
 from wtforms import FloatField
 from wtforms import IntegerField
 from wtforms import PasswordField
+from wtforms import RadioField
 from wtforms import SelectField
 from wtforms import StringField
 from wtforms import SubmitField
@@ -68,6 +69,7 @@ RA_MIN = 0.0
 RA_MAX = 24.0
 URGENCY = [('Routine', 'Routine'), ('Urgent', 'Urgent'), ('Critical', 'Critical')]
 
+FORM_FITS = [('All', 'All FITS Files'), ('Stitched', 'Stitched FITS Files Only'), ('Raw', 'Raw (unstitched) FITS Files Only')]
 FORM_TELESCOPES = [('Bok', 'Bok 90-inch'), ('Kuiper', 'Kuiper 61-inch'), ('MMT', 'MMT 6.5m'), ('Vatt', 'Vatt 1.8m')]
 FORM_INSTRUMENTS = [('90Prime', '90Prime'), ('BCSpec', 'BCSpec'), ('Mont4k', 'Mont4k'),
                     ('BinoSpec', 'BinoSpec'), ('Vatt4k', 'Vatt4k')]
@@ -414,6 +416,7 @@ class NightLogForm(FlaskForm):
     pdf = BooleanField('Create PDF?', false_values=(False, 'false', 0, '0'), default=False)
     telescope = SelectField('Telescope', choices=FORM_TELESCOPES, default=FORM_TELESCOPES[1][1],
                             validators=[DataRequired()])
+    fits = RadioField('FITS Files', choices=FORM_FITS, default=FORM_FITS[1][1])
 
     # submit
     submit = SubmitField('Submit')
