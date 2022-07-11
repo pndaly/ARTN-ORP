@@ -61,6 +61,10 @@
        <th><font color="blue">Object</font></th>
        <!-- RA -->
        <th><font color="blue">RA</font></th>
+       <!-- RA -->
+       <th><font color="blue">RA</font></th>
+       <!-- Dec -->
+       <th><font color="blue">Dec</font></th>
        <!-- Dec -->
        <th><font color="blue">Dec</font></th>
        <!-- Filter -->
@@ -121,8 +125,12 @@
        <th><font color="grey"><center></center></font></th>
        <!-- RA -->
        <th><font color="grey"><center>J2k &deg;</center></font></th>
+       <!-- RA -->
+       <th><font color="grey"><center>hh:mm:ss</center></font></th>
        <!-- Dec -->
-       <!--<th><font color="grey"><center>J2k &deg;</center></font></th>-->
+       <th><font color="grey"><center>J2k &deg;</center></font></th>
+       <!-- Dec -->
+       <th><font color="grey"><center>dd:mm:ss</center></font></th>
        <!-- Filter -->
        <!--<th><font color="grey"><center></center></font></th>-->
        <!-- Exp Time -->
@@ -187,8 +195,12 @@
        <td>{{ record.object_name }}</td>
        <!-- RA -->
        <td>{{ record.ra_deg }}</td>
+       <!-- RA -->
+       <td>{{ record.ra_hms }}</td>
        <!-- Dec -->
        <td>{{ record.dec_deg }}</td>
+       <!-- Dec -->
+       <td>{{ record.dec_dms }}</td>
        <!-- Filter -->
        <!--<td>{{ record.filter_name }}</td>-->
        <!-- Exp Time -->
