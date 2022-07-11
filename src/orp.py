@@ -46,6 +46,7 @@ import astropy
 import signal
 import urllib.parse
 
+
 # +
 # logging
 # -
@@ -204,6 +205,9 @@ def get_client_ip(_request=None):
         msg_out(f"Client address={request.environ['REMOTE_ADDR']}", True, False)
 
 
+### +
+### since the introduction is ObsReq2, this is broken??!!!
+### -
 def check_upload_format(_infil=''):
     # check input(s)
     if not isinstance(_infil, str) or _infil.strip() == '':
@@ -312,7 +316,9 @@ def upload_file_async(_columns=None, _num=0, _user=None):
     if _columns is not None:
         Thread(name='upload_file_async', target=upload_file_in_thread, args=(_columns, _num, _user,)).start()
 
-
+### +
+### since the introduction is ObsReq2, this is broken??!!!
+### -
 def upload_file(_columns=None, _num=0, _user=None):
     for _i in range(0, _num):
         msg_out(f"upload_file> creating observation request {_columns['object_name'][_i]} for "
@@ -815,6 +821,9 @@ def get_old_nightlog(_path=ARTN_DIR_OBJECTS, _type=''):
         return {}
 
 
+### +
+### since the introduction is ObsReq2, this is broken??!!!
+### -
 # noinspection PyBroadException
 def nlog_get_fits_headers(_in=None):
 
@@ -833,12 +842,17 @@ def nlog_get_fits_headers(_in=None):
                 except Exception:
                     _d_out[_h] = ''
 
-        # who requested it?
+        # +
+        # why was the ARTNGID removed from the database table
+        # as this was going to be used to identify dither member(s)?!!!
+        # -
         try:
-            if _d_out['ARTNGID'].strip() != '' and _d_out['ARTNOID'].strip() != '':
-                query = db.session.query(ObsReq)
-                query = obsreq_filters(query, {'group_id': f"{_d_out['ARTNGID']}"})
-                query = obsreq_filters(query, {'observation_id': f"{_d_out['ARTNOID']}"})
+            # who requested it?
+            # if _d_out['ARTNGID'].strip() != '' and _d_out['ARTNOID'].strip() != '':
+            if _d_out['ARTNOID'].strip() != '':
+                query = db.session.query(ObsReq2)
+                # query = obsreq_filters(query, {'group_id': f"{_d_out['ARTNGID']}"})
+                query = obsreq2_filters(query, {'observation_id': f"{_d_out['ARTNOID']}"})
                 _d_out['OWNER'] = query.first().username
             else:
                 _d_out['OWNER'] = ''
@@ -849,6 +863,7 @@ def nlog_get_fits_headers(_in=None):
         _l_out.append(_d_out)
 
     # return list sorted by Julian date key
+    msg_out(f'nlog_get_fits_headers()> _l_out={_l_out}', True, False)
     return sorted(_l_out, key=lambda _i: _i['JULIAN'])
 
 
@@ -870,11 +885,16 @@ def get_old_nightlog_fits(_in=None):
                 except Exception:
                     _d_out[_h] = ''
 
-        # who requested it?
+        # +
+        # why was the ARTNGID removed from the database table
+        # as this was going to be used to identify dither member(s)?!!!
+        # -
         try:
-            if _d_out['ARTNGID'].strip() != '' and _d_out['ARTNOID'].strip() != '':
-                query = db.session.query(ObsReq)
-                query = obsreq_filters(query, {'group_id': f"{_d_out['ARTNGID']}"})
+            # who requested it?
+            # if _d_out['ARTNGID'].strip() != '' and _d_out['ARTNOID'].strip() != '':
+            if _d_out['ARTNOID'].strip() != '':
+                query = db.session.query(ObsReq2)
+                # query = obsreq_filters(query, {'group_id': f"{_d_out['ARTNGID']}"})
                 query = obsreq_filters(query, {'observation_id': f"{_d_out['ARTNOID']}"})
                 _d_out['OWNER'] = query.first().username
             else:
@@ -1279,6 +1299,9 @@ def orp_delete(username=''):
 # +
 # route(s): /orp/download/artn_template.v1.csv
 # -
+### +
+### since the introduction is ObsReq2, this is broken??!!!
+### -
 @app.route('/orp/orp/download/artn_template.v1.csv')
 @app.route('/orp/download/artn_template.v1.csv')
 @app.route('/download/artn_template.v1.csv')
@@ -1292,6 +1315,9 @@ def orp_download_csv_v1():
 # +
 # route(s): /orp/download/artn_template.v1.tsv
 # -
+### +
+### since the introduction is ObsReq2, this is broken??!!!
+### -
 @app.route('/orp/orp/download/artn_template.v1.tsv')
 @app.route('/orp/download/artn_template.v1.tsv')
 @app.route('/download/artn_template.v1.tsv')
@@ -1305,6 +1331,9 @@ def orp_download_tsv_v1():
 # +
 # route(s): /orp/download/artn_template.v2.tsv
 # -
+### +
+### since the introduction is ObsReq2, this is broken??!!!
+### -
 @app.route('/orp/orp/download/artn_template.v2.tsv')
 @app.route('/orp/download/artn_template.v2.tsv')
 @app.route('/download/artn_template.v2.tsv')
@@ -1318,6 +1347,9 @@ def orp_download_tsv_v2():
 # +
 # route(s): /orp/download/check_upload_format_standalone.py
 # -
+### +
+### since the introduction is ObsReq2, this is broken??!!!
+### -
 @app.route('/orp/orp/download/check_upload_format_standalone.py')
 @app.route('/orp/download/check_upload_format_standalone.py')
 @app.route('/download/check_upload_format_standalone.py')
@@ -1331,6 +1363,9 @@ def orp_download_check_upload_format_standalone():
 # +
 # route(s): /orp/download/orp_cli_upload.sh
 # -
+### +
+### since the introduction is ObsReq2, this is broken??!!!
+### -
 @app.route('/orp/orp/download/orp_cli_upload.sh')
 @app.route('/orp/download/orp_cli_upload.sh')
 @app.route('/download/orp_cli_upload.sh')
@@ -1985,6 +2020,9 @@ def orp_old_nightlog():
 # +
 # route(s): /orp/observe/<username>?dbid=<num>, requires login
 # -
+### +
+### since the introduction is ObsReq2, this is broken??!!!
+### -
 @app.route('/orp/orp/observe/<username>', methods=['GET', 'POST'])
 @app.route('/orp/observe/<username>', methods=['GET', 'POST'])
 @app.route('/observe/<username>', methods=['GET', 'POST'])
@@ -2052,6 +2090,9 @@ def orp_observe(username=''):
 # +
 # route(s): /orp/obsreq/<username>, requires login
 # -
+### +
+### since the introduction is ObsReq2, this is broken??!!!
+### -
 @app.route('/orp/orp/obsreq/<username>', methods=['GET', 'POST'])
 @app.route('/orp/obsreq/<username>', methods=['GET', 'POST'])
 @app.route('/obsreq/<username>', methods=['GET', 'POST'])
@@ -2596,6 +2637,9 @@ def orp_telescope_name(name=''):
 # +
 # route(s): /orp/update/<username>?dbid=<num>, requires login
 # -
+### +
+### since the introduction is ObsReq2, this is broken??!!!
+### -
 @app.route('/orp/orp/update/<username>', methods=['GET', 'POST'])
 @app.route('/orp/update/<username>', methods=['GET', 'POST'])
 @app.route('/update/<username>', methods=['GET', 'POST'])
