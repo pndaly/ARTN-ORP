@@ -1,0 +1,52 @@
+# +
+# Dockerfile.14.artn
+#
+# We run a pure postgres:latest container but if you need to add PostGIS / Q3C,
+# you can create your own image:
+#   % docker build -f Dockerfile.14.artn -t artn/postgres-14:postgis3-q3c2 .
+#
+# -
+
+
+# +
+# base image
+# -
+FROM postgres:14
+
+
+# +
+# who did this?
+# -
+MAINTAINER Phil Daly <pndaly@arizona.edu>
+
+
+# +
+# update and install dependencies
+# -
+RUN apt-get update && apt-get install -y \
+    curl gcc git gzip make tar vim wget \
+    postgresql-server-dev-14 postgresql-client-14 postgresql-client-common \
+    libz-dev libkrb5-dev libssl-dev libreadline-dev liblz4-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+
+# +
+# install postgis
+# -
+#RUN echo "CREATE EXTENSION postgis;" > postgis.sql \
+#    && echo "CREATE EXTENSION postgis_topology;" >> postgis.sql \
+#    && mv postgis.sql /docker-entrypoint-initdb.d 
+
+
+# +
+# get and install q3c
+# -
+RUN mkdir -p /usr/local/ \
+    && cd /usr/local \
+    && git clone https://github.com/segasai/q3c.git \
+    && cd /usr/local/q3c \
+    && make \
+    && make install \
+    && echo "CREATE EXTENSION q3c;" > q3c.sql \
+    && echo "SELECT q3c_version();" >> q3c.sql \
+    && mv q3c.sql /docker-entrypoint-initdb.d 
