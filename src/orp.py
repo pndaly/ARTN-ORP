@@ -21,7 +21,7 @@ from werkzeug.urls import url_parse
 from werkzeug.utils import secure_filename
 from src.forms.Forms import ConfirmDeleteForm, ConfirmRegistrationForm, FeedbackForm, \
     LoginForm, OldUserHistoryForm, NightLogForm, OldNightLogForm, ObsReqForm, ProfileForm, \
-    RegistrationForm, ResetPasswordForm, ResetPasswordRequestForm, UpdateObsReqForm, UploadForm, \
+    RegistrationForm, ResetPasswordForm, ResetPasswordRequestForm, UpdateObsReqForm, UploadJSONForm, UploadTSVForm, \
     UserHistoryForm, OBSERVATION_TYPES
 from src.models.Models import db, obsreq_filters, ObsReq, User, user_filters
 from src.models.Models import obsreq2_filters, ObsReq2, ObsExposure, NightlyQueue, NightlyQueueExposure
@@ -95,7 +95,7 @@ TELESCOPES['vatt'].observe = vatt_observe
 # +
 # initialize
 # -
-app = Flask(__name__)
+app = Flask(__name__, instance_path=f"{ORP_HOME}/instance")
 app.config['SECRET_KEY'] = ARTN_SECRET_KEY
 app.config['SQLALCHEMY_DATABASE_URI'] = \
     f'postgresql+psycopg2://{ARTN_DB_USER}:{ARTN_DB_PASS}@{ARTN_DB_HOST}:{ARTN_DB_PORT}/{ARTN_DB_NAME}'
@@ -125,7 +125,7 @@ mail = Mail(app)
 # +
 # initialize api
 # -
-from . import api
+#from . import api
 
 
 def create_gmail(subject='', sender='', recipients=None, text_body='', html_body=''):
@@ -205,9 +205,9 @@ def get_client_ip(_request=None):
         msg_out(f"Client address={request.environ['REMOTE_ADDR']}", True, False)
 
 
-### +
-### since the introduction is ObsReq2, this is broken??!!!
-### -
+# +
+# check TSV is valid
+# -
 def check_upload_format(_infil=''):
     # check input(s)
     if not isinstance(_infil, str) or _infil.strip() == '':
@@ -374,6 +374,7 @@ def upload_file(_columns=None, _num=0, _user=None):
             continue
 
         # set default(s)
+        _non_sidereal_json = None
         if _non_sidereal:
             _str = _columns['non_sidereal_json'][_i]
             _str_start = _str.find('{')
@@ -402,51 +403,95 @@ def upload_file(_columns=None, _num=0, _user=None):
         _priority_value = -_mjd if _priority == 'urgent' else _mjd
 
         # noinspection PyArgumentList
-        msg_out(f"upload_file> instantiating ObsReq(username={_username}, pi=f'{_user.firstname} {_user.lastname}, "
-                f"{_user.affiliation}', created_iso={_iso}, created_mjd={_mjd}, group_id={get_unique_hash()}, "
-                f"observation_id={get_unique_hash()}, priority={_priority}, "
-                f"priority_value=-{_mjd} if _priority == 'urgent' else {_mjd}, object_name={_object_name}, "
-                f"ra_hms={_ra_hms}, ra_deg={ra_to_deg(_ra_hms)}, dec_dms={_dec_dms}, dec_deg={dec_to_deg(_dec_dms)}, "
-                f"begin_iso={_begin_iso}, begin_mjd={_begin_mjd}, end_iso={_end_iso}, end_mjd={_end_mjd}, "
-                f"airmass={_airmass}, lunarphase={_lunarphase}, moonphase={_moonphase}, photometric={_photometric}, "
-                f"guiding={_guiding}, non_sidereal={_non_sidereal}, filter_name={_filter_name}, exp_time={_exp_time}, "
-                f"num_exp={_num_exp}, binning={_binning}, dither={_dither}, cadence={_cadence}, "
-                f"telescope={_telescope}, instrument={_instrument}, rts2_doc='<>', rts2_id=-1, queued=False, "
-                f"queued_iso={ARTN_ZERO_ISO}, queued_mjd={ARTN_ZERO_MJD}, completed_iso={ARTN_ZERO_ISO}, completed_mjd={ARTN_ZERO_MJD}, "
-                f"completed=False, non_sidereal_json={_non_sidereal_json})", True, False)
+        msg_out(f"upload_file> instantiating ObsReq2(username={_username}, pi='{_user.firstname} {_user.lastname}, {_user.affiliation}', created_iso={_iso}, created_mjd={_mjd}, group_id={get_unique_hash()}, observation_id={get_unique_hash()}, priority={_priority}, priority_value=-{_mjd} if _priority == 'urgent' else {_mjd}, object_name={_object_name}, ra_hms={_ra_hms}, ra_deg={ra_to_deg(_ra_hms)}, dec_dms={_dec_dms}, dec_deg={dec_to_deg(_dec_dms)}, begin_iso={_begin_iso}, begin_mjd={_begin_mjd}, end_iso={_end_iso}, end_mjd={_end_mjd}, airmass={_airmass}, lunarphase={_lunarphase}, moonphase={_moonphase}, photometric={_photometric}, guiding={_guiding}, non_sidereal={_non_sidereal}, filter_name={_filter_name}, exp_time={_exp_time}, num_exp={_num_exp}, binning={_binning}, dither={_dither}, cadence={_cadence}, telescope={_telescope}, instrument={_instrument}, rts2_doc='<>', rts2_id=-1, queued=False, queued_iso={ARTN_ZERO_ISO}, queued_mjd={ARTN_ZERO_MJD}, completed_iso={ARTN_ZERO_ISO}, completed_mjd={ARTN_ZERO_MJD}, completed=False, non_sidereal_json={_non_sidereal_json})", True, False)
         _or = None
         try:
             # create obsreq object
             # noinspection PyArgumentList
-            _or = ObsReq(username=_username, pi=f'{_user.firstname} {_user.lastname}, {_user.affiliation}',
-                         created_iso=_iso, created_mjd=_mjd, group_id=get_unique_hash(),
-                         observation_id=get_unique_hash(), priority=_priority,
-                         priority_value=_priority_value, object_name=_object_name,
-                         ra_hms=_ra_hms, ra_deg=ra_to_deg(_ra_hms), dec_dms=_dec_dms, dec_deg=dec_to_deg(_dec_dms),
-                         begin_iso=_begin_iso, begin_mjd=_begin_mjd, end_iso=_end_iso, end_mjd=_end_mjd,
-                         airmass=_airmass, lunarphase=_lunarphase, moonphase=_moonphase, photometric=_photometric,
-                         guiding=_guiding, non_sidereal=_non_sidereal, filter_name=_filter_name, exp_time=_exp_time,
-                         num_exp=_num_exp, binning=_binning, dither=_dither, cadence=_cadence, telescope=_telescope,
-                         instrument=_instrument, rts2_doc='{}', rts2_id=-1, queued=False, completed=False,
-                         queued_iso=ARTN_ZERO_ISO, queued_mjd=ARTN_ZERO_MJD, completed_iso=ARTN_ZERO_ISO, completed_mjd=ARTN_ZERO_MJD,
-                         non_sidereal_json=_non_sidereal_json, author=_user)
+            _or = ObsReq2(
+                    username=_username, 
+                    pi=f'{_user.firstname} {_user.lastname}, {_user.affiliation}',
+                    priority=_priority,
+                    priority_value=_priority_value, 
+                    created_iso=_iso, 
+                    created_mjd=_mjd, 
+                    object_name=_object_name,
+                    ra_hms=_ra_hms, 
+                    ra_deg=ra_to_deg(_ra_hms), 
+                    dec_dms=_dec_dms, 
+                    dec_deg=dec_to_deg(_dec_dms),
+                    observation_id=get_unique_hash(), 
+                    begin_iso=_begin_iso, 
+                    begin_mjd=_begin_mjd, 
+                    end_iso=_end_iso, 
+                    end_mjd=_end_mjd,
+                    airmass=_airmass, 
+                    lunarphase=_lunarphase, 
+                    moonphase=_moonphase, 
+                    photometric=_photometric,
+                    guiding=_guiding, 
+                    non_sidereal=_non_sidereal, 
+                    telescope=_telescope,
+                    instrument=_instrument, 
+                    rts2_doc='{}', 
+                    rts2_id=-1, 
+                    queued=False, 
+                    queued_iso=ARTN_ZERO_ISO, 
+                    queued_mjd=ARTN_ZERO_MJD, 
+                    completed=False,
+                    completed_iso=ARTN_ZERO_ISO, 
+                    completed_mjd=ARTN_ZERO_MJD,
+                    binning=_binning, 
+                    dither=_dither, 
+                    cadence=_cadence, 
+                    non_sidereal_json=_non_sidereal_json, 
+                    obs_status='', 
+                    percent_completed=0.0, 
+                    user_id=_user.id)
         except Exception as _e:
-            msg_out(f"ERROR: failed instantiating ObsReq(), error={_e}", True, True)
+            msg_out(f"ERROR: failed instantiating ObsReq2(), error={_e}", True, True)
         else:
-            msg_out(f"upload_file> instantiated ObsReq() OK", True, False)
+            msg_out(f"upload_file> instantiated ObsReq2() OK, {_or.serialized()}", True, False)
 
         # update database (admin is allowed insert any records, users on those they own)
         if _user.is_admin or (_user.username.lower() == _username.lower()):
             try:
                 db.session.add(_or)
                 db.session.commit()
-                msg_out(f"upload_file> loaded object {_columns['object_name'][_i]} for {_columns['username'][_i]}",
-                        True, False)
             except Exception as _e:
                 db.session.rollback()
-                msg_out(f"ERROR: Failed to create observation request {_columns['object_name'][_i]} for "
-                        f"{_columns['username'][_i]}, error={_e}", True, True)
-                return redirect(url_for('orp_user', username=_user.username))
+                msg_out(f"ERROR: Failed to create observation request {_columns['object_name'][_i]} for {_columns['username'][_i]}, error={_e}", True, True)
+            else:
+                db.session.flush()
+                _obsreqid = _or.serialized()['id']
+                msg_out(f"upload_file> loaded object {_columns['object_name'][_i]} for {_columns['username'][_i]}, id={_obsreqid}", True, True)
+                msg_out(f"upload_file> instantiating ObsExposure(obsreqid={_obsreqid}, filter_name='{_filter_name}', exp_time={_exp_time}, num_exp={_num_exp}, completed=False, queued=False,filename=''")
+                try:
+                    _oe = ObsExposure(
+                            obsreqid=_or.serialized()['id'],
+                            filter_name=_filter_name,
+                            exp_time=_exp_time,
+                            num_exp=_num_exp,
+                            completed=False,
+                            queued=False,
+                            filename='')
+                except Exception as _f:
+                    msg_out(f"ERROR: failed instantiating ObsExposure(), error={_f}", True, True)
+                else:
+                    msg_out(f"upload_file> instantiated ObsExposure() OK, {_oe.serialized()}", True, False)
+                    try:
+                        db.session.add(_oe)
+                        db.session.commit()
+                    except Exception as _x:
+                        db.session.rollback()
+                        msg_out(f"ERROR: Failed to create exposure request {_columns['object_name'][_i]} for {_columns['username'][_i]}, error={_x}", True, True)
+                        ObsReq2.query.filter_by(id=_obsreqid).delete()
+                        msg_out(f"ERROR: Deleted create exposure request {_columns['object_name'][_i]} for {_columns['username'][_i]}, error={_x}", True, True)
+                    else:
+                        msg_out(f"upload_file> loaded object exposure {_oe.serialized()}", True, True)
+
+    # done
+    return redirect(url_for('orp_user', username=_user.username))
 
 
 # noinspection PyBroadException
@@ -1299,9 +1344,6 @@ def orp_delete(username=''):
 # +
 # route(s): /orp/download/artn_template.v1.csv
 # -
-### +
-### since the introduction is ObsReq2, this is broken??!!!
-### -
 @app.route('/orp/orp/download/artn_template.v1.csv')
 @app.route('/orp/download/artn_template.v1.csv')
 @app.route('/download/artn_template.v1.csv')
@@ -1315,9 +1357,6 @@ def orp_download_csv_v1():
 # +
 # route(s): /orp/download/artn_template.v1.tsv
 # -
-### +
-### since the introduction is ObsReq2, this is broken??!!!
-### -
 @app.route('/orp/orp/download/artn_template.v1.tsv')
 @app.route('/orp/download/artn_template.v1.tsv')
 @app.route('/download/artn_template.v1.tsv')
@@ -1331,9 +1370,6 @@ def orp_download_tsv_v1():
 # +
 # route(s): /orp/download/artn_template.v2.tsv
 # -
-### +
-### since the introduction is ObsReq2, this is broken??!!!
-### -
 @app.route('/orp/orp/download/artn_template.v2.tsv')
 @app.route('/orp/download/artn_template.v2.tsv')
 @app.route('/download/artn_template.v2.tsv')
@@ -1347,9 +1383,6 @@ def orp_download_tsv_v2():
 # +
 # route(s): /orp/download/check_upload_format_standalone.py
 # -
-### +
-### since the introduction is ObsReq2, this is broken??!!!
-### -
 @app.route('/orp/orp/download/check_upload_format_standalone.py')
 @app.route('/orp/download/check_upload_format_standalone.py')
 @app.route('/download/check_upload_format_standalone.py')
@@ -1363,9 +1396,6 @@ def orp_download_check_upload_format_standalone():
 # +
 # route(s): /orp/download/orp_cli_upload.sh
 # -
-### +
-### since the introduction is ObsReq2, this is broken??!!!
-### -
 @app.route('/orp/orp/download/orp_cli_upload.sh')
 @app.route('/orp/download/orp_cli_upload.sh')
 @app.route('/download/orp_cli_upload.sh')
@@ -1457,6 +1487,8 @@ def orp_get_file(download_file=''):
 
     # if it's a CSV or TSV files, the filename is of the form <user>_<file>.csv or <user>_<file>.tsv
     if _file.lower().endswith('csv') or _file.lower().endswith('tsv'):
+        _u = _file.split('_')[0].strip().lower()
+    elif _file.lower().endswith('json'):
         _u = _file.split('_')[0].strip().lower()
     # if it's a TGZ file, the filename is of the form <user>.<date>.<id>.tgz
     elif _file.lower().endswith('tgz'):
@@ -1685,6 +1717,9 @@ def dir_listing(ftype=''):
             else:
                 _dict = {'file': f'{_e}', 'name': f'{os.path.basename(_e)}', 'OK': False}
             _results.append(_dict)
+        ###
+        ### need something for JSON here?!
+        ###
         elif _e.lower().endswith('tgz'):
             if int(os.stat(f'{_e}').st_size) > 45:
                 _dict = {'file': f'{_e}', 'name': f'{os.path.basename(_e)}', 'OK': True}
@@ -2806,21 +2841,68 @@ def orp_update(username=''):
 
 
 # +
-# route(s): /orp/upload/<username>, requires login
+# route(s): /orp/tsv_upload/<username>, requires login
 # -
-@app.route('/orp/orp/upload/<username>', methods=['GET', 'POST'])
-@app.route('/orp/upload/<username>', methods=['GET', 'POST'])
-@app.route('/upload/<username>', methods=['GET', 'POST'])
+@app.route('/orp/orp/tsv_upload/<username>', methods=['GET', 'POST'])
+@app.route('/orp/tsv_upload/<username>', methods=['GET', 'POST'])
+@app.route('/tsv_upload/<username>', methods=['GET', 'POST'])
 @login_required
-def orp_upload(username=''):
-    msg_out(f'/orp/upload/{username} entry', True, False)
+def orp_tsv_upload(username=''):
+    msg_out(f'/orp/tsv_upload/{username} entry', True, False)
     get_client_ip(request)
 
     # look up user (as required)
     _u = current_user if current_user.is_authenticated else User.query.filter_by(username=username).first_or_404()
 
     # build form
-    form = UploadForm()
+    form = UploadTSVForm()
+
+    # validate form (POST request)
+    if form.validate_on_submit():
+
+        # get data
+        _fn = form.filename.data
+        filename = secure_filename(_fn.filename)
+        pathname = os.path.join(app.instance_path, 'files', f'{_u.username}_{filename}')
+        _fn.save(pathname)
+        
+        # check file is valid
+        _num, _columns = check_upload_format(pathname)
+        if _num < 0 or _columns is {}:
+            msg_out(f'ERROR: Input file has invalid format, please check {filename}', True, True)
+            return redirect(url_for('orp_view_requests', username=current_user.username))
+
+        # if number of lines < 100, upload synchronously otherwise use a thread
+        if _num < 100:
+            msg_out(f'Input file has {_num} records, loading synchronously', True, True)
+            upload_file(_columns, _num, _u)
+        else:
+            msg_out(f'Input file has {_num} records, loading asynchronously', True, True)
+            upload_file_async(_columns, _num, _u)
+
+        # return to view requests
+        return redirect(url_for('orp_view_requests', username=current_user.username))
+
+    # return for GET
+    return render_template('tsv_upload.html', form=form)
+
+
+# +
+# route(s): /orp/json_upload/<username>, requires login
+# -
+@app.route('/orp/orp/json_upload/<username>', methods=['GET', 'POST'])
+@app.route('/orp/json_upload/<username>', methods=['GET', 'POST'])
+@app.route('/json_upload/<username>', methods=['GET', 'POST'])
+@login_required
+def orp_json_upload(username=''):
+    msg_out(f'/orp/json_upload/{username} entry', True, False)
+    get_client_ip(request)
+
+    # look up user (as required)
+    _u = current_user if current_user.is_authenticated else User.query.filter_by(username=username).first_or_404()
+
+    # build form
+    form = UploadJSONForm()
 
     # validate form (POST request)
     if form.validate_on_submit():
@@ -2855,17 +2937,17 @@ def orp_upload(username=''):
                         else:
                             msg_out(f'Error: Invalid Observation Request: {obsexp.serialized()}')
                             msg_out(f'Errors: {json.dumps(validator.errors)}')
-                            return redirect(url_for('orp_upload', username=current_user.username))
+                            return redirect(url_for('orp_json_upload', username=current_user.username))
                 #No exposures
                 else:
                     msg_out(f'Error: Invalid Observation Request: {json.dumps(obs)}')
                     msg_out(f'Errors: list of \'exposures\' is required')
-                    return redirect(url_for('orp_upload', username=current_user.username))
+                    return redirect(url_for('orp_json_upload', username=current_user.username))
             #Invalid Observation request
             else:
                 msg_out(f'Error: Invalid Observation Request: {json.dumps(obs)}')
                 msg_out(f'Errors: {json.dumps(validator.errors)}')
-                return redirect(url_for('orp_upload', username=current_user.username))
+                return redirect(url_for('orp_json_upload', username=current_user.username))
         #Everything is Kosher, submit to database and return
         db.session.commit()
         msg_out(f'Successfully uploaded file', True, True)
@@ -2894,7 +2976,7 @@ def orp_upload(username=''):
         return redirect(url_for('orp_view_requests', username=current_user.username))
 
     # return for GET
-    return render_template('upload.html', form=form)
+    return render_template('json_upload.html', form=form)
 
 
 # +

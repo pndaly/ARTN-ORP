@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block content %}
+ <hr class="normal">
+ <form action="" method="post" enctype = "multipart/form-data">
+  {{ form.hidden_tag() }}
+     <div class="row">
+         <div class="col-md-12">
+             <p>
+                 {{ form.filename.label }}<br>
+                 {{ form.filename(size=128) }}<br>
+                 {% for error in form.filename.errors %}
+                 <span style="color: red;"><small>[{{ error }}]</small></span>
+                 {% endfor %}
+                 <small><font color="purple">JSON file containing a list of obsreq data objects</font></small>
+             </p>
+         </div>
+     </div>
+  <div class="row">
+   <div class="col-md-12">
+   <div class="d-flex justify-content-between">
+    <div class="row">
+     <button type="submit" class="btn btn-md btn-warning">Upload JSON File</button>
+    </div>
+    <div>
+     <a href="{{ url_for('orp_user', username=current_user.username) }}" class="btn btn-md btn-danger">Cancel</a>
+    </div>
+   </div>
+   </div>
+  </div>
+ </form>
+ <hr class="normal">
+ <div class="row">
+     <h3>Valid JSON file structure</h3><br>
+     <div class="row">
+        <p>The file must be valid JSON, and the keyword/values for observation requests, are as follows</p>
+        <pre>
+            <code class="language-json" data-lang="json">
+    [
+        {
+            "telescope":"tele_name"         //can only be Kuiper (Future support of other telescopes will be available)
+            "instrument":"inst_name"        //can only be Mont4k (Future support of other instruments will be available)
+            "object_name":"name",           //must be string (AlphaNumeric_-)
+            "ra":"42.00",                   //can be decimal degrees or str HMS
+            "dec":"42:00:00.0",             //can be decimal degrees or str DMS
+            "airmass":"2.2"                 //can be decimal (1 < airmass < 3) (default is 2.0)
+            "cadence":"Once",               //can only be Once. (Future support of othe cadences ('Daily', 'BisInDie', 'Weekly', 'Monthly') in work)
+            "dither":"None",                //can only be None. (Future support of othe dithers ('None', 'n-RA', 'nDec', 'NxM') in work)
+            "guiding":"False",              //must be boolean. can only be False (Future support of guiding=True in work). 
+            "photometric":True",            //must be boolean (True/False)
+            "lunarphase":"Any",             //can be 'Dark', 'Grey', 'Bright', 'mBright', 'Any'. (default is 'Any')
+            "priority":"Routine",           //can be 'Routine', 'Urgent', 'ToO'. (default is 'Routine')
+            "binning":"4x4",                //can be '4x4', '3x3', '2x2', '1x1'. (default is 4x4)
+            "begin":"2022-05-19 10:53:51",  //must be datetime format of '%Y-%m-%d %H:%M:%S' (default is day of submission)
+            "end":"2022-05-30 10:53:51",    //must be datetime format of '%Y-%m-%d %H:%M:%S' (default is 30 days after day of submission)
+            "non_sidereal_json":            //must be json_object with exact keywords as follows
+            {
+                "RA_BiasRate": "0.0",   //must be decimal
+                "Dec_BiasRate": "0.0",  //must be decimal
+                "ObjectRate": "0.0",    //must be decimal
+                "PositionAngle": "0.0", //must be decimal
+                "UTC_At_Position": "2022-05-30T10:53:51.0" // must be datetime format of '%Y-%m-%dT%H:%M:%S.%f'
+            },
+            "exposures":[                   //must be list of json objects as follows
+                {
+                    "filter":"V",           //can be 'U', 'B', 'V', 'R', 'I', 'Clear', 'Halpha'
+                    "num_exp":4,            //must be integer
+                    "exp_time":333          //must be integer (time in seconds)
+                }
+            ]
+        }
+    ]
+            </code>
+        </pre>
+     </div>
+ </div>
+{% endblock %}

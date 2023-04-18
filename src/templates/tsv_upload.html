@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+ <hr class="normal">
+ <form action="" method="post" enctype = "multipart/form-data">
+  {{ form.hidden_tag() }}
+     <div class="row">
+         <div class="col-md-12">
+             <p>
+                 {{ form.filename.label }}<br>
+                 {{ form.filename(size=128) }}<br>
+                 {% for error in form.filename.errors %}
+                 <span style="color: red;"><small>[{{ error }}]</small></span>
+                 {% endfor %}
+                 <small><font color="purple">TSV file containing a list of obsreq data objects</font></small>
+             </p>
+         </div>
+     </div>
+  <div class="row">
+   <div class="col-md-12">
+   <div class="d-flex justify-content-between">
+    <div class="row">
+     <button type="submit" class="btn btn-md btn-warning">Upload TSV File</button>
+    </div>
+    <div>
+     <a href="{{ url_for('orp_user', username=current_user.username) }}" class="btn btn-md btn-danger">Cancel</a>
+    </div>
+   </div>
+   </div>
+  </div>
+ </form>
+ <hr class="normal">
+ <div class="row">
+     <h3>Valid TSV file structure</h3><br>
+     <div class="row">
+        <p>The file must be valid TSV, and the tab-separated fields for observation requests are as follows</p>
+        <pre>
+            <code class="language-tsv" data-lang="tsv">
+#username       telescope       instrument      object_name     ra      dec     filter  exp_time        num_exp airmass lunarphase priority        photometric     guiding non_sidereal    begin   end     binning dither  cadence non_sidereal_json
+artn    Kuiper  Mont4k  Stephans_Quintet_4x4_R  22:35:57.5      +33:57:36.0     R       30.0    5       2.0     Any     Routine False   False   False   2023-04-06 11:45:00     2023-04-13 11:45:00     4x4     NoDither        Once    '{}'
+            </code>
+        </pre>
+     </div>
+ </div>
+{% endblock %}

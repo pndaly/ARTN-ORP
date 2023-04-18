@@ -343,15 +343,27 @@ class UpdateObsReqForm(FlaskForm):
 
 
 # +
-# class: UploadForm(), inherits from FlaskForm
+# class: UploadJSONForm(), inherits from FlaskForm
 # -
-class UploadForm(FlaskForm):
+class UploadJSONForm(FlaskForm):
 
     # fields
-    filename = FileField('Filename', validators=[FileRequired(), FileAllowed(['json'], 'json only!')])
+    filename = FileField('Filename', validators=[FileRequired(), FileAllowed(['json'], 'JSON only!')])
 
     # submit
-    submit = SubmitField('Upload File')
+    submit = SubmitField('Upload JSON File')
+
+
+# +
+# class: UploadTSVForm(), inherits from FlaskForm
+# -
+class UploadTSVForm(FlaskForm):
+
+    # fields
+    filename = FileField('Filename', validators=[FileRequired(), FileAllowed(['tsv'], 'TSV only!')])
+
+    # submit
+    submit = SubmitField('Upload TSV File')
 
 
 # +
