@@ -95,7 +95,8 @@ TELESCOPES['vatt'].observe = vatt_observe
 # +
 # initialize
 # -
-app = Flask(__name__, instance_path=f"{ORP_HOME}/instance")
+# app = Flask(__name__, instance_path=f"{ORP_HOME}/instance")
+app = Flask(__name__)
 app.config['SECRET_KEY'] = ARTN_SECRET_KEY
 app.config['SQLALCHEMY_DATABASE_URI'] = \
     f'postgresql+psycopg2://{ARTN_DB_USER}:{ARTN_DB_PASS}@{ARTN_DB_HOST}:{ARTN_DB_PORT}/{ARTN_DB_NAME}'
@@ -125,7 +126,7 @@ mail = Mail(app)
 # +
 # initialize api
 # -
-#from . import api
+from . import api
 
 
 def create_gmail(subject='', sender='', recipients=None, text_body='', html_body=''):
@@ -316,9 +317,10 @@ def upload_file_async(_columns=None, _num=0, _user=None):
     if _columns is not None:
         Thread(name='upload_file_async', target=upload_file_in_thread, args=(_columns, _num, _user,)).start()
 
-### +
-### since the introduction is ObsReq2, this is broken??!!!
-### -
+# +
+# since the introduction of ObsReq2, this is broken??!!!
+# fixed: pnd, 20230418
+# -
 def upload_file(_columns=None, _num=0, _user=None):
     for _i in range(0, _num):
         msg_out(f"upload_file> creating observation request {_columns['object_name'][_i]} for "
@@ -356,21 +358,18 @@ def upload_file(_columns=None, _num=0, _user=None):
             if (_user.username.strip().lower() == _username.strip().lower()) or _user.is_admin:
                 pass
             else:
-                msg_out(f"ERROR: {_user.username} does not have permission to create an ObsReq() "
-                        f"for {_username}", True, True)
+                msg_out(f"ERROR: {_user.username} does not have permission to create an ObsReq() for {_username}", True, True)
                 continue
 
         # check telescope / instrument pairing
         if f'{_instrument}' not in ARTN_SUPPORTED_NODES[f'{_telescope}']:
-            msg_out(f"upload_file> invalid telescope ({_telescope}) and instrument ({_instrument}) combination",
-                    True, False)
+            msg_out(f"upload_file> invalid telescope ({_telescope}) and instrument ({_instrument}) combination", True, True)
             continue
 
         # check known limit(s)
         _d = dec_to_deg(_dec_dms)
         if _d > TEL__DEC__LIMIT[f'{_telescope.lower()}']:
-            msg_out(f"upload_file> requested declination {_d:.3f} > {TEL__DEC__LIMIT[_telescope.lower()]} limit "
-                    f"for {_telescope} telescope", True, False)
+            msg_out(f"upload_file> requested declination {_d:.3f} > {TEL__DEC__LIMIT[_telescope.lower()]} limit for {_telescope} telescope", True, False)
             continue
 
         # set default(s)
@@ -383,7 +382,7 @@ def upload_file(_columns=None, _num=0, _user=None):
             if check_json(_json):
                 _non_sidereal_json = json.loads(_json)
             else:
-                msg_out(f"upload_file> json not valid ... skipping", True, False)
+                msg_out(f"upload_file> invalid JSON ... skipping", True, False)
                 continue
         else:
             _non_sidereal_json = json.loads('{}')
@@ -464,8 +463,8 @@ def upload_file(_columns=None, _num=0, _user=None):
             else:
                 db.session.flush()
                 _obsreqid = _or.serialized()['id']
-                msg_out(f"upload_file> loaded object {_columns['object_name'][_i]} for {_columns['username'][_i]}, id={_obsreqid}", True, True)
-                msg_out(f"upload_file> instantiating ObsExposure(obsreqid={_obsreqid}, filter_name='{_filter_name}', exp_time={_exp_time}, num_exp={_num_exp}, completed=False, queued=False,filename=''")
+                msg_out(f"upload_file> loaded object {_columns['object_name'][_i]} for {_columns['username'][_i]}, id={_obsreqid}", True, False)
+                msg_out(f"upload_file> instantiating ObsExposure(obsreqid={_obsreqid}, filter_name='{_filter_name}', exp_time={_exp_time}, num_exp={_num_exp}, completed=False, queued=False,filename=''", True, False)
                 try:
                     _oe = ObsExposure(
                             obsreqid=_or.serialized()['id'],
@@ -488,7 +487,7 @@ def upload_file(_columns=None, _num=0, _user=None):
                         ObsReq2.query.filter_by(id=_obsreqid).delete()
                         msg_out(f"ERROR: Deleted create exposure request {_columns['object_name'][_i]} for {_columns['username'][_i]}, error={_x}", True, True)
                     else:
-                        msg_out(f"upload_file> loaded object exposure {_oe.serialized()}", True, True)
+                        msg_out(f"upload_file> loaded object exposure {_oe.serialized()}", True, False)
 
     # done
     return redirect(url_for('orp_user', username=_user.username))
