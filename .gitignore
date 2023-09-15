@@ -12,6 +12,7 @@ __pycache__
 instance/files/*.csv
 instance/files/*.json
 instance/files/*.tsv
+instance/files/rsync_tgz.sh
 
 # +
 # Packages
