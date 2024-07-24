@@ -31,8 +31,9 @@
    <span class="nightlog-3"><i>Focal Length:</i> {{ "%.1f"|format(nod.focal_length_m) }}<sup>m</sup> ({{ "%.1f"|format(nod.focal_length_ft) }}&prime;) &vert;</span>
    <span class="nightlog-3"><i>Mount:</i> {{ nod.mount }} &vert;</span>
    <span class="nightlog-3"><i>Primary:</i> {{ "%.1f"|format(nod.primary_imperial) }}&Prime; ({{ "%.2f"|format(nod.primary_metric) }}<sup>m</sup>)<br></span>
-   <span class="nightlog-3"><i>Astronomical Dusk: {{ nod.astronomical_dusk }}&deg; &vert; </i></span>
-   <span class="nightlog-3">Astronomical Twilight: {{ nod.astronomical_twilight }}&deg; &vert;</span>
+   <!-- <span class="nightlog-3"><i>Astronomical Dusk: {{ nod.astronomical_dusk }}&deg; &vert; </i></span> -->
+   <!-- <span class="nightlog-3"><i>Astronomical Twilight: {{ nod.astronomical_twilight }}&deg; &vert;</i></span> -->
+   <span class="nightlog-3">{{ nod.astronomical_dusk }} &lt; <i>Astronomical Twilight</i> &lt; {{ nod.astronomical_twilight }} &vert;</span>
    <span class="nightlog-3">{{ nod.min_airmass }} &lt; <i>Airmass</i> &lt; {{ nod.max_airmass }} &vert;</span>
    <span class="nightlog-3">{{ nod.min_moon_exclusion }}&deg; &lt; <i>Moon Exclusion</i> &lt; {{ nod.max_moon_exclusion }}&deg; &vert;</span>
    <span class="nightlog-3"><i>Declination Limit:</i> {{ nod.declination_limit }}&deg;</span>

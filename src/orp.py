@@ -3043,7 +3043,8 @@ def orp_view_observable(username=''):
             query = obsreq2_filters(query, {"sort_field": "id", "sort_order": "descending"})
 
         query = obsreq2_filters(query, request.args)
-        paginator = query.paginate(page, ARTN_RESULTS_PER_PAGE, True)
+        ## paginator = query.paginate(page, ARTN_RESULTS_PER_PAGE, True)
+        paginator = query.paginate(page=page, per_page=ARTN_RESULTS_PER_PAGE, error_out=True)
         response = {
             'total': paginator.total,
             'pages': paginator.pages,
@@ -3173,7 +3174,8 @@ def orp_view_requests(username=''):
         # request by everything else
         #query = obsreq_filters(query, request.args)
         query = obsreq2_filters(query, request.args)
-        paginator = query.paginate(page, ARTN_RESULTS_PER_PAGE, True)
+        # paginator = query.paginate(page, ARTN_RESULTS_PER_PAGE, True)
+        paginator = query.paginate(page=page, per_page=ARTN_RESULTS_PER_PAGE, error_out=True)
         response = {
             'total': paginator.total,
             'pages': paginator.pages,
