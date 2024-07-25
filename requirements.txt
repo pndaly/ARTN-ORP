@@ -12,7 +12,9 @@ numpy
 pdfkit
 psycopg2-binary
 pyjwt
+pyparsing
 pytest
+python-dateutil
 pytz
 reportlab
 requests
